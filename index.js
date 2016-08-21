@@ -1,10 +1,11 @@
+const classes = require('classnames')
 const {start, html, pull} = require('inu')
 const log = require('inu-log')
 const jsonSchema = require('jsonschema')
 const intersperse = require('ramda/src/intersperse')
 const updeep = require('updeep')
 
-// Form schema
+// form schema
 
 const formSchema = {
   'First name': {type: 'string', minLength: 1},
@@ -19,7 +20,7 @@ const formSchema = {
 const validate = (label, value) =>
   jsonSchema.validate(value, formSchema[label]).errors
 
-// App
+// app
 
 const createAction = type => payload => ({type, payload})
 
@@ -57,13 +58,16 @@ const view = (model, dispatch) => {
     dispatch(actions.input({field, value}))
 
   const text = label =>
-    textField(label, model.fields[label], value => dispatchInput(label, value))
+    textField(label, model.fields[label], model.errors[label], value => dispatchInput(label, value))
 
   const choice = (label, options) =>
-    choiceField(label, options, model.fields[label], value => dispatchInput(label, value))
+    choiceField(label, options, model.fields[label], model.errors[label], value => dispatchInput(label, value))
 
   const date = label =>
-    dateField(label, model.fields[label], value => dispatchInput(label, value))
+    dateField(label, model.fields[label], model.errors[label], value => dispatchInput(label, value))
+
+  const select = (label, options) =>
+    selectField(label, options, model.fields[label], model.errors[label], value => dispatchInput(label, value))
 
   return html`
     <div class="form">
@@ -72,21 +76,22 @@ const view = (model, dispatch) => {
       ${text('Last name')}
       ${choice('Gender', ['male', 'female', 'other'])}
       ${date('Date of birth')}
+      ${select('University', ['TODO', 'foo', 'bazzz'])}
       ${text('Course')}
     </div>
   `
 }
 
-const textField = (label, value, onValue) =>
+const textField = (label, value, error, onValue) =>
   html`
-    <div class="field text">
+    <div class="${classes('field', 'text', {error})}">
       <label>${label}: <input type="text" oninput=${e => onValue(e.target.value)} value=${value || ''} /></label>
     </div>
   `
 
-const choiceField = (label, options, value, onValue) =>
+const choiceField = (label, options, value, error, onValue) =>
   html`
-    <div class="field choice">
+    <div class="${classes('field', 'choice', {error})}">
       ${label}:
       ${intersperse(' / ', options.map(option => html`
         <span
@@ -101,12 +106,24 @@ const choiceField = (label, options, value, onValue) =>
     </div>
   `
 
-const dateField = (label, value, onValue) =>
+const dateField = (label, value, error, onValue) =>
   html`
-    <div class="field date">
+    <div class="${classes('field', 'date', {error})}">
       <label>${label}: <input type="text" oninput=${e => onValue(e.target.value)} value=${value || ''} placeholder="YYYY-MM-DD" /></label>
     </div>
   `
+
+const selectField = (label, options, value, error, onValue) =>
+  html`
+    <div class="${classes('field', 'select', {error})}">
+      ${label}:
+      <select onchange=${e => onValue(options[e.target.selectedIndex])}>
+        ${options.map(option => html`<option ${option === value ? 'selected' : ''}>${option}</option>`)}
+      </select>
+    </div>
+  `
+
+// init
 
 const app = {
   init: () => ({ model }),
