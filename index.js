@@ -29,12 +29,7 @@ const actions = {
 }
 
 const model = {
-  fields: {
-    'First name': null,
-    'Last name': null,
-    'Gender': null,
-    'Date of birth': null,
-  },
+  fields: {}, // TODO
   errors: {},
 }
 
@@ -58,16 +53,20 @@ const view = (model, dispatch) => {
     dispatch(actions.input({field, value}))
 
   const text = label =>
-    textField(label, model.fields[label], model.errors[label], value => dispatchInput(label, value))
+    labelledField(label, model.errors[label], 'text',
+      textField(model.fields[label], value => dispatchInput(label, value)))
 
   const choice = (label, options) =>
-    choiceField(label, options, model.fields[label], model.errors[label], value => dispatchInput(label, value))
+    labelledField(label, model.errors[label], 'choice',
+      choiceField(model.fields[label], value => dispatchInput(label, value), options))
 
   const date = label =>
-    dateField(label, model.fields[label], model.errors[label], value => dispatchInput(label, value))
+    labelledField(label, model.errors[label], 'date',
+      dateField(model.fields[label], value => dispatchInput(label, value)))
 
   const select = (label, options) =>
-    selectField(label, options, model.fields[label], model.errors[label], value => dispatchInput(label, value))
+    labelledField(label, model.errors[label], 'select',
+      selectField(model.fields[label], value => dispatchInput(label, value), options))
 
   return html`
     <div class="form">
@@ -82,45 +81,40 @@ const view = (model, dispatch) => {
   `
 }
 
-const textField = (label, value, error, onValue) =>
+const labelledField = (label, error, type, field) =>
   html`
-    <div class="${classes('field', 'text', {error})}">
-      <label>${label}: <input type="text" oninput=${e => onValue(e.target.value)} value=${value || ''} /></label>
+    <div class="${classes('field', type, {error})}">
+      ${label}: ${field}
     </div>
   `
 
-const choiceField = (label, options, value, error, onValue) =>
+const textField = (value, onInput) =>
+  html`<input type="text" oninput=${e => onInput(e.target.value)} value=${value || ''} />`
+
+const choiceField = (value, onInput, options) =>
   html`
-    <div class="${classes('field', 'choice', {error})}">
-      ${label}:
+    <span>
       ${intersperse(' / ', options.map(option => html`
         <span
           class="option ${option === value ? 'selected' : ''}"
-          onclick=${() => onValue(option)}
+          onclick=${() => onInput(option)}
           tabindex=0
-          onkeydown=${e => {if (e.keyCode === 13) onValue(option)}}
+          onkeydown=${e => {if (e.keyCode === 13) onInput(option)}}
         >
           ${option}
         </span>
       `))}
-    </div>
+    </span>
   `
 
-const dateField = (label, value, error, onValue) =>
-  html`
-    <div class="${classes('field', 'date', {error})}">
-      <label>${label}: <input type="text" oninput=${e => onValue(e.target.value)} value=${value || ''} placeholder="YYYY-MM-DD" /></label>
-    </div>
-  `
+const dateField = (value, onInput) =>
+  html`<input type="text" oninput=${e => onInput(e.target.value)} value=${value || ''} placeholder="YYYY-MM-DD" />`
 
-const selectField = (label, options, value, error, onValue) =>
+const selectField = (value, onInput, options) =>
   html`
-    <div class="${classes('field', 'select', {error})}">
-      ${label}:
-      <select onchange=${e => onValue(options[e.target.selectedIndex])}>
-        ${options.map(option => html`<option ${option === value ? 'selected' : ''}>${option}</option>`)}
-      </select>
-    </div>
+    <select onchange=${e => onInput(options[e.target.selectedIndex])}>
+      ${options.map(option => html`<option ${option === value ? 'selected' : ''}>${option}</option>`)}
+    </select>
   `
 
 // init
