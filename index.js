@@ -5,15 +5,29 @@ const jsonSchema = require('jsonschema')
 const intersperse = require('ramda/src/intersperse')
 const updeep = require('updeep')
 
+const year = 2017
+
+function contains (array, item) {
+  return array.indexOf(item) !== -1
+}
+
 // form schema
 
+const requiredString = {type: 'string', minLength: 1}
+const optionalString = {anyOf: [{type: 'null'}, {type: 'string'}]}
+const optionalEnum = members => ({anyOf: [{enum: members}, {type: 'string'}]}) // useless?
 const formSchema = {
-  'First name': {type: 'string', minLength: 1},
-  'Last name': {type: 'string', minLength: 1},
-  'Gender': {enum: ['male', 'female', 'other']},
+  'First name': requiredString,
+  'Last name': requiredString,
+  'Gender': optionalEnum(['male', 'female']),
   'Date of birth': {type: 'string', format: 'date'},
-  'University': {enum: ['TODO', 'foo', 'bar']},
-  'Course': {type: 'string', minLength: 1},
+  'University': optionalEnum(['TODO']),
+  'Other university': optionalString,
+  'Course': requiredString,
+  'Course year': optionalEnum(['1', '2', '3', '4', '5']),
+  'Other course year': optionalString,
+  'Graduation year': optionalEnum(['2017', '2018', '2019', '2020', '2021']),
+  'Other graduation year': optionalString,
 }
 
 // returns array of errors
@@ -49,34 +63,50 @@ const update = (model, action) => {
 }
 
 const view = (model, dispatch) => {
+  const {errors, fields} = model
+
   const dispatchInput = (field, value) =>
     dispatch(actions.input({field, value}))
 
   const text = label =>
     labelledField(label, model.errors[label], 'text',
-      textField(model.fields[label], value => dispatchInput(label, value)))
+      textField(fields[label], value => dispatchInput(label, value)))
 
   const choice = (label, options) =>
-    labelledField(label, model.errors[label], 'choice',
-      choiceField(model.fields[label], value => dispatchInput(label, value), options))
+    labelledField(label, errors[label], 'choice',
+      choiceField(fields[label], value => dispatchInput(label, value), options))
+
+  const openChoice = (label, options) =>
+    labelledField(label, errors[label], 'open-choice',
+      openChoiceField(fields[label], value => dispatchInput(label, value), options))
 
   const date = label =>
-    labelledField(label, model.errors[label], 'date',
-      dateField(model.fields[label], value => dispatchInput(label, value)))
+    labelledField(label, errors[label], 'date',
+      dateField(fields[label], value => dispatchInput(label, value)))
 
   const select = (label, options) =>
-    labelledField(label, model.errors[label], 'select',
-      selectField(model.fields[label], value => dispatchInput(label, value), options))
+    labelledField(label, errors[label], 'select',
+      selectField(fields[label], value => dispatchInput(label, value), options))
 
   return html`
     <div class="form">
       <h1>Your profile</h1>
+      <h2>Basics</h2>
       ${text('First name')}
       ${text('Last name')}
-      ${choice('Gender', ['male', 'female', 'other'])}
+      ${openChoice('Gender', ['male', 'female', 'other'])}
       ${date('Date of birth')}
-      ${select('University', ['TODO', 'foo', 'bazzz'])}
+      <h2>University</h2>
+
+      <p>If you can't find your university, choose "other" & type in your university.</p>
+      ${select('University', ['TODO'])}
+      ${fields['University'] === 'other' ? text('Other university') : null}
       ${text('Course')}
+
+      ${openChoice('Course year', ['1', '2', '3', '4', '5'])}
+      ${openChoice('Graduation year', ['2017', '2018', '2019', '2020', '2021'])}
+
+
     </div>
   `
 }
@@ -104,6 +134,16 @@ const choiceField = (value, onInput, options) =>
           ${option}
         </span>
       `))}
+    </span>
+  `
+
+const openChoiceField = (value, onInput, options) =>
+  html`
+    <span>
+      ${choiceField(value, onInput, options.concat('other'))}
+      ${value && !contains(options, value) || value === 'other'
+        ? textField(value === 'other' ? '' : value, onInput)
+        : null}
     </span>
   `
 
