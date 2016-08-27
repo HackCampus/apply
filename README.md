@@ -1,5 +1,6 @@
 # todo
 
+- [ ] oauth: linkedin, github
 - [ ] test in non-es6 env
 
 

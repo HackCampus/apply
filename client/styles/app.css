@@ -1,0 +1,12 @@
+.field {
+  background: blue;
+}
+
+.text {
+  composes: field;
+  color: white;
+}
+
+.text input {
+  background: red;
+}
