@@ -1,6 +1,8 @@
-const {html} = require('inu')
+const {html, pull} = require('inu')
 const {Action, Domain} = require('inux')
+const fetch = require('isomorphic-fetch')
 const jsonSchema = require('jsonschema')
+const promiseToPull = require('pull-promise')
 const updeep = require('updeep')
 
 const fields = require('../fields')
@@ -8,10 +10,18 @@ const fields = require('../fields')
 // actions
 
 const actions = {
-  input: Symbol('input')
+  input: Symbol('input'),
+  setFields: Symbol('setFields'),
+}
+const input = Action(actions.input)
+const setFields = Action(actions.setFields)
+
+const effects = {
+  authenticate: Symbol('authenticate')
 }
 
-const input = Action(actions.input)
+const authenticate = Action(effects.authenticate)
+
 
 // form schema
 
@@ -38,6 +48,7 @@ const validate = (label, value) =>
 
 
 const model = {
+  authState: undefined, // 'anonymous' | 'inProgress' | 'invalid' | 'authenticated'
   fields: {},
   errors: {},
 }
@@ -53,11 +64,24 @@ const update = (model, action) => {
         errors: errors.length === 0 ? updeep.omit(field) : {[field]: true}
       }, model)
     }
+
+    case actions.setFields:
+      debugger
+      return {model}
+
+    case effects.authenticate:
+      return action.payload
+        ? {model: updeep({authState: 'inProgress'}, model), effect: action}
+        : {model: updeep({authState: 'anonymous'}, model)}
   }
   return {model}
 }
 
-const view = (model, dispatch) => {
+const view = (model, dispatch, hacker) => {
+  if (!model.authState) {
+    dispatch(authenticate(hacker))
+  }
+
   const $ = (field, value) =>
     dispatch(input({field, value}))
 
@@ -87,7 +111,7 @@ const view = (model, dispatch) => {
       <h2>Basics</h2>
       ${text('First name')}
       ${text('Last name')}
-      ${openChoice('Gender', ['male', 'female', 'other'])}
+      ${openChoice('Gender', ['male', 'female'])}
       ${date('Date of birth')}
 
       <h2>University</h2>
@@ -102,12 +126,29 @@ const view = (model, dispatch) => {
   `
 }
 
+const apiCall = (url, onResponse) =>
+  pull(
+    promiseToPull.source(fetch(url, {
+      cache: 'no-cache',
+      credentials: 'include',
+    })),
+    promiseToPull.through(res => res.json()),
+    pull.map(onResponse))
+
+const run = ({type, payload}, sources) => {
+  switch (type) {
+    case effects.authenticate:
+      return apiCall(`/~${payload}.json`, setFields)
+  }
+}
+
 module.exports = Domain({
   name: 'apply',
   init: () => ({model}),
   update,
+  run,
   routes: [
-    ['/apply', (_, model, dispatch) => html`<div>TODO</div>`],
-    ['/apply/:hacker', ({hacker}, model, dispatch) => view(model.apply, dispatch)]
+    ['/apply', (_, model, dispatch) => view(model.apply, dispatch)],
+    ['/apply/:hacker', ({hacker}, model, dispatch) => view(model.apply, dispatch, hacker)]
   ]
 })

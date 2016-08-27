@@ -15,7 +15,10 @@ document.body.appendChild(container)
 const app = App([
   apply,
   {
-    routes: [['/', (params, model, dispatch) => html`<h1>yeee</h1>`]]
+    routes: [
+      ['/', (params, model, dispatch) => html`<h1>TODO</h1>`],
+      ['notFound', (params, model, dispatch) => html`<h1>404!!!!</h1>`],
+    ]
   }
 ])
 
