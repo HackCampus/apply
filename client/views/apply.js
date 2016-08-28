@@ -22,7 +22,6 @@ const effects = {
 
 const authenticate = Action(effects.authenticate)
 
-
 // form schema
 
 const requiredString = {type: 'string', minLength: 1}
@@ -77,9 +76,9 @@ const update = (model, action) => {
   return {model}
 }
 
-const view = (model, dispatch, hacker) => {
+const view = (model, dispatch, userName) => {
   if (!model.authState) {
-    dispatch(authenticate(hacker))
+    dispatch(authenticate(userName))
   }
 
   const $ = (field, value) =>
@@ -149,6 +148,6 @@ module.exports = Domain({
   run,
   routes: [
     ['/apply', (_, model, dispatch) => view(model.apply, dispatch)],
-    ['/apply/:hacker', ({hacker}, model, dispatch) => view(model.apply, dispatch, hacker)]
+    ['/apply/:userName', ({userName}, model, dispatch) => view(model.apply, dispatch, userName)]
   ]
 })

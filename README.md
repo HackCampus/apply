@@ -1,3 +1,18 @@
+# spec
+
+a user should be able to authenticate with email+password or github
+a user should not be able to register an account with an email that's already used
+a user has a single associated application (or none)
+applicant should be able to enter their application
+applicant should be able to start application without having registered
+'save' should prompt for user details
+application should be be associated with a single user
+
+# random
+
+undo/redo/saved state with hash of url
+can do anonymous editing with it
+
 # todo
 
 - [ ] oauth: linkedin, github

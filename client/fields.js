@@ -52,7 +52,6 @@ const select = (value, onInput, options) =>
 const contains = (array, item) =>
   array.indexOf(item) !== -1
 
-
 module.exports = {
   labelled,
   text,
