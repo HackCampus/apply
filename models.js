@@ -11,5 +11,6 @@ const User = bookshelf.Model.extend({
 })
 
 module.exports = {
+  Database: bookshelf,
   User,
 }
