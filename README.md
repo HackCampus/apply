@@ -7,6 +7,7 @@ applicant should be able to enter their application
 applicant should be able to start application without having registered
 'save' should prompt for user details
 application should be be associated with a single user
+email verification
 
 # random
 

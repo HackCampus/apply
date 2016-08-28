@@ -1,10 +1,3 @@
-// TODO move
-const sessionConfig = {
-  secret: 'changeme',
-  resave: false,
-  saveUninitialized: false,
-}
-
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const express = require('express')
@@ -13,19 +6,19 @@ const fs = require('fs')
 const http = require('http')
 const path = require('path')
 
+const config = require('../config')
+const {User} = require('./models')
+
 const port = process.env.PORT || 3000
 const app = express()
 
-app.use(session(sessionConfig))
+app.use(session({
+  secret: config.sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+}))
 app.use(bodyParser.json())
 app.use(cookieParser())
-
-// db
-
-// const knex = require('knex')
-// const database = knex()
-
-// end db
 
 // passport
 
@@ -37,8 +30,9 @@ passport.serializeUser((user, done) => {
 })
 
 passport.deserializeUser((id, done) => {
-  // TODO knex stuff
-  done('not implemented')
+  User.where('id', id).fetch()
+  .then(user => { done(null, user) })
+  .catch(err => { done(err) })
 })
 
 app.use(passport.initialize())
@@ -48,9 +42,15 @@ app.use(passport.session())
 
 app.use('/static', express.static(path.join(__dirname, 'build')))
 
-app.get('/~:applicant.json', (req, res) => {
-  const {applicant} = req.params
-  res.json({name: applicant})
+app.get('/~:name.json', (req, res) => {
+  const {name} = req.params
+  // TODO authenticated response?
+  User.where('name', name).fetch()
+  .then(user => res.json(user.toJSON()))
+  .catch(err => {
+    console.log(err)
+    res.status(404).send('TODO')
+  })
 })
 
 app.use(require('./shell'))
