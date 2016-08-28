@@ -52,3 +52,8 @@ unclear in docs that state is {model, effect}
 
 json patch
 https://tools.ietf.org/html/rfc6902
+
+# dev db setup
+
+create role hackcampus with createdb login password 'hackcampus';
+create database hackcampus with owner hackcampus;

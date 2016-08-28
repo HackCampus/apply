@@ -20,6 +20,13 @@ app.use(session(sessionConfig))
 app.use(bodyParser.json())
 app.use(cookieParser())
 
+// db
+
+// const knex = require('knex')
+// const database = knex()
+
+// end db
+
 // passport
 
 const passport = require('passport')
