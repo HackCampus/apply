@@ -1,5 +1,6 @@
 const passport = require('passport')
 
+const github = require('./github')
 const password = require('./password')
 
 module.exports = app => {
@@ -16,5 +17,6 @@ module.exports = app => {
     .catch(err => { done(err) })
   })
 
+  github(passport, app)
   password(passport, app)
 }
