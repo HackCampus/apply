@@ -33,6 +33,7 @@ const passport = require('passport')
 const {Strategy: LocalStrategy} = require('passport-local')
 
 passport.serializeUser((user, done) => {
+  console.log('serialize user', user)
   done(null, user.id)
 })
 
