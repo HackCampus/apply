@@ -10,6 +10,7 @@ const status = require('statuses')
 const errorHandler = require('./middlewares/errors')
 const validateRequest = require('./middlewares/validate')
 
+const auth = require('./auth')
 const config = require('../config')
 const errors = require('./errors')
 const {Authentication, Database, User} = require('./models')
@@ -27,33 +28,14 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 app.use('/static', express.static(path.join(__dirname, 'build')))
 app.disable('x-powered-by')
-
-// passport
-
-const passport = require('passport')
-
-passport.serializeUser((user, done) => {
-  console.log('serialize user', user)
-  done(null, user.id)
-})
-
-passport.deserializeUser((id, done) => {
-  User.where('id', id).fetch()
-  .then(user => { done(null, user) })
-  .catch(err => { done(err) })
-})
-
-app.use(passport.initialize())
-app.use(passport.session())
-
-// end passport
+auth(app)
 
 // register
+// errors:
 // 0. junk in
-// 1. user already exists
-// 2. email already exists
-// 3. auth is wrong?
-app.post('/~', validateRequest(wireFormats.user), (req, res, handleError) => {
+// 1. email already exists
+// 2. user already exists
+app.post('/register', validateRequest(wireFormats.user) /*0*/, (req, res, handleError) => {
   const {name, email, authentication} = req.body
   Database.transaction(transaction =>
     new User({name, email})
@@ -65,20 +47,14 @@ app.post('/~', validateRequest(wireFormats.user), (req, res, handleError) => {
   )
   .then(user => { res.status(status('Created')).json(user.toJSON()) })
   .catch(error => {
-    if (error.constraint === 'users_email_unique') {
-      return handleError({status: 'Conflict', message: {error: errors.emailTaken}})
+    if (error.constraint === 'users_email_unique') { /*1*/
+      return handleError({status: 'Conflict', error: errors.emailTaken})
     }
-    if (error.constraint === 'users_name_unique') {
-      return handleError({status: 'Conflict', message: {error: errors.nameTaken}})
+    if (error.constraint === 'users_name_unique') { /*2*/
+      return handleError({status: 'Conflict', error: errors.nameTaken})
     }
-    console.log(error)
-    return handleError({status: 'Internal Server Error'})
+    return handleError({status: 'Unknown', error})
   })
-})
-
-// login
-app.post('/~:name.json', (req, res) => {
-
 })
 
 app.get('/~:name.json', (req, res, handleError) => {
@@ -93,10 +69,7 @@ app.get('/~:name.json', (req, res, handleError) => {
       return handleError({status: 'Not Found'})
     }
   })
-  .catch(error => {
-    console.error(error)
-    return handleError({status: 'Internal Server Error'})
-  })
+  .catch(error => { return handleError({status: 'Unknown', error}) })
 })
 
 // single page app

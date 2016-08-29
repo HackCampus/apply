@@ -18,8 +18,8 @@ const api = () =>
 // === register ===
 
 const register = () =>
-api()
-.post('/~')
+  api()
+  .post('/register')
 
 register()
 .send({weird: 'stuff'})

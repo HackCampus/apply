@@ -20,7 +20,7 @@ const Authentication = bookshelf.Model.extend({
   tableName: 'authentication',
   hasTimeStamps: ['createdAt', 'updatedAt'],
   user: function () {
-    return this.belongsTo('User', 'userId')
+    return this.belongsTo(User, 'userId')
   }
 })
 
