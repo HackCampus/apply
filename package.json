@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "autoprefixer": "^6.4.0",
+    "bcrypt": "^0.8.7",
     "body-parser": "^1.15.2",
     "bookshelf": "^0.10.0",
     "browserify": "^13.1.0",

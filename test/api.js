@@ -4,7 +4,6 @@ hippie.assert.showDiff = true
 const end = test => (err, res, body) => {
   console.log(test)
   if (err) {
-    console.log(res)
     console.log(body)
     throw err
   }
@@ -33,6 +32,6 @@ register()
 .end(end('wrong types'))
 
 register()
-.send({name: 'lachenmayer', email: 'foo@bar.baz'})
+.send({name: 'lachenmayer', email: 'foo@bar.baz', authentication: {type: 'password', token: 'foobar'}})
 .expectStatus(409)
 .end(end('already taken'))

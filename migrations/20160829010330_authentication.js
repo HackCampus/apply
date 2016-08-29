@@ -4,8 +4,8 @@ exports.up = function(knex, Promise) {
     t.dateTime('createdAt').notNull().defaultsTo(knex.fn.now())
 		t.dateTime('updatedAt').nullable()
 
-    t.string('type').notNull()
-    t.string('identifier').notNull()
+    t.enum('type', ['password']).notNull()
+    t.string('identifier').nullable()
     t.string('token').notNull()
     t.integer('userId')
       .unsigned()

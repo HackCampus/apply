@@ -5,13 +5,14 @@ const session = require('express-session')
 const fs = require('fs')
 const http = require('http')
 const path = require('path')
+const status = require('statuses')
 
 const errorHandler = require('./middlewares/errors')
 const validateRequest = require('./middlewares/validate')
 
 const config = require('../config')
 const errors = require('./errors')
-const {Database, User} = require('./models')
+const {Authentication, Database, User} = require('./models')
 const wireFormats = require('./wireFormats')
 
 const port = process.env.PORT || 3000
@@ -30,7 +31,6 @@ app.disable('x-powered-by')
 // passport
 
 const passport = require('passport')
-const {Strategy: LocalStrategy} = require('passport-local')
 
 passport.serializeUser((user, done) => {
   console.log('serialize user', user)
@@ -55,20 +55,21 @@ app.use(passport.session())
 // 3. auth is wrong?
 app.post('/~', validateRequest(wireFormats.user), (req, res, handleError) => {
   const {name, email, authentication} = req.body
-  new User({name, email}).save()
-  .then(user => {
-    res.status(status('Created')).json(user.toJSON())
-  })
+  Database.transaction(transaction =>
+    new User({name, email})
+    .save(null, {transacting: transaction})
+    .tap(user => Authentication.createForUser(user, authentication, transaction))
+    // TODO log in?
+    .then(transaction.commit)
+    .catch(transaction.rollback)
+  )
+  .then(user => { res.status(status('Created')).json(user.toJSON()) })
   .catch(error => {
-    let errors = []
     if (error.constraint === 'users_email_unique') {
-      errors.push(errors.emailTaken)
+      return handleError({status: 'Conflict', message: {error: errors.emailTaken}})
     }
     if (error.constraint === 'users_name_unique') {
-      errors.push(errors.nameTaken)
-    }
-    if (errors.length > 0) {
-      return handleError({status: 'Conflict', message: {errors}})
+      return handleError({status: 'Conflict', message: {error: errors.nameTaken}})
     }
     console.log(error)
     return handleError({status: 'Internal Server Error'})
