@@ -4,6 +4,7 @@ const express = require('express')
 const session = require('express-session')
 const fs = require('fs')
 const http = require('http')
+const morgan = require('morgan')
 const path = require('path')
 const status = require('statuses')
 
@@ -19,6 +20,7 @@ const wireFormats = require('./wireFormats')
 const port = process.env.PORT || 3000
 const app = express()
 
+app.use(morgan('dev'))
 app.use(session({
   secret: config.sessionSecret,
   resave: false,
@@ -35,7 +37,7 @@ auth(app)
 // 0. junk in
 // 1. email already exists
 // 2. user already exists
-app.post('/register', validateRequest(wireFormats.user) /*0*/, (req, res, handleError) => {
+app.post('/~', validateRequest(wireFormats.user) /*0*/, (req, res, handleError) => {
   const {name, email, authentication} = req.body
   Database.transaction(transaction =>
     new User({name, email})
@@ -57,20 +59,20 @@ app.post('/register', validateRequest(wireFormats.user) /*0*/, (req, res, handle
   })
 })
 
-app.get('/~:name.json', (req, res, handleError) => {
-  const {name} = req.params
-  // TODO authenticated response?
-  User.where('name', name).fetch()
-  .then(user => {
-    if (user) {
-      res.json(user.toJSON())
-    } else {
-      // TODO error message
-      return handleError({status: 'Not Found'})
-    }
-  })
-  .catch(error => { return handleError({status: 'Unknown', error}) })
-})
+// app.get('/~:name.json', (req, res, handleError) => {
+//   const {name} = req.params
+//   // TODO authenticated response?
+//   User.where('name', name).fetch()
+//   .then(user => {
+//     if (user) {
+//       res.json(user.toJSON())
+//     } else {
+//       // TODO error message
+//       return handleError({status: 'Not Found'})
+//     }
+//   })
+//   .catch(error => { return handleError({status: 'Unknown', error}) })
+// })
 
 // single page app
 app.use(require('./shell'))

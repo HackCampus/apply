@@ -1,5 +1,6 @@
 const autoprefixer = require('autoprefixer')
 const browserify = require('browserify')
+const {exec} = require('child_process')
 const cssnano = require('cssnano')
 const exorcist = require('exorcist')
 const fs = require('fs')
@@ -36,6 +37,8 @@ gulp.task('styles', () =>
   .pipe(gulp.dest(build))
 )
 
-gulp.task('default', ['app', 'styles'])
+gulp.task('default', ['app', 'styles'], () => {
+  exec(`osascript -e 'display notification "build finished" with title "hackcampus"'`)
+})
 
 gulp.start.call(gulp, 'default')

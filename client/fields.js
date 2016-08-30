@@ -12,6 +12,9 @@ const labelled = (label, error, type, field) =>
 const text = (value, onInput) =>
   html`<input type="text" oninput=${e => onInput(e.target.value)} value=${value || ''} />`
 
+const password = (value, onInput) =>
+  html`<input type="password" oninput=${e => onInput(e.target.value)} value=${value || ''} />`
+
 const choice = (value, onInput, options) =>
   html`
     <span>
@@ -48,13 +51,13 @@ const select = (value, onInput, options) =>
     </select>
   `
 
-
 const contains = (array, item) =>
   array.indexOf(item) !== -1
 
 module.exports = {
   labelled,
   text,
+  password,
   choice,
   openChoice,
   date,

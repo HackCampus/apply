@@ -1,56 +1,52 @@
 const {html, pull} = require('inu')
 const {Action, Domain} = require('inux')
-const fetch = require('isomorphic-fetch')
 const jsonSchema = require('jsonschema')
-const promiseToPull = require('pull-promise')
 const updeep = require('updeep')
 
+const api = require('../api')
+const errors = require('../../errors')
 const fields = require('../fields')
-
-// actions
+const {either} = require('../pull')
+const wireFormats = require('../../wireFormats')
 
 const actions = {
   input: Symbol('input'),
-  setFields: Symbol('setFields'),
+  submit: Symbol('submit')
 }
 const input = Action(actions.input)
-const setFields = Action(actions.setFields)
+const submit = Action(actions.submit)
 
-const effects = {
-  authenticate: Symbol('authenticate')
+const responses = {
+  registerResponse: Symbol('registerResponse'),
 }
+const registerResponse = Action(responses.registerResponse)
 
-const authenticate = Action(effects.authenticate)
-
-// form schema
-
-const requiredString = {type: 'string', minLength: 1}
-const optionalString = {anyOf: [{type: 'null'}, {type: 'string'}]}
-const optionalEnum = members => ({anyOf: [{enum: members}, {type: 'string'}]}) // useless?
-const formSchema = {
-  'First name': requiredString,
-  'Last name': requiredString,
-  'Gender': optionalEnum(['male', 'female']),
-  'Date of birth': {type: 'string', format: 'date'},
-  'University': optionalEnum(['TODO']),
-  'Other university': optionalString,
-  'Course': requiredString,
-  'Course year': optionalEnum(['1', '2', '3', '4', '5']),
-  'Other course year': optionalString,
-  'Graduation year': optionalEnum(['2017', '2018', '2019', '2020', '2021']),
-  'Other graduation year': optionalString,
-}
-
-// returns array of errors
-const validate = (label, value) =>
-  jsonSchema.validate(value, formSchema[label]).errors
-
+const goSymbol = Symbol('go')
+const go = Action(goSymbol)
 
 const model = {
-  authState: undefined, // 'anonymous' | 'inProgress' | 'invalid' | 'authenticated'
-  fields: {},
+  fields: {
+    name: '',
+    email: '',
+    password: '',
+    'confirm password': '',
+  },
   errors: {},
 }
+
+const formSchema = {
+  id: 'apply',
+  type: 'object',
+  properties: {
+    name: wireFormats.user.properties.name,
+    email: wireFormats.user.properties.email,
+    password: wireFormats.password,
+    'confirm password': wireFormats.password,
+  }
+}
+
+const validate = (label, value) =>
+  jsonSchema.validate(value, formSchema.properties[label]).errors
 
 const update = (model, action) => {
   const u = newState => ({model: updeep(newState, model)})
@@ -64,81 +60,95 @@ const update = (model, action) => {
       }, model)
     }
 
-    case actions.setFields:
-      debugger
-      return {model}
+    case actions.submit:
+      return {model, effect: submit(model.fields)}
 
-    case effects.authenticate:
-      return action.payload
-        ? {model: updeep({authState: 'inProgress'}, model), effect: action}
-        : {model: updeep({authState: 'anonymous'}, model)}
+    case responses.registerResponse: {
+      const {status, body} = action.payload
+      switch (status) {
+        case 'Created':
+          const {name} = body
+          return {model, effect: go(`/apply/${name}`)}
+        case 'Conflict':
+          const error = body
+          switch (error) {
+            case errors.emailTaken:
+              return u({errors: {email: true}})
+            case errors.nameTaken:
+              return u({errors: {name: true}})
+          }
+      }
+    }
   }
   return {model}
 }
 
-const view = (model, dispatch, userName) => {
-  if (!model.authState) {
-    dispatch(authenticate(userName))
-  }
+const run = (effect, sources) => {
+  switch (effect.type) {
+    case actions.submit: {
+      const {name, email, password} = effect.payload
+      const body = {name, email, authentication: {type: 'password', token: 'password'}}
+      return pull(
+        api.post('/~', body),
+        either(registerResponse, error => {
+          console.log(error)
+        }))
+    }
 
+    case goSymbol:
+      window.location = effect.payload
+      return
+  }
+}
+
+const view = (model, dispatch) => {
   const $ = (field, value) =>
     dispatch(input({field, value}))
+
+  const name =
+    fields.labelled('name', model.errors.name, 'text',
+      html`<span><span class="demoUrl">hackcampus.io/~</span>${fields.text(model.fields.name, value => $('name', value))}</span>`)
 
   const text = label =>
     fields.labelled(label, model.errors[label], 'text',
       fields.text(model.fields[label], value => $(label, value)))
 
-  const choice = (label, options) =>
-    fields.labelled(label, model.errors[label], 'choice',
-      fields.choice(model.fields[label], value => $(label, value), options))
-
-  const openChoice = (label, options) =>
-    fields.labelled(label, model.errors[label], 'open-choice',
-      fields.openChoice(model.fields[label], value => $(label, value), options))
-
-  const date = label =>
-    fields.labelled(label, model.errors[label], 'date',
-      fields.date(model.fields[label], value => $(label, value)))
-
-  const select = (label, options) =>
-    fields.labelled(label, model.errors[label], 'select',
-      fields.select(model.fields[label], value => $(label, value), options))
+  const completed = fieldName =>
+    model.fields[fieldName] && !model.errors[fieldName]
 
   return html`
     <div class="form">
-      <h1>Your profile</h1>
-      <h2>Basics</h2>
-      ${text('First name')}
-      ${text('Last name')}
-      ${openChoice('Gender', ['male', 'female'])}
-      ${date('Date of birth')}
-
-      <h2>University</h2>
-      <p>If you can't find your university, choose "other" & type in your university.</p>
-      ${select('University', ['TODO'])}
-      ${fields['University'] === 'other' ? text('Other university') : null}
-      ${text('Course')}
-
-      ${openChoice('Course year', ['1', '2', '3', '4', '5'])}
-      ${openChoice('Graduation year', ['2017', '2018', '2019', '2020', '2021'])}
+      <h2>Apply to HackCampus</h2>
+      ${name}
+      ${text('email')}
+      ${completed('name') && completed('email') ? authView(model, dispatch) : null}
     </div>
   `
 }
 
-const apiCall = (url, onResponse) =>
-  pull(
-    promiseToPull.source(fetch(url, {
-      cache: 'no-cache',
-      credentials: 'include',
-    })),
-    promiseToPull.through(res => res.json()),
-    pull.map(onResponse))
+const authView = (model, dispatch) => {
+  const $ = (field, value) =>
+    dispatch(input({field, value}))
 
-const run = ({type, payload}, sources) => {
-  switch (type) {
-    case effects.authenticate:
-      return apiCall(`/~${payload}.json`, setFields)
-  }
+  const password = label =>
+    fields.labelled(label, model.errors[label], 'password',
+      fields.password(model.fields[label], value => $(label, value)))
+
+  const completed = fieldName =>
+    model.fields[fieldName] && !model.errors[fieldName]
+
+  const passwordButtonEnabled =
+    completed('password') && completed('confirm password') && model.fields.password === model.fields['confirm password']
+
+  return html`
+    <div class="auth-form">
+      ${password('password')}
+      ${password('confirm password')}
+      <button ${passwordButtonEnabled ? '' : 'disabled'} onclick=${() => dispatch(submit())}>Sign up with a password</button>
+      <p>or</p>
+      <button>Authenticate with GitHub</button>
+    </div>
+  `
 }
 
 module.exports = Domain({
@@ -147,7 +157,6 @@ module.exports = Domain({
   update,
   run,
   routes: [
-    ['/apply', (_, model, dispatch) => view(model.apply, dispatch)],
-    ['/apply/:userName', ({userName}, model, dispatch) => view(model.apply, dispatch, userName)]
+    ['/apply', (_, model, dispatch) => view(model.apply, dispatch)]
   ]
 })

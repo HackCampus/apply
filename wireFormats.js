@@ -8,10 +8,12 @@ const authentication = {
   required: ['type', 'token'],
 }
 
+const password = {type: 'string', minLength: 6, maxLength: 72}
+
 const user = {
   type: 'object',
   properties: {
-    name: {type: 'string'},
+    name: {type: 'string', maxLength: 32, pattern: '^[\\w\\d\\._-]+$'},
     email: {type: 'string', format: 'email'},
     authentication,
   },
@@ -20,5 +22,6 @@ const user = {
 
 module.exports = {
   authentication,
+  password,
   user,
 }

@@ -19,7 +19,7 @@ const api = () =>
 
 const register = () =>
   api()
-  .post('/register')
+  .post('/~')
 
 register()
 .send({weird: 'stuff'})
