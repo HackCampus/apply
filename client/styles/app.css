@@ -15,6 +15,11 @@ h2::before {
 
 .tab {
   cursor: pointer;
+  margin-bottom: 1em;
+}
+
+.tab-content {
+  border-bottom: 1px solid rgb(255, 110, 45);
 }
 
 /* scrap styles */

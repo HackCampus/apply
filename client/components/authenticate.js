@@ -43,7 +43,6 @@ module.exports = Component({
       <div class="form">
         ${radio(tabs.newApplication, 'Start a new application')}
         ${radio(tabs.existingApplication, 'Edit an existing application')}
-        <p></p>
         ${(() => {
           switch (model.tab) {
             case tabs.newApplication:

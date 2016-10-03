@@ -61,7 +61,7 @@ const app = Component({
   }
 })
 
-const {views} = start(app)
+const {views, models} = start(app)
 
 const container = document.getElementById('container')
 const appDiv = container.appendChild(document.createElement('div'))
@@ -71,3 +71,8 @@ pull(
     html.update(appDiv, view)
   })
 )
+
+// pull(
+//   models(),
+//   pull.log()
+// )
