@@ -1,47 +1,73 @@
 const {html, pull, start} = require('inu')
-const {App} = require('inux')
 const log = require('inu-log')
+const mapValues = require('lodash.mapvalues')
+const u = require('updeep')
 
-const applicationForm = require('./views/applicationForm')
-const apply = require('./views/apply')
-const home = require('./views/home')
+const action = (type, payload) => ({type, payload})
 
-const {navigate} = require('./navigation')
+const Component = require('./component')
 
-// init
+const authenticate = require('./components/authenticate')
 
-const app = App([
-  applicationForm,
-  apply,
-  home,
-  {
-    routes: [
-      ['notFound', (params, model, dispatch) => html`<h1 onclick=${() => navigate('/apply')}>404!!!!</h1>`],
-    ]
+const app = Component({
+  children: {
+    authenticate,
+  },
+  init () {
+    return {
+      model: {
+        expanded: {
+          step0: true,
+          step1: false,
+        },
+        heights: {
+          step0: 'auto',
+          step1: 0,
+        },
+      },
+      effect: null,
+    }
+  },
+  update (model, action) {
+    switch (action.type) {
+      case 'toggleExpanded': {
+        const name = action.payload
+        const model_ = u.updateIn(['expanded', name], expanded => !expanded, model)
+        const isExpanded = model_.expanded[name]
+        const element = document.querySelector(`.expando-${name}`)
+        const height = isExpanded ? `${element.scrollHeight}px` : '0'
+        const newModel = u.updateIn(['heights', name], height, model_)
+        return {model: newModel, effect: null}
+      }
+      default:
+        return {model, effect: null}
+    }
+  },
+  view (model, dispatch, children) {
+    const section = (name, header, content) => html`
+      <div class="${name}">
+        <h2 onclick=${() => dispatch(action('toggleExpanded', name))}>${header}</h2>
+        <div class="expando expando-${name}" style="height: ${model.heights[name]}">
+          ${content}
+        </div>
+      </div>
+    `
+    return html`
+      <div>
+        <h1>Apply to HackCampus</h1>
+        ${section('step0', 'Step 0: Authenticate', children.authenticate())}
+      </div>
+    `
   }
-])
+})
 
-const {models, views} = start(app)
+const {views} = start(app)
 
-const page = view => html`
-  <div id="container">
-    ${view}
-  </div>
-`
-
-const container = document.createElement('div')
-document.body.appendChild(container)
-
+const container = document.getElementById('container')
+const appDiv = container.appendChild(document.createElement('div'))
 pull(
   views(),
   pull.drain(view => {
-    html.update(container, page(view))
-  })
-)
-
-pull(
-  models(),
-  pull.drain(model => {
-    console.log(model.href)
+    html.update(appDiv, view)
   })
 )

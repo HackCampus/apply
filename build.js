@@ -6,10 +6,10 @@ const exorcist = require('exorcist')
 const fs = require('fs')
 const gulp = require('gulp')
 const postcss = require('gulp-postcss')
-const precss = require('precss')
 const sourcemaps = require('gulp-sourcemaps')
 const mkdirp = require('mkdirp')
 const path = require('path')
+const precss = require('precss')
 const source = require('vinyl-source-stream')
 
 const build = 'build'
@@ -18,7 +18,7 @@ gulp.task('app', () => {
   mkdirp.sync(build)
   return browserify({
     entries: ['client/index.js'],
-    fullPaths: true, // for disc
+    // fullPaths: true, // for disc
     debug: true,
   })
   .transform('es2040')

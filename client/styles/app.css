@@ -1,12 +1,33 @@
-.field {
+#container {
+  max-width: 768px;
+  margin: auto;
+  font-family: 'Roboto Mono', monospace;
+}
+
+h2 {
+  font-size: 1em;
+}
+h2::before {
+  content: '# ';
+}
+
+/* authenticate */
+
+.tab {
+  cursor: pointer;
+}
+
+/* scrap styles */
+
+.expando {
+  overflow: hidden;
+  transition: height 0.1s ease;
+}
+
+.expanded {
   background: blue;
 }
 
-.text {
-  composes: field;
-  color: white;
-}
-
-.text input {
+.collapsed {
   background: red;
 }
