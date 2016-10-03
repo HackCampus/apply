@@ -76,3 +76,7 @@ test('view gets passed children', assert => {
   })
   component.view({children: {child: 'foo'}}, () => 'nothing')
 })
+
+test('nested children', assert => {
+  assert.fail('TODO')
+})

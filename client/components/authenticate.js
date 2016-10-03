@@ -1,6 +1,10 @@
 const {html} = require('inu')
 const u = require('updeep')
 
+const Component = require('../component')
+
+const newApplication = require('./newApplication')
+
 const action = (type, payload) => ({type, payload})
 
 const tabs = {
@@ -8,7 +12,10 @@ const tabs = {
   existingApplication: 1,
 }
 
-module.exports = {
+module.exports = Component({
+  children: {
+    newApplication,
+  },
   init () {
     return {
       model: {
@@ -27,8 +34,7 @@ module.exports = {
         return {model, effect: null}
     }
   },
-  view (model, dispatch) {
-    console.log(dispatch('foo'))
+  view (model, dispatch, children) {
     const select = id =>
       dispatch(action('select', id))
     const tab = (id, content) =>
@@ -40,13 +46,12 @@ module.exports = {
         ${(() => {
           switch (model.tab) {
             case tabs.newApplication:
-              return 'yep'
+              return children.newApplication()
             case tabs.existingApplication:
               return 'nope'
           }
         })()}
       </div>
     `
-  },
-  run () {}
-}
+  }
+})
