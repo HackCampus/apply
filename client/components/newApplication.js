@@ -1,6 +1,14 @@
 const {html} = require('inu')
 
-module.exports = {
+const Component = require('../component')
+
+const textField = require('./textField')
+
+module.exports = Component({
+  children: {
+    email: textField,
+    username: textField,
+  },
   init () {
     return {
       model: {},
@@ -13,10 +21,12 @@ module.exports = {
         return {model, effect: null}
     }
   },
-  view (model, dispatch) {
+  view (model, dispatch, children) {
     return html`
-      yes please children!
+      <div>
+        <p>\xA0\xA0\xA0\xA0email: ${children.email()}</p>
+        <p>\xA0\xA0\xA0\xA0username: hackcampus.io/~${children.username()}</p>
+      </div>
     `
   },
-  run () {}
-}
+})

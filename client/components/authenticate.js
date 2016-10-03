@@ -37,12 +37,13 @@ module.exports = Component({
   view (model, dispatch, children) {
     const select = id =>
       dispatch(action('select', id))
-    const tab = (id, content) =>
-      html`<div class="tab" onclick=${() => select(id)}>- [${id === model.tab ? 'x' : ' '}] ${content}</div>`
+    const radio = (id, content) =>
+      html`<div class="tab" onclick=${() => select(id)}>- [${id === model.tab ? 'x' : ' '}] <span class="tab-content">${content}</span></div>`
     return html`
       <div class="form">
-        ${tab(tabs.newApplication, 'Start a new application')}
-        ${tab(tabs.existingApplication, 'Edit an existing application')}
+        ${radio(tabs.newApplication, 'Start a new application')}
+        ${radio(tabs.existingApplication, 'Edit an existing application')}
+        <p></p>
         ${(() => {
           switch (model.tab) {
             case tabs.newApplication:
