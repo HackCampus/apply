@@ -1,3 +1,5 @@
+/*@import './formReset.css';*/
+
 #container {
   max-width: 768px;
   margin: auto;
@@ -11,6 +13,19 @@ h2::before {
   content: '# ';
 }
 
+a {
+  color: black;
+  border-bottom: 1px solid rgb(255, 110, 45);
+  text-decoration: none;
+  font-weight: bold;
+}
+a:visited {
+  color: black;
+}
+a.disabled {
+  border-bottom: 1px solid #aaa;
+}
+
 /* authenticate */
 
 .tab {
@@ -22,17 +37,35 @@ h2::before {
   border-bottom: 1px solid rgb(255, 110, 45);
 }
 
-/* scrap styles */
+/* text field */
 
-.expando {
-  overflow: hidden;
-  transition: height 0.1s ease;
+.textfield {
+  border-bottom: 1px solid rgb(255, 110, 45);
+}
+.textfield:focus {
+  outline: 0; /* webkit glow */
+}
+.textfield.invalid {
+  color: red;
 }
 
-.expanded {
-  background: blue;
+/* form reset */
+
+input {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: normal;
+  background: none;
+  line-height: 1;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1em;
+  overflow: visible;
 }
 
-.collapsed {
-  background: red;
+/* webkit glow */
+input:focus {
+	outline: 0;
 }

@@ -19,6 +19,7 @@ module.exports = function Component (component) {
       const childModels = mapValues(childInits, child => child.model)
       const model = Object.assign({}, componentInit.model, {children: childModels})
       // TODO what to do with child effects?
+      // Should be able to specify an array of effects (like Effect.batch in Elm)
       const effect = componentInit.effect
       return {model, effect}
     },
@@ -43,7 +44,25 @@ module.exports = function Component (component) {
       }))
       return component.view(model, dispatch, children)
     },
-    run () { throw new Error('TODO') }
+    // If the child does not have a run function, pass the whole effect object, keyed by child.
+    // Allows us to handle effects at a higher level, (hopefully) making child components more reusable.
+    handlesEffects: typeof component.run === 'function',
+    run (effect, sources) {
+      const child = effect.child
+      if (child && self.children[child]) {
+        const childComponent = self.children[child]
+        const run = self.children[child]
+        if (childComponent.handlesEffects) {
+          return childComponent.run(effect.effect, sources)
+        }
+      }
+      if (typeof component.run === 'function') {
+        return component.run(effect, sources)
+      } else {
+        console.error('no run function defined for effect', effect)
+        return null
+      }
+    }
   }
   return self
 }
