@@ -4,6 +4,7 @@
   max-width: 768px;
   margin: auto;
   font-family: 'Roboto Mono', monospace;
+  line-height: 1.4;
 }
 
 h2 {
@@ -30,17 +31,21 @@ a.disabled {
 
 .tab {
   cursor: pointer;
-  margin-bottom: 1em;
 }
 
 .tab-content {
   border-bottom: 1px solid rgb(255, 110, 45);
 }
 
+.entry {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 /* text field */
 
 .textfield {
-  border-bottom: 1px solid rgb(255, 110, 45);
+  border-bottom: 1px solid black;
 }
 .textfield:focus {
   outline: 0; /* webkit glow */

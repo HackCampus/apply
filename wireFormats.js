@@ -1,7 +1,7 @@
 const authentication = {
   type: 'object',
   properties: {
-    type: {enum: ['password']},
+    type: {enum: ['password', 'github']},
     identifier: {type: 'string'},
     token: {type: 'string'},
   },
@@ -10,18 +10,17 @@ const authentication = {
 
 const password = {type: 'string', minLength: 6, maxLength: 72}
 
-const user = {
+const register = {
   type: 'object',
   properties: {
-    name: {type: 'string', maxLength: 32, pattern: '^[\\w\\d\\._-]+$'},
     email: {type: 'string', format: 'email'},
-    authentication,
+    password,
   },
-  required: ['name', 'email', 'authentication'],
+  required: ['email', 'password'],
 }
 
 module.exports = {
   authentication,
   password,
-  user,
+  register,
 }

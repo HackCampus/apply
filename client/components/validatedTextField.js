@@ -29,13 +29,16 @@ module.exports = (schema = defaultSchema) => ({
     }
   },
   view (model, dispatch) {
-    const valid = model.errors.length > 0 ? 'invalid' : 'valid'
+    const onEnter = model.onEnter
+
+    const valid = model.valid ? 'valid' : 'invalid'
     return html`
       <div style="display: inline-block;">
         <span
           contenteditable="true"
           class="textfield ${valid}"
           oninput=${e => dispatch(e.target.textContent)}
+          onkeydown=${e => { if (e.keyCode === 13) onEnter && onEnter() }}
           style="display: inline-block; min-width: 35px"
           spellcheck="false"
         >${model.value}</span>

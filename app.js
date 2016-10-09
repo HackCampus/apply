@@ -36,14 +36,17 @@ auth(app)
 // errors:
 // 0. junk in
 // 1. email already exists
-// 2. user already exists
-app.post('/~', validateRequest(wireFormats.user) /*0*/, (req, res, handleError) => {
-  const {name, email, authentication} = req.body
+app.post('/users', validateRequest(wireFormats.register) /*0*/, (req, res, handleError) => {
+  const {email, password} = req.body
+  const authentication = {
+    type: 'password',
+    identifier: email,
+    token: password,
+  }
   Database.transaction(transaction =>
-    new User({name, email})
+    new User({email})
     .save(null, {transacting: transaction})
     .tap(user => Authentication.createForUser(user, authentication, transaction))
-    // TODO log in?
     .then(transaction.commit)
     .catch(transaction.rollback)
   )
@@ -51,9 +54,6 @@ app.post('/~', validateRequest(wireFormats.user) /*0*/, (req, res, handleError) 
   .catch(error => {
     if (error.constraint === 'users_email_unique') { /*1*/
       return handleError({status: 'Conflict', error: errors.emailTaken})
-    }
-    if (error.constraint === 'users_name_unique') { /*2*/
-      return handleError({status: 'Conflict', error: errors.nameTaken})
     }
     return handleError({status: 'Unknown', error})
   })

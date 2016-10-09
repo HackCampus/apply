@@ -24,6 +24,10 @@ gulp.task('app', () => {
   .transform('es2040')
   // .transform({global: true}, 'uglifyify')
   .bundle()
+  .on('error', e => {
+    exec(`osascript -e 'display notification "${e.message}" with title "hackcampus"'`)
+    throw e
+  })
   .pipe(exorcist(path.join(build, 'app.js.map')))
   .pipe(source('app.js'))
   .pipe(gulp.dest(build))

@@ -10,15 +10,21 @@ const defaultSize = 3
 
 module.exports = (schema = defaultSchema) => extend(validatedTextField(schema), {
   view (model, dispatch) {
-    const valid = model.errors.length > 0 ? 'invalid' : 'valid'
+    const onEnter = model.onEnter
+    const confirmValue = model.confirmValue
+
+    const valid = confirmValue
+      ? model.valid && model.value === confirmValue
+      : model.valid
     const length = model.value.length
     return html`
       <div style="display: inline-block;">
         <input
           type="password"
-          class="textfield passwordfield ${valid}"
+          class="textfield passwordfield ${valid ? 'valid' : 'invalid'}"
           size=${length > defaultSize ? length : defaultSize}
           oninput=${e => dispatch(e.target.value)}
+          onkeydown=${e => { if (e.keyCode === 13) onEnter && onEnter() }}
           value=${model.value}
         />
       </div>

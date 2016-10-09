@@ -1,6 +1,7 @@
 // TODO: children as array (polymorphic map)
 const mapValues = require('lodash.mapvalues')
 const u = require('updeep')
+const extend = require('xtend')
 
 const none = {}
 
@@ -37,27 +38,33 @@ module.exports = function Component (component) {
       if (self.children === none) {
         return component.view(model, dispatch)
       }
-      const children = mapValues(self.children, ({view}, child) => (function () {
-        return view(model.children && model.children[child], function (action) {
+      const children = mapValues(self.children, ({view}, child) => (function (overrides) {
+        if (!(child in model.children)) {
+          throw new Error(`internal error: child ${child} not in model.`)
+        }
+        const childModel = typeof overrides === 'object'
+          ? extend(model.children[child], overrides)
+          : model.children[child]
+        return view(childModel, function childDispatch (action) {
           dispatch({child, action})
         })
       }))
       return component.view(model, dispatch, children)
     },
-    // If the child does not have a run function, pass the whole effect object, keyed by child.
+    // If the child does not have a run function, we pass the whole effect object, keyed by child, to the parent component's run function.
     // Allows us to handle effects at a higher level, (hopefully) making child components more reusable.
     handlesEffects: typeof component.run === 'function',
-    run (effect, sources) {
+    run (effect, sources, action = (type, payload) => ({type, payload})) {
       const child = effect.child
       if (child && self.children[child]) {
         const childComponent = self.children[child]
         const run = self.children[child]
         if (childComponent.handlesEffects) {
-          return childComponent.run(effect.effect, sources)
+          return childComponent.run(effect.effect, sources, (type, payload) => ({child, action: action(type, payload)}))
         }
       }
       if (typeof component.run === 'function') {
-        return component.run(effect, sources)
+        return component.run(effect, sources, action)
       } else {
         console.error('no run function defined for effect', effect)
         return null

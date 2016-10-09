@@ -19,7 +19,7 @@ const api = () =>
 
 const register = () =>
   api()
-  .post('/~')
+  .post('/users')
 
 register()
 .send({weird: 'stuff'})
@@ -32,6 +32,6 @@ register()
 .end(end('wrong types'))
 
 register()
-.send({name: 'lachenmayer', email: 'foo@bar.baz', authentication: {type: 'password', token: 'foobar'}})
+.send({email: 'foo@bar.baz', authentication: {type: 'password', token: 'foobar'}})
 .expectStatus(409)
 .end(end('already taken'))

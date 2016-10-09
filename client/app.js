@@ -1,9 +1,10 @@
-const {html} = require('inu')
+const {pull, html} = require('inu')
 const u = require('updeep')
 
 const action = (type, payload) => ({type, payload})
 
 const Component = require('./component')
+const either = require('./pull-either')
 
 const authenticate = require('./components/authenticate')
 
@@ -19,19 +20,14 @@ module.exports = Component({
   },
   update (model, action) {
     switch (action.type) {
+      case 'registered':
+        return {model, effect: action('login')}
       default:
         return {model, effect: null}
     }
   },
   run (effect, sources) {
-    if (effect.child === 'authenticate') {
-      const authenticateEffect = effect.effect
-      switch (authenticateEffect.type) {
-        case 'password': {
-          const {email, password} = authenticateEffect.payload
-        }
-      }
-    }
+    console.log(effect)
   },
   view (model, dispatch, children) {
     const section = (name, header, content) => html`
