@@ -59,6 +59,15 @@ app.post('/users', validateRequest(wireFormats.register) /*0*/, (req, res, handl
   })
 })
 
+app.get('/me', (req, res, handleError) => {
+  if (req.user) {
+    console.log(req.user)
+    res.end()
+  } else {
+    return handleError({status: 'Not Found'})
+  }
+})
+
 // app.get('/~:name.json', (req, res, handleError) => {
 //   const {name} = req.params
 //   // TODO authenticated response?

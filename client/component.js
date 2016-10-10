@@ -1,10 +1,16 @@
 // TODO: children as array (polymorphic map)
 const mapValues = require('lodash.mapvalues')
+const pullMany = require('pull-many')
 const u = require('updeep')
 const extend = require('xtend')
 
 const none = {}
 
+// features:
+// child components
+// call child component from view function with dispatch, update, etc. wired up
+// handle effects at any level
+// run multiple effects at once
 module.exports = function Component (component) {
   const self = {
     children: component.children || none,
@@ -12,17 +18,25 @@ module.exports = function Component (component) {
       const init = typeof component.init === 'function'
         ? component.init
         : () => ({model: null, effect: null})
+
       const componentInit = init()
       if (self.children === none) {
         return componentInit
       }
+
       const childInits = mapValues(self.children, child => child.init())
+
       const childModels = mapValues(childInits, child => child.model)
       const model = Object.assign({}, componentInit.model, {children: childModels})
-      // TODO what to do with child effects?
-      // Should be able to specify an array of effects (like Effect.batch in Elm)
-      const effect = componentInit.effect
-      return {model, effect}
+
+      let effects = [componentInit.effect]
+      for (let child in childInits) {
+        const childEffect = childInits[child].effect
+        effects.push({child, effect: childEffect})
+      }
+      const actualEffects = effects.filter(effect => !!effect)
+
+      return {model, effect: actualEffects}
     },
     update (model, action) {
       if (action.child && action.child in self.children && model.children) {
@@ -55,6 +69,15 @@ module.exports = function Component (component) {
     // Allows us to handle effects at a higher level, (hopefully) making child components more reusable.
     handlesEffects: typeof component.run === 'function',
     run (effect, sources, action = (type, payload) => ({type, payload})) {
+      if (Array.isArray(effect)) {
+        const runEffects = effect.map(singleEffect => self._runOne(singleEffect, sources, action))
+        const effectActionSources = runEffects.filter(e => !!e)
+        return pullMany(effectActionSources)
+      } else {
+        return self._runOne(effect, sources, action)
+      }
+    },
+    _runOne (effect, sources, action) {
       const child = effect.child
       if (child && self.children[child]) {
         const childComponent = self.children[child]
@@ -69,7 +92,7 @@ module.exports = function Component (component) {
         console.error('no run function defined for effect', effect)
         return null
       }
-    }
+    },
   }
   return self
 }

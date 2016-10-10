@@ -29,7 +29,7 @@ module.exports = Component({
         tab: tabs.newApplication,
         error: null,
       },
-      effect: null,
+      effect: action('loadApplication'),
     }
   },
   update (model, a) {
@@ -98,7 +98,9 @@ module.exports = Component({
         )
       }
       case 'loadApplication': {
-        return pull.once({action: 'loadApplication', payload: null}) // global action
+        axios.get('me').then(res => {
+          console.log(res)
+        })
       }
     }
   },

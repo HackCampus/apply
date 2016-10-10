@@ -26,9 +26,6 @@ module.exports = Component({
         return {model, effect: null}
     }
   },
-  run (effect, sources) {
-    console.log(effect)
-  },
   view (model, dispatch, children) {
     const section = (name, header, content) => html`
       <div class="${name}">
