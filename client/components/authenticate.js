@@ -5,6 +5,7 @@ const u = require('updeep')
 
 const errors = require('../../errors')
 
+const api = require('../api')
 const Component = require('../component')
 
 const validatedTextField = require('./validatedTextField')
@@ -70,14 +71,11 @@ module.exports = Component({
       case 'register': {
         const {email, password} = effect.payload
         return pull(
-          promiseToPull.source(
-            axios.post('users', {email, password})
-            .catch(error => error.response)
-          ),
-          pull.map(response => {
-            switch (response.statusText) {
-              case 'Created': return action('registerSuccess', response.data)
-              default: return action('registerError', response.data)
+          api.post('/users', {email, password}),
+          pull.map(({statusText, data}) => {
+            switch (statusText) {
+              case 'Created': return action('registerSuccess', data)
+              default: return action('registerError', data)
             }
           })
         )
@@ -85,14 +83,11 @@ module.exports = Component({
       case 'login': {
         const {email, password} = effect.payload
         return pull(
-          promiseToPull.source(
-            axios.post('/auth/password', {email, password})
-            .catch(error => error.response)
-          ),
-          pull.map(response => {
-            switch (response.statusText) {
-              case 'OK': return action('loginSuccess', response.data)
-              default: return action('loginError', response.data)
+          api.post('/auth/password', {email, password}),
+          pull.map(({statusText, data}) => {
+            switch (statusText) {
+              case 'OK': return action('loginSuccess', data)
+              default: return action('loginError', data)
             }
           })
         )

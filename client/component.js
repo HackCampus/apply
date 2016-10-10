@@ -4,14 +4,13 @@ const pullMany = require('pull-many')
 const u = require('updeep')
 const extend = require('xtend')
 
-const none = {}
-
 // features:
 // child components
 // call child component from view function with dispatch, update, etc. wired up
 // handle effects at any level
 // run multiple effects at once
 module.exports = function Component (component) {
+  const none = {}
   const self = {
     children: component.children || none,
     init () {
