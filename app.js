@@ -63,7 +63,7 @@ app.get('/me', (req, res, handleError) => {
   if (req.user) {
     return res.json(req.user.toJSON())
   } else {
-    return handleError({status: 'Not Found'})
+    return handleError({status: 'Unauthorized'})
   }
 })
 

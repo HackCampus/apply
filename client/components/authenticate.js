@@ -29,20 +29,26 @@ module.exports = Component({
       model: {
         tab: tabs.newApplication,
         error: null,
+        user: null,
       },
-      effect: action('loadApplication'),
+      effect: action('loadUser'),
     }
   },
   update (model, a) {
     switch (a.type) {
+      // effects
+      case 'register':
+      case 'login':
+      case 'github':
+      case 'loadUser': {
+        return {model, effect: a}
+      }
+
       case 'select': {
         const newModel = u({tab: a.payload}, model)
         return {model: newModel, effect: null}
       }
-      case 'register':
-      case 'login': {
-        return {model, effect: a}
-      }
+
       case 'registerSuccess': {
         const email = model.children.email.value
         const password = model.children.password.value
@@ -52,16 +58,23 @@ module.exports = Component({
         const newModel = u({error: a.payload}, model)
         return {model: newModel, effect: null}
       }
+
       case 'loginSuccess': {
-        return {model, effect: action('loadApplication')}
+        return {model, effect: action('loadUser')}
       }
       case 'loginError': {
         const newModel = u({error: errors.loginIncorrect}, model)
         return {model: newModel, effect: null}
       }
-      case 'github': {
-        return {model, effect: action('github')}
+
+      case 'userLoadedSuccess': {
+        const newModel = u({user: a.payload}, model)
+        return {model: newModel, effect: null}
       }
+      case 'userLoadedError': {
+        return {model, effect: null}
+      }
+
       default:
         return {model, effect: null}
     }
@@ -92,10 +105,16 @@ module.exports = Component({
           })
         )
       }
-      case 'loadApplication': {
-        axios.get('me').then(res => {
-          console.log(res)
-        })
+      case 'loadUser': {
+        return pull(
+          api.get('/me'),
+          pull.map(({statusText, data}) => {
+            switch (statusText) {
+              case 'OK': return action('userLoadedSuccess', data)
+              default: return action('userLoadedError', data)
+            }
+          })
+        )
       }
     }
   },
@@ -150,7 +169,7 @@ module.exports = Component({
       </div>
     `
   },
-  view (model, dispatch, children) {
+  formView (model, dispatch, children) {
     const select = id =>
       dispatch(action('select', id))
     const radio = (id, content) =>
@@ -173,5 +192,18 @@ module.exports = Component({
         <div><a href="#" onclick=${() => dispatch(action('github'))}>Authenticate with GitHub</a></div>
       </div>
     `
+  },
+  authenticatedView (model, dispatch, children) {
+    const {user} = model
+    return html`
+      <div class="authenticated">
+        ${JSON.stringify(user)}
+      </div>
+    `
+  },
+  view (model, dispatch, children) {
+    return model.user
+      ? this.authenticatedView(model, dispatch, children)
+      : this.formView(model, dispatch, children)
   }
 })
