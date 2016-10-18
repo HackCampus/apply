@@ -10,7 +10,6 @@ const validatedTextField = require('./validatedTextField')
 
 const fields = mapValues(wireFormats.personalDetails.properties, schema => {
   if (schema.type === 'string') return validatedTextField(schema)
-  if (schema.type === 'string' && schema.format === 'date') return validatedTextField(schema) // TODO
   if (schema.enum && schema.enum.length <= 6) return choiceField(schema.enum)
   console.error(schema)
   return validatedTextField() // TODO
@@ -30,8 +29,9 @@ module.exports = Component({
         return {model, effect: null}
     }
   },
-  field (label, field) {
-    return html`<div class="field">\xA0\xA0\xA0\xA0${label}: ${field}</div>`
+  field (label, field, comment) {
+    console.log(comment)
+    return html`<div class="field">\xA0\xA0\xA0\xA0${label}: ${field}${comment ? html`<span class="comment"> // ${comment}</span>` : ''}</div>`
   },
   view (model, dispatch, children) {
     const isOther = child => model.children[child].value === 'other'
@@ -41,7 +41,7 @@ module.exports = Component({
         ${this.field('first name', children.firstName())}
         ${this.field('last name', children.lastName())}
         ${this.field('gender', children.gender())}
-        ${this.field('date of birth', children.dateOfBirth())}
+        ${this.field('date of birth', children.dateOfBirth(), html`<a target="_blank" href="http://www.cl.cam.ac.uk/~mgk25/iso-time.html">YYYY-MM-DD</a>`)}
         <h3>Your studies</h3>
         ${this.field('university', children.university())}
         ${isOther('university') ? this.field('specify university') : ''}

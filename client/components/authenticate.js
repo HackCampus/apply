@@ -144,11 +144,11 @@ module.exports = Component({
           })}</div>
           <div>${model.error === errors.emailTaken ? html`
             <span>\xA0\xA0\xA0\xA0error: An application has already been started with this email address.
-            Do you want to try <a href="#" onclick=${() => dispatch(action('select', tabs.existingApplication))}>logging in with this email address?</a>
+            Do you want to try <a onclick=${() => dispatch(action('select', tabs.existingApplication))}>logging in with this email address?</a>
             </span>` : ''}
           </div>
         </div>
-        <div><a href="#" class=${valid ? 'enabled' : 'disabled'} onclick=${register}>Register with email/password</a></div>
+        <div><a class=${valid ? 'enabled' : 'disabled'} onclick=${register}>Register with email/password</a></div>
       </div>
     `
   },
@@ -167,7 +167,7 @@ module.exports = Component({
           <div>\xA0\xA0\xA0\xA0email: ${children.email({onEnter: login})}</div>
           <div>\xA0\xA0\xA0\xA0password: ${children.password({onEnter: login})}</div>
         </div>
-        <div><a href="#" class=${valid ? 'enabled' : 'disabled'} onclick=${login}>Log in with email/password</a></div>
+        <div><a class=${valid ? 'enabled' : 'disabled'} onclick=${login}>Log in with email/password</a></div>
       </div>
     `
   },
@@ -175,7 +175,7 @@ module.exports = Component({
     const select = id =>
       dispatch(action('select', id))
     const radio = (id, content) =>
-      html`<div class="tab" onclick=${() => select(id)}>- [${id === model.tab ? 'x' : ' '}] <a href="#" class="tab-content">${content}</a></div>`
+      html`<div class="tab" onclick=${() => select(id)}>- [${id === model.tab ? 'x' : ' '}] <a class="tab-content">${content}</a></div>`
     return html`
       <div class="form">
         ${radio(tabs.newApplication, 'Start a new application')}
@@ -191,7 +191,7 @@ module.exports = Component({
         <div>\xA0</div>
         <div><em>or</em></div>
         <div>\xA0</div>
-        <div><a href="#" onclick=${() => dispatch(action('github'))}>Authenticate with GitHub</a></div>
+        <div><a onclick=${() => dispatch(action('github'))}>Authenticate with GitHub</a></div>
       </div>
     `
   },
