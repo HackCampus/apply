@@ -21,6 +21,7 @@ const User = bookshelf.Model.extend({
     const {type} = authentication
     switch (type) {
       case 'password': return this.createPasswordAuthentication(authentication, transaction)
+      case 'github': return this.createTokenAuthentication(authentication, transaction)
       default: throw new Error(`authentication type ${type} not implemented`)
     }
   },
@@ -31,10 +32,20 @@ const User = bookshelf.Model.extend({
       .then(hash =>
         new Authentication({
           type,
+          identifier,
           token: hash,
           userId: this.id,
         }).save(null, {transacting: transaction})
       )
+  },
+  createTokenAuthentication: function (authentication, transaction) {
+    const {type, identifier, token} = authentication
+    return new Authentication({
+      type,
+      identifier,
+      token,
+      userId: this.id,
+    }).save(null, {transacting: transaction})
   },
 })
 
@@ -56,6 +67,23 @@ User.createWithAuthentication = function (email, authentication) {
   )
 }
 
+User.updateAuthentication = function (email, authentication) {
+  return bookshelf.transaction(transaction =>
+    User.where('email', email).fetch({
+      withRelated: ['authentication'],
+      transacting: transaction,
+    }).then(user => {
+      const auth = user.related('authentication')
+      const existingAuthentication = auth.findWhere({type: authentication.type})
+      if (existingAuthentication) {
+        return existingAuthentication.save(authentication, {patch: true, transacting: transaction})
+      } else {
+        return user.createAuthentication(authentication)
+      }
+    })
+  )
+}
+
 User.createWithPassword = function (email, password) {
   const authentication = {
     type: 'password',
@@ -63,6 +91,21 @@ User.createWithPassword = function (email, password) {
     token: password,
   }
   return User.createWithAuthentication(email, authentication)
+}
+
+User.createWithGithub = function (email, accessToken) {
+  const authentication = {
+    type: 'github',
+    identifier: email,
+    token: accessToken,
+  }
+  return User.createWithAuthentication(email, authentication)
+    .catch(error => {
+      if (error.constraint === 'users_email_unique') {
+        return User.updateAuthentication(email, authentication)
+      }
+      return error
+    })
 }
 
 module.exports = {

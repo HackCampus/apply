@@ -1,5 +1,6 @@
 const GitHubStrategy = require('passport-github2')
 
+const {User} = require('../models')
 const config = require('../../config')
 
 function setReturnTo (req, res, next) {
@@ -14,9 +15,11 @@ module.exports = (passport, app) => {
     callbackURL: `${config.host}/auth/github/callback`,
     scope: config.github.scope,
   }, (accessToken, refreshToken, profile, done) => {
-    console.log('access', accessToken)
-    console.log('refresh', refreshToken)
-    console.log('profile', profile)
+    const {id, emails} = profile
+    const email = emails[0].value // passport profile normalisation making things difficult...
+    User.createWithGithub(email, accessToken)
+      .then(user => done(null, user))
+      .catch(err => done(err))
   }))
 
   app.get('/auth/github', setReturnTo, passport.authenticate('github'))

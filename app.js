@@ -50,7 +50,17 @@ app.post('/users', validateRequest(wireFormats.register) /*0*/, (req, res, handl
 
 app.get('/me', (req, res, handleError) => {
   if (req.user) {
-    return res.json(req.user.toJSON())
+    User.where({id: req.user.id}, {withRelated: ['authentication']}).fetch()
+    .then(user => {
+      user.related('authentication').fetch({columns: ['type']})
+      .then(authMethods => {
+        res.json({
+          id: user.id,
+          email: user.email,
+          connectedAccounts: authMethods.pluck('type'),
+        })
+      })
+    })
   } else {
     return handleError({status: 'Unauthorized'})
   }
