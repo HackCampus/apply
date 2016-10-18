@@ -7,12 +7,12 @@ const Component = require('./component')
 const either = require('./pull-either')
 
 const authenticate = require('./components/authenticate')
-const contactDetails = require('./components/contactDetails')
+const personalDetails = require('./components/personalDetails')
 
 module.exports = Component({
   children: {
     authenticate,
-    contactDetails,
+    personalDetails,
   },
   init () {
     return {
@@ -39,7 +39,7 @@ module.exports = Component({
       <div>
         <h1>Apply to HackCampus</h1>
         ${section('step0', 'Step 0: Authenticate', children.authenticate())}
-        ${section('step1', 'Step 1: Contact details', children.contactDetails())}
+        ${section('step1', 'Step 1: Personal details', children.personalDetails())}
       </div>
     `
   }

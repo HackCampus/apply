@@ -4,14 +4,25 @@
   max-width: 768px;
   margin: auto;
   font-family: 'Roboto Mono', monospace;
-  line-height: 1.4;
+  line-height: 1.6;
 }
 
 h2 {
-  font-size: 1em;
+  font-size: 1.5em;
 }
 h2::before {
+  color: #aaa;
+  font-weight: normal;
   content: '# ';
+}
+
+h3 {
+  font-size: 1em;
+}
+h3::before {
+  color: #aaa;
+  font-weight: normal;
+  content: '## ';
 }
 
 a {
