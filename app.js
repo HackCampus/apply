@@ -38,18 +38,7 @@ auth(app)
 // 1. email already exists
 app.post('/users', validateRequest(wireFormats.register) /*0*/, (req, res, handleError) => {
   const {email, password} = req.body
-  const authentication = {
-    type: 'password',
-    identifier: email,
-    token: password,
-  }
-  Database.transaction(transaction =>
-    new User({email})
-    .save(null, {transacting: transaction})
-    .tap(user => Authentication.createForUser(user, authentication, transaction))
-    .then(transaction.commit)
-    .catch(transaction.rollback)
-  )
+  User.createWithPassword(email, password)
   .then(user => { res.status(status('Created')).json(user.toJSON()) })
   .catch(error => {
     if (error.constraint === 'users_email_unique') { /*1*/
@@ -66,21 +55,6 @@ app.get('/me', (req, res, handleError) => {
     return handleError({status: 'Unauthorized'})
   }
 })
-
-// app.get('/~:name.json', (req, res, handleError) => {
-//   const {name} = req.params
-//   // TODO authenticated response?
-//   User.where('name', name).fetch()
-//   .then(user => {
-//     if (user) {
-//       res.json(user.toJSON())
-//     } else {
-//       // TODO error message
-//       return handleError({status: 'Not Found'})
-//     }
-//   })
-//   .catch(error => { return handleError({status: 'Unknown', error}) })
-// })
 
 // single page app
 app.use(require('./shell'))

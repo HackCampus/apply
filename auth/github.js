@@ -2,6 +2,11 @@ const GitHubStrategy = require('passport-github2')
 
 const config = require('../../config')
 
+function setReturnTo (req, res, next) {
+  req.session.returnTo = req.headers.referer
+  next()
+}
+
 module.exports = (passport, app) => {
   passport.use(new GitHubStrategy({
     clientID: config.github.clientId,
@@ -14,6 +19,6 @@ module.exports = (passport, app) => {
     console.log('profile', profile)
   }))
 
-  app.get('/auth/github', passport.authenticate('github'))
-  app.get('/auth/github/callback', passport.authenticate('github'))
+  app.get('/auth/github', setReturnTo, passport.authenticate('github'))
+  app.get('/auth/github/callback', passport.authenticate('github', {successReturnToOrRedirect: '/'}))
 }

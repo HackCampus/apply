@@ -105,6 +105,9 @@ module.exports = Component({
           })
         )
       }
+      case 'github': {
+        window.location.href = '/auth/github'
+      }
       case 'loadUser': {
         return pull(
           api.get('/me'),
