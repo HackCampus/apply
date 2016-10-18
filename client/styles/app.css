@@ -54,6 +54,15 @@ a.disabled {
   color: red;
 }
 
+/* choice field */
+
+a.choice {
+  font-weight: normal;
+}
+a.chosen {
+  color: rgb(255, 110, 45);
+}
+
 /* form reset */
 
 input {

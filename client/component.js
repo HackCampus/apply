@@ -31,11 +31,14 @@ module.exports = function Component (component) {
       let effects = [componentInit.effect]
       for (let child in childInits) {
         const childEffect = childInits[child].effect
-        effects.push({child, effect: childEffect})
+        if (childEffect) {
+          effects.push({child, effect: childEffect})
+        }
       }
       const actualEffects = effects.filter(effect => !!effect)
+      const maybeEffects = actualEffects.length > 0 ? actualEffects : null
 
-      return {model, effect: actualEffects}
+      return {model, effect: maybeEffects}
     },
     update (model, action) {
       if (action.child && action.child in self.children && model.children) {

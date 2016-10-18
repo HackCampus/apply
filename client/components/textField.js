@@ -1,7 +1,8 @@
 const {html} = require('inu')
+const h = html.createElement
 const extend = require('xtend')
 
-module.exports = (params = {}) => {
+module.exports = (params = {}) => ({
   init () {
     return {
       model: '',
@@ -11,10 +12,13 @@ module.exports = (params = {}) => {
     return {model: newValue}
   },
   view (model, dispatch) {
-    return html.createElement('input', extend(params, {
-      type: 'text',
-      oninput: e => dispatch(e.target.value),
-      value: model,
-    })
+    return h('div', { style: 'display: inline-block;' }, [
+        h('span', extend({
+          contenteditable: 'true',
+          class: `textfield ${params.class || ''}`,
+          oninput: e => dispatch(e.target.textContent),
+          style: 'display: inline-block; min-width: 35px',
+        }, params), [model])
+    ])
   },
-}
+})

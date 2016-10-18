@@ -35,14 +35,14 @@ module.exports = (schema = defaultSchema, params = {}) => ({
 
     const valid = model.valid ? 'valid' : 'invalid'
     return h('div', { style: 'display: inline-block;' }, [
-        h('span', extend(params, {
+        h('span', extend({
           contenteditable: 'true',
           class: `textfield ${params.class || ''} ${valid}`,
           oninput: e => dispatch(e.target.textContent),
           onkeydown: e => { if (e.keyCode === 13) onEnter && onEnter() },
           style: 'display: inline-block; min-width: 35px',
           spellcheck: 'false',
-        }), [model.value])
+        }, params), [model.value])
     ])
   },
 })
