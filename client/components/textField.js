@@ -1,6 +1,7 @@
 const {html} = require('inu')
+const extend = require('xtend')
 
-module.exports = {
+module.exports = (params = {}) => {
   init () {
     return {
       model: '',
@@ -10,6 +11,10 @@ module.exports = {
     return {model: newValue}
   },
   view (model, dispatch) {
-    return html`<input type="text" class="textfield" oninput=${e => dispatch(e.target.value)} value=${model} />`
+    return html.createElement('input', extend(params, {
+      type: 'text',
+      oninput: e => dispatch(e.target.value),
+      value: model,
+    })
   },
 }

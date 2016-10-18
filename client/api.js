@@ -2,19 +2,21 @@ const axios = require('axios')
 const {pull} = require('inu')
 const promiseToPull = require('pull-promise')
 
+const pullAxios = promise =>
+  promiseToPull.source(promise.catch(error => error.response))
+
 const get = url =>
-  promiseToPull.source(
-    axios.get(url)
-    .catch(error => error.response)
-  )
+  pullAxios(axios.get(url))
 
 const post = (url, body) =>
-  promiseToPull.source(
-    axios.post(url, body)
-    .catch(error => error.response)
-  )
+  pullAxios(axios.post(url))
+
+// delete is a keyword
+const delete_ = url =>
+  pullAxios(axios.delete(url))
 
 module.exports = {
   get,
   post,
+  delete: delete_,
 }

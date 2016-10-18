@@ -23,5 +23,8 @@ module.exports = (passport, app) => {
   }))
 
   app.get('/auth/github', setReturnTo, passport.authenticate('github'))
-  app.get('/auth/github/callback', passport.authenticate('github', {successReturnToOrRedirect: '/'}))
+  app.get('/auth/github/callback', passport.authenticate('github', {
+    successReturnToOrRedirect: '/',
+    failureRedirect: '/',
+  }))
 }

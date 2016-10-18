@@ -20,7 +20,7 @@ const tabs = {
 
 module.exports = Component({
   children: {
-    email: validatedTextField({format: 'email'}),
+    email: validatedTextField({format: 'email'}, {autocomplete: 'email'}),
     password: passwordField({minLength: 6}),
     confirmPassword: passwordField({minLength: 6}),
   },
@@ -40,9 +40,8 @@ module.exports = Component({
       case 'register':
       case 'login':
       case 'github':
-      case 'loadUser': {
+      case 'loadUser':
         return {model, effect: a}
-      }
 
       case 'select': {
         const newModel = u({tab: a.payload}, model)
@@ -200,7 +199,7 @@ module.exports = Component({
     const {user} = model
     return html`
       <div class="authenticated">
-        ${JSON.stringify(user)}
+        You are authenticated as <strong>${user.email}</strong>. (<a href="/signout">Sign out</a>)
       </div>
     `
   },

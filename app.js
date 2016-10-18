@@ -56,7 +56,7 @@ app.get('/me', (req, res, handleError) => {
       .then(authMethods => {
         res.json({
           id: user.id,
-          email: user.email,
+          email: user.get('email'),
           connectedAccounts: authMethods.pluck('type'),
         })
       })
@@ -64,6 +64,12 @@ app.get('/me', (req, res, handleError) => {
   } else {
     return handleError({status: 'Unauthorized'})
   }
+})
+
+// should really not be a get, but can't redirect in browser...
+app.get('/signout', (req, res) => {
+  req.session.destroy()
+  res.redirect('/')
 })
 
 // single page app

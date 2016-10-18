@@ -81,6 +81,9 @@ module.exports = function Component (component) {
       if (child && self.children[child]) {
         const childComponent = self.children[child]
         const run = self.children[child]
+        if (effect.effect == null) {
+          return null
+        }
         if (childComponent.handlesEffects) {
           return childComponent.run(effect.effect, sources, (type, payload) => ({child, action: action(type, payload)}))
         }
