@@ -19,9 +19,9 @@ const fields = mapValues(fieldSchemas, schema => {
       return selectField(schema.enum)
     }
   }
-
+  // unknown field type
   console.error(schema)
-  return validatedTextField() // TODO
+  return validatedTextField(schema)
 })
 
 module.exports = Component({
@@ -39,7 +39,7 @@ module.exports = Component({
     }
   },
   field (label, field, comment) {
-    return html`<div class="field">\xA0\xA0\xA0\xA0${label}: ${field}${comment ? html`<span class="comment"> // ${comment}</span>` : ''}</div>`
+    return html`<div class="field">${label}: ${field}${comment ? html`<span class="comment"> // ${comment}</span>` : ''}</div>`
   },
   view (model, dispatch, children) {
     const isOther = child => model.children[child].value === 'other'

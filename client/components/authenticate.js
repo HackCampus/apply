@@ -120,6 +120,44 @@ module.exports = Component({
       }
     }
   },
+
+  view (model, dispatch, children) {
+    return model.user
+      ? this.authenticatedView(model, dispatch, children)
+      : this.formView(model, dispatch, children)
+  },
+  authenticatedView (model, dispatch, children) {
+    const {user} = model
+    return html`
+      <div class="authenticated">
+        You are authenticated as <strong>${user.email}</strong>. (<a href="/signout">Sign out</a>)
+      </div>
+    `
+  },
+  formView (model, dispatch, children) {
+    const select = id =>
+      dispatch(action('select', id))
+    const radio = (id, content) =>
+      html`<div class="tab" onclick=${() => select(id)}>- [${id === model.tab ? 'x' : ' '}] <a href="javascript:void(0)" class="tab-content">${content}</a></div>`
+    return html`
+      <div class="form">
+        ${radio(tabs.newApplication, 'Start a new application')}
+        ${radio(tabs.existingApplication, 'Edit an existing application')}
+        ${(() => {
+          switch (model.tab) {
+            case tabs.newApplication:
+              return this.newApplicationView(model, dispatch, children)
+            case tabs.existingApplication:
+              return this.existingApplicationView(model, dispatch, children)
+          }
+        })()}
+        <div>\xA0</div>
+        <div><em>or</em></div>
+        <div>\xA0</div>
+        <div><a href="javascript:void(0)" onclick=${() => dispatch(action('github'))}>Authenticate with GitHub</a></div>
+      </div>
+    `
+  },
   newApplicationView (model, dispatch, children) {
     const emailField = model.children.email
     const passwordField = model.children.password
@@ -136,19 +174,19 @@ module.exports = Component({
     return html`
       <div>
         <div class="entry">
-          <div>\xA0\xA0\xA0\xA0email: ${children.email({onEnter: register})}</div>
-          <div>\xA0\xA0\xA0\xA0password: ${children.password({onEnter: register})}</div>
-          <div>\xA0\xA0\xA0\xA0confirm password: ${children.confirmPassword({
+          <div>email: ${children.email({onEnter: register})}</div>
+          <div>password: ${children.password({onEnter: register})}</div>
+          <div>confirm password: ${children.confirmPassword({
             onEnter: register,
             confirmValue: passwordField.value
           })}</div>
           <div>${model.error === errors.emailTaken ? html`
-            <span>\xA0\xA0\xA0\xA0error: An application has already been started with this email address.
+            <span>error: An application has already been started with this email address.
             Do you want to try <a onclick=${() => dispatch(action('select', tabs.existingApplication))}>logging in with this email address?</a>
             </span>` : ''}
           </div>
         </div>
-        <div><a class=${valid ? 'enabled' : 'disabled'} onclick=${register}>Register with email/password</a></div>
+        <div><a href="javascript:void(0)" class=${valid ? 'enabled' : 'disabled'} onclick=${register}>Register with email/password</a></div>
       </div>
     `
   },
@@ -164,48 +202,11 @@ module.exports = Component({
     return html`
       <div>
         <div class="entry">
-          <div>\xA0\xA0\xA0\xA0email: ${children.email({onEnter: login})}</div>
-          <div>\xA0\xA0\xA0\xA0password: ${children.password({onEnter: login})}</div>
+          <div>email: ${children.email({onEnter: login})}</div>
+          <div>password: ${children.password({onEnter: login})}</div>
         </div>
-        <div><a class=${valid ? 'enabled' : 'disabled'} onclick=${login}>Log in with email/password</a></div>
+        <div><a href="javascript:void(0)" class=${valid ? 'enabled' : 'disabled'} onclick=${login}>Log in with email/password</a></div>
       </div>
     `
   },
-  formView (model, dispatch, children) {
-    const select = id =>
-      dispatch(action('select', id))
-    const radio = (id, content) =>
-      html`<div class="tab" onclick=${() => select(id)}>- [${id === model.tab ? 'x' : ' '}] <a class="tab-content">${content}</a></div>`
-    return html`
-      <div class="form">
-        ${radio(tabs.newApplication, 'Start a new application')}
-        ${radio(tabs.existingApplication, 'Edit an existing application')}
-        ${(() => {
-          switch (model.tab) {
-            case tabs.newApplication:
-              return this.newApplicationView(model, dispatch, children)
-            case tabs.existingApplication:
-              return this.existingApplicationView(model, dispatch, children)
-          }
-        })()}
-        <div>\xA0</div>
-        <div><em>or</em></div>
-        <div>\xA0</div>
-        <div><a onclick=${() => dispatch(action('github'))}>Authenticate with GitHub</a></div>
-      </div>
-    `
-  },
-  authenticatedView (model, dispatch, children) {
-    const {user} = model
-    return html`
-      <div class="authenticated">
-        You are authenticated as <strong>${user.email}</strong>. (<a href="/signout">Sign out</a>)
-      </div>
-    `
-  },
-  view (model, dispatch, children) {
-    return model.user
-      ? this.authenticatedView(model, dispatch, children)
-      : this.formView(model, dispatch, children)
-  }
 })

@@ -21,7 +21,7 @@ module.exports = (choices = []) => ({
     const {chosen, choices} = model
     return html`
       ${intersperse(' | ', choices.map((choice, i) => html`
-        <a class="choice ${i === chosen ? 'chosen' : ''}" onclick=${() => dispatch(i)}>${choice}</a>
+        <a href="javascript:void(0)" class="choice ${i === chosen ? 'chosen' : ''}" onclick=${() => dispatch(i)}>${choice}</a>
       `))}
     `
   },
