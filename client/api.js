@@ -9,7 +9,10 @@ const get = url =>
   pullAxios(axios.get(url))
 
 const post = (url, body) =>
-  pullAxios(axios.post(url))
+  pullAxios(axios.post(url, body))
+
+const put = (url, body) =>
+  pullAxios(axios.put(url, body))
 
 // delete is a keyword
 const delete_ = url =>
@@ -18,5 +21,6 @@ const delete_ = url =>
 module.exports = {
   get,
   post,
+  put,
   delete: delete_,
 }

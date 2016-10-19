@@ -26,6 +26,7 @@ const personalDetails = {
   properties: {
     firstName: {type: 'string'},
     lastName: {type: 'string'},
+    contactEmail: {type: 'string', format: 'email'},
     gender: {enum: ['male', 'female', 'other']},
     dateOfBirth: {type: 'string', format: 'date'},
     university: {enum: ['other (eg. international)'].concat(universities)},

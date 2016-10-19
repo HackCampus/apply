@@ -121,4 +121,5 @@ module.exports = {
   Authentication,
   Database: bookshelf,
   User,
+  Application,
 }

@@ -13,13 +13,18 @@ exports.up = function (knex, Promise) {
 
     t.string('firstName')
     t.string('lastName')
+    t.string('contactEmail')
     t.enum('gender', ['male', 'female', 'other'])
     t.date('dateOfBirth')
     t.string('university')
+    t.string('otherUniversity')
     t.string('courseName')
     t.string('courseType')
+    t.string('otherCourseType')
     t.string('yearOfStudy')
+    t.string('otherYearOfStudy')
     t.string('graduationYear')
+    t.string('otherGraduationYear')
   })
 }
 

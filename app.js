@@ -8,8 +8,9 @@ const path = require('path')
 
 const errorHandler = require('./middlewares/errors')
 
-const user = require('./routes/user')
+const application = require('./routes/application')
 const auth = require('./routes/auth')
+const user = require('./routes/user')
 
 const config = require('../config')
 
@@ -27,11 +28,14 @@ app.use(cookieParser())
 app.use('/static', express.static(path.join(__dirname, 'build')))
 app.disable('x-powered-by')
 
+// routes
 auth(app)
 user(app)
+application(app)
 
 // single page app
-app.use(require('./shell'))
+app.get('/', require('./shell'))
+app.use((req, res, handleError) => { handleError({status: 'Not Found'}) })
 
 app.use(errorHandler)
 

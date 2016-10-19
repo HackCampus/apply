@@ -2,6 +2,8 @@ const {html} = require('inu')
 const intersperse = require('ramda/src/intersperse')
 const u = require('updeep')
 
+const link = require('./link')
+
 module.exports = (choices = []) => ({
   init () {
     return {
@@ -20,9 +22,9 @@ module.exports = (choices = []) => ({
   view (model, dispatch) {
     const {chosen, choices} = model
     return html`
-      ${intersperse(' | ', choices.map((choice, i) => html`
-        <a href="javascript:void(0)" class="choice ${i === chosen ? 'chosen' : ''}" onclick=${() => dispatch(i)}>${choice}</a>
-      `))}
+      ${intersperse(' | ', choices.map((choice, i) => link(choice, () => dispatch(i), {
+        class: `choice ${i === chosen ? 'chosen' : ''}`
+      })))}
     `
   },
 })

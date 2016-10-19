@@ -8,6 +8,7 @@ const errors = require('../../errors')
 const api = require('../api')
 const Component = require('../component')
 
+const link = require('./link')
 const validatedTextField = require('./validatedTextField')
 const passwordField = require('./passwordField')
 
@@ -138,7 +139,7 @@ module.exports = Component({
     const select = id =>
       dispatch(action('select', id))
     const radio = (id, content) =>
-      html`<div class="tab" onclick=${() => select(id)}>- [${id === model.tab ? 'x' : ' '}] <a href="javascript:void(0)" class="tab-content">${content}</a></div>`
+      html`<div class="tab">- [${id === model.tab ? 'x' : ' '}] ${link(content, () => select(id), {class: 'tab-content'})}</div>`
     return html`
       <div class="form">
         ${radio(tabs.newApplication, 'Start a new application')}
@@ -154,7 +155,7 @@ module.exports = Component({
         <div>\xA0</div>
         <div><em>or</em></div>
         <div>\xA0</div>
-        <div><a href="javascript:void(0)" onclick=${() => dispatch(action('github'))}>Authenticate with GitHub</a></div>
+        <div>${link('Authenticate with GitHub', () => dispatch(action('github')))}</div>
       </div>
     `
   },
@@ -180,13 +181,13 @@ module.exports = Component({
             onEnter: register,
             confirmValue: passwordField.value
           })}</div>
-          <div>${model.error === errors.emailTaken ? html`
+          <div>${/* FIXME */ model.error === errors.emailTaken ? html`
             <span>error: An application has already been started with this email address.
             Do you want to try <a onclick=${() => dispatch(action('select', tabs.existingApplication))}>logging in with this email address?</a>
             </span>` : ''}
           </div>
         </div>
-        <div><a href="javascript:void(0)" class=${valid ? 'enabled' : 'disabled'} onclick=${register}>Register with email/password</a></div>
+        <div>${link('Register with email/password', register, {class: valid ? 'enabled' : 'disabled'})}</div>
       </div>
     `
   },
@@ -205,7 +206,7 @@ module.exports = Component({
           <div>email: ${children.email({onEnter: login})}</div>
           <div>password: ${children.password({onEnter: login})}</div>
         </div>
-        <div><a href="javascript:void(0)" class=${valid ? 'enabled' : 'disabled'} onclick=${login}>Log in with email/password</a></div>
+        <div>${link('Log in with email/password', login, {class: valid ? 'enabled' : 'disabled'})}</div>
       </div>
     `
   },

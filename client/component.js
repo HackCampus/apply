@@ -54,7 +54,7 @@ module.exports = function Component (component) {
       if (self.children === none) {
         return component.view(model, dispatch)
       }
-      const children = mapValues(self.children, ({view}, child) => (function (overrides) {
+      const children = mapValues(self.children, ({view}, child) => (function childView (overrides) {
         if (!(child in model.children)) {
           throw new Error(`internal error: child ${child} not in model.`)
         }

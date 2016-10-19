@@ -52,6 +52,10 @@ a.disabled {
   color: #666;
 }
 
+.error {
+  color: red;
+}
+
 /* authenticate */
 
 .tab {
