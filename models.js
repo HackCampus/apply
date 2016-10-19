@@ -14,6 +14,7 @@ const hash = promisify(bcrypt.hash)
 const User = bookshelf.Model.extend({
   tableName: 'users',
   hasTimeStamps: ['createdAt', 'updatedAt'],
+
   authentication: function () {
     return this.hasMany(Authentication, 'userId')
   },
@@ -31,30 +32,20 @@ const User = bookshelf.Model.extend({
       .then(salt => hash(token, salt))
       .then(hash =>
         new Authentication({
-          type,
-          identifier,
-          token: hash,
-          userId: this.id,
+          type, identifier, token: hash, userId: this.id,
         }).save(null, {transacting: transaction})
       )
   },
   createTokenAuthentication: function (authentication, transaction) {
     const {type, identifier, token} = authentication
     return new Authentication({
-      type,
-      identifier,
-      token,
-      userId: this.id,
+      type, identifier, token, userId: this.id,
     }).save(null, {transacting: transaction})
   },
-})
 
-const Authentication = bookshelf.Model.extend({
-  tableName: 'authentication',
-  hasTimeStamps: ['createdAt', 'updatedAt'],
-  user: function () {
-    return this.belongsTo(User, 'userId')
-  }
+  application: function () {
+    return this.hasOne(Application, 'userId')
+  },
 })
 
 User.createWithAuthentication = function (email, authentication) {
@@ -107,6 +98,24 @@ User.createWithGithub = function (email, accessToken) {
       return error
     })
 }
+
+const Authentication = bookshelf.Model.extend({
+  tableName: 'authentication',
+  hasTimeStamps: ['createdAt', 'updatedAt'],
+
+  user: function () {
+    return this.belongsTo(User, 'userId')
+  },
+})
+
+const Application = bookshelf.Model.extend({
+  tableName: 'applications',
+  hasTimeStamps: ['createdAt', 'updatedAt'],
+
+  user: function () {
+    return this.belongsTo(User, 'userId')
+  },
+})
 
 module.exports = {
   Authentication,
