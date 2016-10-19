@@ -1,10 +1,30 @@
 const bcrypt = require('bcrypt')
 const {Strategy: LocalStrategy} = require('passport-local')
+const status = require('statuses')
 
-const errors = require('../errors')
-const {User} = require('../models')
+const errors = require('../../errors')
+const validateRequest = require('../../middlewares/validate')
+const {User} = require('../../models')
+const wireFormats = require('../../wireFormats')
 
 module.exports = (passport, app) => {
+  // Registration
+  // errors:
+  // 0. junk in
+  // 1. email already exists
+  app.post('/users', validateRequest(wireFormats.register) /*0*/, (req, res, handleError) => {
+    const {email, password} = req.body
+    User.createWithPassword(email, password)
+    .then(user => { res.status(status('Created')).json(user.toJSON()) })
+    .catch(error => {
+      if (error.constraint === 'users_email_unique') { /*1*/
+        return handleError({status: 'Conflict', error: errors.emailTaken})
+      }
+      return handleError({status: 'Unknown', error})
+    })
+  })
+
+  // Log-in
   passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',

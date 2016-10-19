@@ -1,7 +1,7 @@
 const GitHubStrategy = require('passport-github2')
 
-const {User} = require('../models')
-const config = require('../../config')
+const {User} = require('../../models')
+const config = require('../../../config')
 
 function setReturnTo (req, res, next) {
   req.session.returnTo = req.headers.referer

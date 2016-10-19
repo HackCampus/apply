@@ -32,6 +32,6 @@ register()
 .end(end('wrong types'))
 
 register()
-.send({email: 'foo@bar.baz', authentication: {type: 'password', token: 'foobar'}})
+.send({email: 'foo@bar.baz', password: 'foobar'})
 .expectStatus(409)
 .end(end('already taken'))

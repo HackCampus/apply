@@ -29,6 +29,7 @@ module.exports = Component({
     }
   },
   view (model, dispatch, children) {
+    const authenticated = !!model.children.authenticate.user
     const section = (name, header, content) => html`
       <div class="${name}">
         <h2>${header}</h2>
@@ -39,7 +40,9 @@ module.exports = Component({
       <div>
         <h1>Apply to HackCampus</h1>
         ${section('step0', 'Step 0: Authenticate', children.authenticate())}
-        ${section('step1', 'Step 1: Personal details', children.personalDetails())}
+        ${section('step1', 'Step 1: Personal details', authenticated ? children.personalDetails() : '')}
+        ${section('step2', 'Step 2: Tech preferences', authenticated ? children.personalDetails() : '')}
+        ${section('step3', 'Step 3: Personal & technical questions', authenticated ? children.personalDetails() : '')}
       </div>
     `
   }
