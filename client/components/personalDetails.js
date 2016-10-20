@@ -31,7 +31,7 @@ const fields = mapValues(fieldSchemas, schema => {
   return validatedTextField(schema)
 })
 
-module.exports = Component({
+const personalDetails = Component({
   children: fields,
   init () {
     return {
@@ -45,54 +45,6 @@ module.exports = Component({
   },
   update (model, {type, payload}) {
     switch (type) {
-      case 'save': {
-        const user = payload
-        const fields = {}
-        for (let field in model.children) {
-          const {value, started} = model.children[field]
-          if (started) { // only send through the ones that have actually been updated
-            fields[field] = value
-          }
-        }
-        if (fields.contactEmail && fields.contactEmail.length === 0) {
-          fields.contactEmail = user.email
-        }
-        const newModel = u({
-          errorMessage: null,
-          errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
-          readOnly: true,
-        }, model)
-        return {model: newModel, effect: action('save', fields)}
-      }
-      case 'saveUserError': {
-        const errors = payload.errors
-        const errorFields = {}
-        for (let field of errors) {
-          errorFields[field] = true
-        }
-        const newModel = u({
-          errorMessage: 'There were some issues with your responses, please take a look at the ones highlighted in red.',
-          errorFields: u.constant(errorFields), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
-          readOnly: false,
-        }, model)
-        return {model: newModel, effect: null}
-      }
-      case 'saveServerError': {
-        const newModel = u({
-          errorMessage: 'Something is wrong with the server - please let us know at contact@hackcampus.io. Thank you! :)',
-          errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
-          readOnly: false,
-        }, model)
-        return {model: newModel, effect: null}
-      }
-      case 'saveSuccess': {
-        const newModel = u({
-          errorMessage: null,
-          errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
-          readOnly: false,
-        }, model)
-        return {model: newModel, effect: null}
-      }
       default:
         return {model, effect: null}
     }
@@ -154,26 +106,21 @@ module.exports = Component({
         ${field('link to your CV', 'cvUrl')}
         ${field('website', 'websiteUrl', 'optional')}
         ${field('LinkedIn', 'linkedinUrl', 'optional')}
-        ${link('Save', () => dispatch(action('save', model.user)))}
         ${model.errorMessage ? html`<div class="error">${model.errorMessage}</div>` : ''}
       </div>
     `
   },
-  run (effect, sources, action) {
-    switch (effect.type) {
-      case 'save': {
-        const fields = effect.payload
-        return pull(
-          api.put('/me/application', fields),
-          pull.map(({statusText, data}) => {
-            switch (statusText) {
-              case 'OK': return action('saveSuccess')
-              case 'Bad Request': return action('saveUserError', data)
-              default: return action('saveServerError', data)
-            }
-          })
-        )
-      }
+})
+
+personalDetails.getFormResponses = function (model) {
+  const fields = {}
+  for (let field in model.children) {
+    const {value, started} = model.children[field]
+    if (started) { // only send through the ones that have actually been updated
+      fields[field] = value
     }
   }
-})
+  return fields
+}
+
+module.exports = personalDetails

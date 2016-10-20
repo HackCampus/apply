@@ -1,18 +1,17 @@
 const {html} = require('inu')
+const mapValues = require('lodash.mapvalues')
 const u = require('updeep')
 
-const technologies = require('../../technologies')
+const wireFormats = require('../../wireFormats')
 
 const Component = require('../component')
 
 const choiceField = require('./choiceField')
 
-const fields = {}
-technologies.forEach(tech => {
-  fields[tech] = choiceField(['0', '1', '2', '3'])
-})
+const technologies = Object.keys(wireFormats.techPreferences.properties)
+const fields = mapValues(wireFormats.techPreferences.properties, tech => choiceField(tech.enum))
 
-module.exports = Component({
+const techPreferences = Component({
   children: fields,
   init () {
     return {
@@ -27,6 +26,7 @@ module.exports = Component({
     }
   },
   view (model, dispatch, children) {
+    const {application} = model
     return html`
       <div class="techpreferences">
         <p>Help us match you to the perfect role by telling us what your technologies of choice are.</p>
@@ -40,10 +40,27 @@ module.exports = Component({
             <th>Technology</th>
             <th>Preference</th>
           </tr>
-          ${technologies.map(tech => html`<tr><td>${tech}</td><td>${children[tech]()}</td></tr>`)}
+          ${technologies.map(tech =>
+            html`<tr><td>${tech}</td><td>${
+              children[tech](application
+                ? {startingValue: application.techPreferences[tech]}
+                : {})
+            }</td></tr>`)}
         </table>
       </div>
     `
   },
-  // run (effect, sources, action) {}
 })
+
+techPreferences.getFormResponses = function (model) {
+  const fields = {}
+  for (let tech in model.children) {
+    const {started, value} = model.children[tech]
+    if (started) {
+      fields[tech] = value
+    }
+  }
+  return fields
+}
+
+module.exports = techPreferences

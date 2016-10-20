@@ -115,11 +115,24 @@ const Application = bookshelf.Model.extend({
   user: function () {
     return this.belongsTo(User, 'userId')
   },
+  techPreferences: function () {
+    return this.hasMany(TechPreference, 'applicationId')
+  },
+})
+
+const TechPreference = bookshelf.Model.extend({
+  tableName: 'techpreferences',
+  hasTimeStamps: ['createdAt'],
+
+  application: function () {
+    return this.belongsTo(Application, 'applicationId')
+  },
 })
 
 module.exports = {
   Authentication,
   Database: bookshelf,
   User,
+  TechPreference,
   Application,
 }

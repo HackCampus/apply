@@ -1,5 +1,5 @@
 exports.up = function(knex, Promise) {
-  return knex.schema.createTable('techPreferences', function (t) {
+  return knex.schema.createTable('techpreferences', function (t) {
     t.increments('id').unsigned().primary()
     t.dateTime('createdAt').notNull().defaultsTo(knex.fn.now());
 
@@ -12,9 +12,11 @@ exports.up = function(knex, Promise) {
 
     t.string('technology')
     t.integer('preference')
+
+    t.unique(['applicationId', 'technology'])
   })
 }
 
 exports.down = function(knex, Promise) {
-  return knex.schema.dropTable('techPreferences')
+  return knex.schema.dropTable('techpreferences')
 }

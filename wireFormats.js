@@ -1,5 +1,7 @@
-const universities = require('./universities')
 const extend = require('xtend')
+
+const technologies = require('./technologies')
+const universities = require('./universities')
 
 const authentication = {
   type: 'object',
@@ -52,10 +54,22 @@ const application = {
   ),
 }
 
+const acceptableTechPreferences = {}
+technologies.forEach(tech => {
+  acceptableTechPreferences[tech] = {enum: [0, 1, 2, 3]}
+})
+
+const techPreferences = {
+  type: 'object',
+  properties: acceptableTechPreferences,
+  additionalProperties: false,
+}
+
 module.exports = {
   authentication,
   password,
   register,
   personalDetails,
+  techPreferences,
   application,
 }
