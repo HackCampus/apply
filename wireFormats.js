@@ -25,14 +25,14 @@ const register = {
 const personalDetails = {
   type: 'object',
   properties: {
-    firstName: {type: 'string'},
-    lastName: {type: 'string'},
+    firstName: {type: 'string', minLength: 1},
+    lastName: {type: 'string', minLength: 1},
     contactEmail: {type: 'string', format: 'email'},
     gender: {enum: ['male', 'female', 'other']},
     dateOfBirth: {type: 'string', format: 'date'},
     university: {enum: ['other (eg. international)'].concat(universities)},
     otherUniversity: {type: 'string'},
-    courseName: {type: 'string'},
+    courseName: {type: 'string', minLength: 1},
     courseType: {enum: ['under-graduate', 'graduate', 'other']},
     otherCourseType: {type: 'string'},
     yearOfStudy: {enum: ['1', '2', '3', '4', '5', 'other']},

@@ -38,7 +38,6 @@ function handleApplicationUpdate (req, res, handleError) {
     })
 }
 
-
 module.exports = function (app) {
   app.get('/users/:userId/application', (req, res, handleError) => {
     Application.where({userId: req.params.userId}).fetch()
