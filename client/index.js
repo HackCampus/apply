@@ -4,7 +4,7 @@ const log = require('inu-log')
 const app = require('./app')
 
 function main () {
-  const {actions, views, models} = start(app)
+  const {views} = start(app)
 
   const container = document.getElementById('container')
   const appDiv = container.appendChild(document.createElement('div'))

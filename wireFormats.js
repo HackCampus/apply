@@ -1,4 +1,5 @@
 const universities = require('./universities')
+const extend = require('xtend')
 
 const authentication = {
   type: 'object',
@@ -41,9 +42,17 @@ const personalDetails = {
   }
 }
 
+const application = {
+  type: 'object',
+  properties: extend(
+    personalDetails.properties
+  ),
+}
+
 module.exports = {
   authentication,
   password,
   register,
   personalDetails,
+  application,
 }

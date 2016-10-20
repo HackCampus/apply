@@ -31,16 +31,15 @@ const fields = mapValues(fieldSchemas, schema => {
   return validatedTextField(schema)
 })
 
-const noErrors = {
-  errorMessage: null,
-  errorFields: {},
-}
-
 module.exports = Component({
   children: fields,
   init () {
     return {
-      model: noErrors,
+      model: {
+        errorMessage: null,
+        errorFields: {},
+        readOnly: false,
+      },
       effect: null,
     }
   },
@@ -48,11 +47,22 @@ module.exports = Component({
     switch (type) {
       case 'save': {
         const user = payload
-        const fields = mapValues(model.children, field => field.value)
-        if (fields.contactEmail.length === 0) {
+        const fields = {}
+        for (let field in model.children) {
+          const {value, started} = model.children[field]
+          if (started) { // only send through the ones that have actually been updated
+            fields[field] = value
+          }
+        }
+        if (fields.contactEmail && fields.contactEmail.length === 0) {
           fields.contactEmail = user.email
         }
-        return {model: noErrors, effect: action('save', fields)}
+        const newModel = u({
+          errorMessage: null,
+          errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
+          readOnly: true,
+        }, model)
+        return {model: newModel, effect: action('save', fields)}
       }
       case 'saveUserError': {
         const errors = payload.errors
@@ -60,30 +70,67 @@ module.exports = Component({
         for (let field of errors) {
           errorFields[field] = true
         }
-        return {model: {
+        const newModel = u({
           errorMessage: 'There were some issues with your responses, please take a look at the ones highlighted in red.',
-          errorFields: u.constant(errorFields) // FIXME if we don't add u.constant, fields never get removed because of how updeep works
-        }, effect: null}
+          errorFields: u.constant(errorFields), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
+          readOnly: false,
+        }, model)
+        return {model: newModel, effect: null}
       }
       case 'saveServerError': {
-        const newModel = extend({errorMessage: 'Something is wrong with the server - please let us know at contact@hackcampus.io. Thank you! :)'}, {errorFields: {}})
+        const newModel = u({
+          errorMessage: 'Something is wrong with the server - please let us know at contact@hackcampus.io. Thank you! :)',
+          errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
+          readOnly: false,
+        }, model)
         return {model: newModel, effect: null}
       }
       case 'saveSuccess': {
-        console.log('success')
-        return {model: noErrors, effect: null}
+        const newModel = u({
+          errorMessage: null,
+          errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
+          readOnly: false,
+        }, model)
+        return {model: newModel, effect: null}
       }
       default:
         return {model, effect: null}
     }
   },
   view (model, dispatch, children) {
-    const errorFields = model.errorFields
-    console.log('view', errorFields.gender)
+    const {
+      application, // fetched from the server
+      errorFields,
+      readOnly,
+      user,
+    } = model
     const isOther = child => model.children[child].value === 'other'
     const other = (fieldName, field) => isOther(fieldName) ? field : ''
-    const field = (label, field, comment) =>
-      html`<div class="field"><span class=${errorFields[field] ? 'error' : 'no-error'}>${label}:</span> ${children[field]()}${comment ? html`<span class="comment"> // ${comment}</span>` : ''}</div>`
+    const field = function (label, field, comment) {
+      const labelClass = errorFields[field] ? 'error' : 'no-error'
+      const commentElement = comment
+        ? html`<span class="comment"> // ${comment}</span>`
+        : ''
+      let fieldElement
+      if (readOnly) {
+        const childModel = model.children[field]
+        if (childModel.started) {
+          fieldElement = childModel.value
+        } else if (application) {
+          fieldElement = application[field]
+        } else {
+          fieldElement = ''
+        }
+      } else {
+        const childView = children[field]
+        if (application) {
+          fieldElement = childView({startingValue: application[field]})
+        } else {
+          fieldElement = childView()
+        }
+      }
+      return html`<div class="field"><span class=${labelClass}>${label}:</span> ${fieldElement}${commentElement}</div>`
+    }
     return html`
       <div class="form">
         <h3>Basic information</h3>
@@ -112,7 +159,7 @@ module.exports = Component({
       case 'save': {
         const fields = effect.payload
         return pull(
-          api.put('/me/application/personaldetails', fields),
+          api.put('/me/application', fields),
           pull.map(({statusText, data}) => {
             switch (statusText) {
               case 'OK': return action('saveSuccess')

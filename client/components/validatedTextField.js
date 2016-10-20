@@ -31,18 +31,23 @@ module.exports = (schema = defaultSchema, params = {}) => ({
     }
   },
   view (model, dispatch) {
-    const onEnter = model.onEnter
+    const {onEnter, started, startingValue} = model
+    let {value, valid} = model
+    if (!started && startingValue) {
+      value = startingValue
+      valid = this.validate(value).length === 0
+    }
 
-    const valid = model.valid ? 'valid' : 'invalid'
+    const validClass = valid ? 'valid' : 'invalid'
     return h('div', { style: 'display: inline-block;' }, [
         h('span', extend({
           contenteditable: 'true',
-          class: `textfield ${params.class || ''} ${valid}`,
+          class: `textfield ${params.class || ''} ${validClass}`,
           oninput: e => dispatch(e.target.textContent),
           onkeydown: e => { if (e.keyCode === 13) onEnter && onEnter() },
           style: 'display: inline-block; min-width: 35px',
           spellcheck: 'false',
-        }, params), [model.value])
+        }, params), [value])
     ])
   },
 })

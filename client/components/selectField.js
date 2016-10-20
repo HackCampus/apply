@@ -8,17 +8,22 @@ module.exports = (options = []) => ({
         options,
         selected: -1,
         value: null,
+        started: false,
       },
       effect: null,
     }
   },
   update (model, selectedIndex) {
     const selected = selectedIndex - 1 // remove empty choice
-    const newModel = u({selected, value: model.options[selected]})
+    const newModel = u({selected, value: model.options[selected], started: true}, model)
     return {model: newModel, effect: null}
   },
   view (model, dispatch) {
-    const {options, selected} = model
+    const {options, startingValue, started} = model
+    let selected = model.selected
+    if (!started && startingValue) {
+      selected = options.indexOf(startingValue)
+    }
     return html`
       <select onchange=${function () { dispatch(this.selectedIndex) }}>
         <option selected=${selected === -1} value="-1"></option>

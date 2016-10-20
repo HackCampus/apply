@@ -54,14 +54,14 @@ module.exports = function Component (component) {
       if (self.children === none) {
         return component.view(model, dispatch)
       }
-      const children = mapValues(self.children, ({view}, child) => (function childView (overrides) {
+      const children = mapValues(self.children, (childComponent, child) => (function childView (overrides) {
         if (!(child in model.children)) {
           throw new Error(`internal error: child ${child} not in model.`)
         }
         const childModel = typeof overrides === 'object'
           ? extend(model.children[child], overrides)
           : model.children[child]
-        return view(childModel, function childDispatch (action) {
+        return childComponent.view(childModel, function childDispatch (action) {
           dispatch({child, action})
         })
       }))
