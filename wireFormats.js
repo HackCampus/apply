@@ -39,6 +39,9 @@ const personalDetails = {
     otherYearOfStudy: {type: 'string'},
     graduationYear: {enum: ['2017', '2018', '2019', '2020', '2021', 'other']},
     otherGraduationYear: {type: 'string'},
+    cvUrl: {type: 'string', format: 'uri'},
+    websiteUrl: {type: 'string'},
+    linkedinUrl: {type: 'string'},
   }
 }
 

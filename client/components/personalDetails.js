@@ -129,14 +129,14 @@ module.exports = Component({
           fieldElement = childView()
         }
       }
-      return html`<div class="field"><span class=${labelClass}>${label}:</span> ${fieldElement}${commentElement}</div>`
+      return html`<div class="field"><span class=${labelClass}>${label}:</span> ${commentElement}<br />\xA0\xA0${fieldElement}</div>`
     }
     return html`
       <div class="form">
         <h3>Basic information</h3>
         ${field('first name', 'firstName')}
         ${field('last name', 'lastName')}
-        ${field('contact email', 'contactEmail', 'optional - if different from registration email')}
+        ${field('contact email', 'contactEmail', 'optional - only needed if different from your registration email')}
         ${field('gender', 'gender')}
         ${field('date of birth', 'dateOfBirth', html`<a target="_blank" href="http://www.cl.cam.ac.uk/~mgk25/iso-time.html">YYYY-MM-DD</a>`)}
         <h3>Your studies</h3>
@@ -149,6 +149,11 @@ module.exports = Component({
         ${other('yearOfStudy', field('specify course year', 'otherYearOfStudy'))}
         ${field('year of graduation', 'graduationYear')}
         ${other('graduationYear', field('specify year of graduation', 'otherGraduationYear'))}
+        <h3>Links</h3>
+        <p>Please make sure your CV is publicly accessible and is up to date. Not having a working CV link will greatly reduce your chances of being accepted in the programme.</p>
+        ${field('link to your CV', 'cvUrl')}
+        ${field('website', 'websiteUrl', 'optional')}
+        ${field('LinkedIn', 'linkedinUrl', 'optional')}
         ${link('Save', () => dispatch(action('save', model.user)))}
         ${model.errorMessage ? html`<div class="error">${model.errorMessage}</div>` : ''}
       </div>
