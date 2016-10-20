@@ -32,7 +32,7 @@ module.exports = Component({
         <p>Help us match you to the perfect role by telling us what your technologies of choice are.</p>
         <p><strong>0:</strong> I have never used <em>X</em>.</p>
         <p><strong>1:</strong> I have read about <em>X</em>, or I have only used it once, or have used it and would prefer not to work with it.</p>
-        <p><strong>2:</strong> I am familiar with <em>X</em>, and/or would be comfortable taking on a role where I have to <em>X</em>.</p>
+        <p><strong>2:</strong> I am familiar with <em>X</em>, and/or would be comfortable taking on a role where I have to use <em>X</em>.</p>
         <p><strong>3:</strong> I am completely proficient in <em>X</em>, ie. I have used it for several projects.</p>
         <p><strong>Note:</strong> If you don't find your favourite tech here, don't worry - just tell us about what you've built with it in the next section! :)</p>
         <table>
