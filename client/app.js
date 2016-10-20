@@ -5,15 +5,17 @@ const action = (type, payload) => ({type, payload})
 
 const api = require('./api')
 const Component = require('./component')
-const either = require('./pull-either')
 
 const authenticate = require('./components/authenticate')
+const link = require('./components/link')
 const personalDetails = require('./components/personalDetails')
+const techPreferences = require('./components/techPreferences')
 
 module.exports = Component({
   children: {
     authenticate,
     personalDetails,
+    techPreferences,
   },
   init () {
     return {
@@ -64,8 +66,9 @@ module.exports = Component({
         <h1>Apply to HackCampus</h1>
         ${section('step0', 'Step 0: Authenticate', children.authenticate())}
         ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(props) : '')}
-        ${section('step2', 'Step 2: Tech preferences', '')}
+        ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
         ${section('step3', 'Step 3: Personal & technical questions', '')}
+        <div class="toolbar">${link('Save')}</div>
       </div>
     `
   },
