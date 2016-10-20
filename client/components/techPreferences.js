@@ -1,5 +1,5 @@
 const {html} = require('inu')
-const mapValues = require('lodash.mapvalues')
+const mapValues = require('lodash/mapvalues')
 const u = require('updeep')
 
 const wireFormats = require('../../wireFormats')
