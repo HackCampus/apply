@@ -34,7 +34,7 @@ const techPreferences = Component({
         <p><strong>1:</strong> I have read about <em>X</em>, or I have only used it once, or have used it and would prefer not to work with it.</p>
         <p><strong>2:</strong> I am familiar with <em>X</em>, and/or would be comfortable taking on a role where I have to use <em>X</em>.</p>
         <p><strong>3:</strong> I am completely proficient in <em>X</em>, ie. I have used it for several projects.</p>
-        <p><strong>Note:</strong> If you don't find your favourite tech here, don't worry - just tell us about what you've built with it in the next section! :)</p>
+        <p><strong>Note:</strong> <em>You're obviously not expected to know all of these technologies! This is a wide cross-section of technologies that the startups taking part in the programme are working with. We only use this to help us to find the right role for you, eg. if you prefer frontend work to backend work. Likewise, if you don't find your favourite tech here, don't worry - just tell us about what you've built with it in the next section! :)</em></p>
         <table>
           <tr>
             <th>Technology</th>

@@ -12,6 +12,7 @@ const authenticate = require('./components/authenticate')
 const link = require('./components/link')
 const personalDetails = require('./components/personalDetails')
 const techPreferences = require('./components/techPreferences')
+const questions = require('./components/questions')
 
 const noErrors = u({
   errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
@@ -30,6 +31,7 @@ module.exports = Component({
     authenticate,
     personalDetails,
     techPreferences,
+    questions,
   },
   init () {
     return {
@@ -126,12 +128,12 @@ module.exports = Component({
       ? {application, user, readOnly}
       : {application, user}
     return html`
-      <div>
+      <div class="apply">
         <h1>Apply to HackCampus</h1>
         ${section('step0', 'Step 0: Authenticate', children.authenticate())}
         ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(props) : '')}
         ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
-        ${section('step3', 'Step 3: Personal & technical questions', '')}
+        ${section('step3', 'Step 3: Personal & technical questions', user ? children.questions(props) : '')}
         <div class="toolbar">${link('Save', () => dispatch(action('saveApplication')))}</div>
       </div>
     `
