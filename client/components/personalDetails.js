@@ -94,12 +94,12 @@ const personalDetails = Component({
         <h3>Your studies</h3>
         ${field('university', 'university')}
         ${model.children.university.value === fieldSchemas.university.enum[0] ? field('specify university', 'otherUniversity') : ''}
-        ${field('course name', 'courseName')}
+        ${field('course name', 'courseName', 'eg. "Computer Science", "Physics"')}
         ${field('course type', 'courseType')}
         ${other('courseType', field('specify course type', 'otherCourseType'))}
         ${field('year of study', 'yearOfStudy')}
         ${other('yearOfStudy', field('specify course year', 'otherYearOfStudy'))}
-        ${field('year of graduation', 'graduationYear')}
+        ${field('(expected) year of graduation', 'graduationYear')}
         ${other('graduationYear', field('specify year of graduation', 'otherGraduationYear'))}
         <h3>Links</h3>
         <p>Please make sure your CV is publicly accessible and is up to date. Not having a working CV link will greatly reduce your chances of being accepted in the programme.</p>

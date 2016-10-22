@@ -23,7 +23,7 @@ module.exports = (choices = []) => ({
   view (model, dispatch) {
     const {choices, started, startingValue} = model
     let chosen = model.chosen
-    if (!started && startingValue) {
+    if (!started && startingValue != null) {
       chosen = choices.indexOf(startingValue)
     }
     return html`

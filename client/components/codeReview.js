@@ -1,7 +1,7 @@
 const {html} = require('inu')
 
 module.exports = html`
-<div class="code-review">
+<div class="codeReview">
 <div id="gist41141105" class="gist">
 <div class="gist-file">
 <div class="gist-data">

@@ -19,6 +19,9 @@ const tabs = {
   existingApplication: 1,
 }
 
+const field = (label, content) =>
+  html`<div class="field"><span>${label}:</span><br />\xA0\xA0${content}</div>`
+
 module.exports = Component({
   children: {
     email: validatedTextField({format: 'email'}, {autocomplete: 'email'}),
@@ -28,6 +31,7 @@ module.exports = Component({
   init () {
     return {
       model: {
+        password: false,
         tab: tabs.newApplication,
         error: null,
         user: null,
@@ -43,6 +47,11 @@ module.exports = Component({
       case 'github':
       case 'loadUser':
         return {model, effect: a}
+
+      case 'password': {
+        const newModel = u({password: true}, model)
+        return {model: newModel, effect: null}
+      }
 
       case 'select': {
         const newModel = u({tab: a.payload}, model)
@@ -125,7 +134,7 @@ module.exports = Component({
   view (model, dispatch, children) {
     return model.user
       ? this.authenticatedView(model, dispatch, children)
-      : this.formView(model, dispatch, children)
+      : this.notAuthenticatedView(model, dispatch, children)
   },
   authenticatedView (model, dispatch, children) {
     const {user} = model
@@ -135,14 +144,22 @@ module.exports = Component({
       </div>
     `
   },
-  formView (model, dispatch, children) {
+  notAuthenticatedView (model, dispatch, children) {
+    return html`
+      <div class="form">
+        <div>${link('Authenticate with GitHub', () => dispatch(action('github')))} | ${link('Authenticate with email/password', () => dispatch(action('password')))}</div>
+        ${model.password ? this.passwordView(model, dispatch, children) : ''}
+      </div>
+    `
+  },
+  passwordView (model, dispatch, children) {
     const select = id =>
       dispatch(action('select', id))
     const radio = (id, content) =>
-      html`<div class="tab">- [${id === model.tab ? 'x' : ' '}] ${link(content, () => select(id), {class: 'tab-content'})}</div>`
+      link(content, () => select(id), {class: model.tab === id ? 'disabled' : ''})
     return html`
-      <div class="form">
-        ${radio(tabs.newApplication, 'Start a new application')}
+      <div>
+        ${radio(tabs.newApplication, 'Start a new application')} |
         ${radio(tabs.existingApplication, 'Edit an existing application')}
         ${(() => {
           switch (model.tab) {
@@ -152,10 +169,6 @@ module.exports = Component({
               return this.existingApplicationView(model, dispatch, children)
           }
         })()}
-        <div>\xA0</div>
-        <div><em>or</em></div>
-        <div>\xA0</div>
-        <div>${link('Authenticate with GitHub', () => dispatch(action('github')))}</div>
       </div>
     `
   },
@@ -175,14 +188,14 @@ module.exports = Component({
     return html`
       <div>
         <div class="entry">
-          <div>email: ${children.email({onEnter: register})}</div>
-          <div>password: ${children.password({onEnter: register})}</div>
-          <div>confirm password: ${children.confirmPassword({
+          ${field('email', children.email({onEnter: register}))}
+          ${field('password', children.password({onEnter: register}))}
+          ${field('confirm password', children.confirmPassword({
             onEnter: register,
             confirmValue: passwordField.value
-          })}</div>
-          <div>${/* FIXME */ model.error === errors.emailTaken ? html`
-            <span>error: An application has already been started with this email address.
+          }))}
+          <div>${model.error === errors.emailTaken ? html`
+            <span class="error">An application has already been started with this email address.
             Do you want to try <a onclick=${() => dispatch(action('select', tabs.existingApplication))}>logging in with this email address?</a>
             </span>` : ''}
           </div>
@@ -203,8 +216,8 @@ module.exports = Component({
     return html`
       <div>
         <div class="entry">
-          <div>email: ${children.email({onEnter: login})}</div>
-          <div>password: ${children.password({onEnter: login})}</div>
+          ${field('email', children.email({onEnter: login}))}
+          ${field('password', children.password({onEnter: login}))}
         </div>
         <div>${link('Log in with email/password', login, {class: valid ? 'enabled' : 'disabled'})}</div>
       </div>
