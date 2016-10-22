@@ -107,6 +107,10 @@ const personalDetails = Component({
         ${field('website', 'websiteUrl', 'optional')}
         ${field('LinkedIn', 'linkedinUrl', 'optional')}
         ${model.errorMessage ? html`<div class="error">${model.errorMessage}</div>` : ''}
+        <h3>Where did you find out about us?</h3>
+        <p>If you were referred by a friend, or a previous HackCampus intern, we'd love to know their name. You obviously don't have to provide this if you or they don't want to!</p>
+        ${field('referer', 'referer')}
+        ${field('any details', 'refererDetail', 'eg. name of the hackathon/event')}
       </div>
     `
   },

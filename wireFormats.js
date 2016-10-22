@@ -44,6 +44,8 @@ const personalDetails = {
     cvUrl: {type: 'string', format: 'uri'},
     websiteUrl: {type: 'string'},
     linkedinUrl: {type: 'string'},
+    referer: {enum: ['friend', 'hackathon', 'campus event', 'Facebook', 'other']},
+    refererDetail: {type: 'string'},
   }
 }
 
