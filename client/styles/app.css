@@ -3,11 +3,12 @@
 #container {
   max-width: 768px;
   margin: auto;
-  font-family: 'Roboto Mono', monospace;
+  font-family: 'Roboto', sans-serif;
   line-height: 1.6;
 }
 
 h2 {
+  font-family: 'Roboto Mono', monospace;
   font-size: 1.5em;
 }
 h2::before {
@@ -17,6 +18,7 @@ h2::before {
 }
 
 h3 {
+  font-family: 'Roboto Mono', monospace;
   font-size: 1em;
 }
 h3::before {
@@ -78,6 +80,10 @@ li::before {
 
 /* form */
 
+.field {
+  font-family: 'Roboto Mono', monospace;
+}
+
 .comment {
   font-style: italic;
   color: #666;
@@ -90,6 +96,10 @@ li::before {
 
 .error {
   color: red;
+}
+
+.question {
+  margin: 4em 0;
 }
 
 .markdownTextArea {

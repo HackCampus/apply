@@ -41,7 +41,7 @@ const techPreferences = Component({
             <th>Preference</th>
           </tr>
           ${technologies.map(tech =>
-            html`<tr><td>${tech}</td><td>${
+            html`<tr class="field"><td>${tech}</td><td>${
               children[tech](application
                 ? {startingValue: application.techPreferences[tech]}
                 : {})
