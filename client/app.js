@@ -67,8 +67,8 @@ module.exports = Component({
         return {model: newModel, effect: null}
       }
       case 'fetchApplicationError': {
-        console.error({type, payload})
-        return {model, effect: null}
+        const newModel = serverError(newModel)
+        return {model: newModel, effect: null}
       }
       case 'saveApplication': {
         const personalDetailsResponses = getFormResponses(model.children.personalDetails)
@@ -125,43 +125,6 @@ module.exports = Component({
       default:
         return {model, effect: null}
     }
-  },
-  view (model, dispatch, children) {
-    const {
-      application,
-      errorFields,
-      errorMessage,
-      readOnly,
-      statusMessage,
-      user,
-    } = model
-    const section = (name, header, content) => html`
-      <div class="${name}">
-        <h2>${header}</h2>
-        <div>${content}</div>
-      </div>
-    `
-    const saveApplication = () =>
-      dispatch(action('saveApplication'))
-    const completed = this.getCompleted(model)
-    // readOnly may be also set by the subcomponent - don't override it unless needed
-    const props = readOnly
-      ? {application, user, errorFields, readOnly}
-      : {application, user, errorFields}
-    return html`
-      <div class="apply">
-        <h1>Apply to HackCampus</h1>
-        ${section('step0', 'Step 0: Authenticate', children.authenticate())}
-        ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(props) : '')}
-        ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
-        ${section('step3', 'Step 3: Personal & technical questions', user ? children.questions(props) : '')}
-        ${section('step4', 'Step 4: Finish your application', user ? children.finishApplication({
-          saveApplication
-        }) : '')}
-        ${statusBar(statusMessage, errorMessage)}
-        ${completedBar(completed)}
-      </div>
-    `
   },
   run (effect, sources, action) {
     switch (effect.type) {
@@ -223,6 +186,43 @@ module.exports = Component({
         )
       }
     }
+  },
+  view (model, dispatch, children) {
+    const {
+      application,
+      errorFields,
+      errorMessage,
+      readOnly,
+      statusMessage,
+      user,
+    } = model
+    const section = (name, header, content) => html`
+      <div class="${name}">
+        <h2>${header}</h2>
+        <div>${content}</div>
+      </div>
+    `
+    const saveApplication = () =>
+      dispatch(action('saveApplication'))
+    const completed = this.getCompleted(model)
+    // readOnly may be also set by the subcomponent - don't override it unless needed
+    const props = readOnly
+      ? {application, user, errorFields, readOnly}
+      : {application, user, errorFields}
+    return html`
+      <div class="apply">
+        <h1>Apply to HackCampus</h1>
+        ${section('step0', 'Step 0: Authenticate', children.authenticate())}
+        ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(props) : '')}
+        ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
+        ${section('step3', 'Step 3: Personal & technical questions', user ? children.questions(props) : '')}
+        ${section('step4', 'Step 4: Finish your application', user ? children.finishApplication({
+          saveApplication
+        }) : '')}
+        ${statusBar(statusMessage, errorMessage)}
+        ${completedBar(completed)}
+      </div>
+    `
   },
   getCompleted (model) {
     const application = model.application || {}
