@@ -22,12 +22,12 @@ module.exports = (schema = defaultSchema, params = {}) => ({
   update (model, newValue) {
     const errors = this.validate(newValue)
     return {
-      model: u({
+      model: {
         errors,
         started: true,
         valid: errors.length == 0,
         value: newValue,
-      })
+      }
     }
   },
   view (model, dispatch) {

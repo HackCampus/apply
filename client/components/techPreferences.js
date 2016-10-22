@@ -52,15 +52,4 @@ const techPreferences = Component({
   },
 })
 
-techPreferences.getFormResponses = function (model) {
-  const fields = {}
-  for (let tech in model.children) {
-    const {started, value} = model.children[tech]
-    if (started) {
-      fields[tech] = value
-    }
-  }
-  return fields
-}
-
 module.exports = techPreferences

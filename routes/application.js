@@ -124,9 +124,4 @@ module.exports = function (app) {
   app.put('/me/application/techpreferences',
     authorized, validate(wireFormats.techPreferences),
     handleTechPreferencesUpdate)
-
-  // FIXME
-  app.put('/test/techpreferences', validate(wireFormats.techPreferences),
-  (req, res) => { req.user = {}; req.user.id = 1 },
-  handleTechPreferencesUpdate)
 }

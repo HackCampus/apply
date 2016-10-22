@@ -7,6 +7,7 @@ const action = (type, payload) => ({type, payload})
 
 const api = require('./api')
 const Component = require('./component')
+const getFormResponses = require('./getFormResponses')
 
 const authenticate = require('./components/authenticate')
 const link = require('./components/link')
@@ -64,14 +65,14 @@ module.exports = Component({
         return {model, effect: null}
       }
       case 'saveApplication': {
-        const personalDetailsResponses = personalDetails.getFormResponses(model.children.personalDetails)
+        const personalDetailsResponses = getFormResponses(model.children.personalDetails)
         if (personalDetailsResponses.contactEmail &&
             personalDetailsResponses.contactEmail.length === 0) {
           personalDetailsResponses.contactEmail = user.email
         }
-        const techPreferencesResponses = techPreferences.getFormResponses(model.children.techPreferences)
-        // const questionsResponses = questions.getFormResponses(model.children.questions)
-        const application = extend(personalDetailsResponses)
+        const techPreferencesResponses = getFormResponses(model.children.techPreferences)
+        const questionsResponses = getFormResponses(model.children.questions)
+        const application = extend(personalDetailsResponses, questionsResponses)
 
         const effect = [action('saveApplication', application)]
         if (!isEmpty(techPreferencesResponses)) {

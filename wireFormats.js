@@ -47,10 +47,21 @@ const personalDetails = {
   }
 }
 
+const questions = {
+  type: 'object',
+  properties: {
+    bestProject: {type: 'string'},
+    mostExcitingTechnology: {type: 'string'},
+    applicationDesign: {type: 'string'},
+    codeReview: {type: 'string'},
+  }
+}
+
 const application = {
   type: 'object',
   properties: extend(
-    personalDetails.properties
+    personalDetails.properties,
+    questions.properties
   ),
 }
 
@@ -70,6 +81,7 @@ module.exports = {
   password,
   register,
   personalDetails,
+  questions,
   techPreferences,
   application,
 }

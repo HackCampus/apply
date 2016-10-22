@@ -25,6 +25,11 @@ h3::before {
   content: '## ';
 }
 
+p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
 a {
   color: black;
   border-bottom: 1px solid rgb(255, 110, 45);
@@ -87,6 +92,54 @@ li::before {
   color: red;
 }
 
+.markdownTextArea {
+  display: flex;
+  min-height: 300px;
+}
+@media (max-width: 768px) {
+  .markdownTextArea {
+    flex-direction: column;
+  }
+}
+
+textarea {
+  border: solid rgb(255, 110, 45);
+  border-width: 2px 0;
+  height: 100%;
+  min-height: 200px;
+  width: 100%;
+  font-family: 'Roboto Mono', monospace;
+  line-height: 1.6;
+  font-size: 1em;
+  padding: 0;
+}
+
+.textareaContainer,
+.previewContainer {
+  flex: 1;
+}
+
+.preview {
+  border: solid black;
+  border-width: 2px 0;
+  font-family: 'Roboto', sans-serif;
+  height: 100%;
+  min-height: 200px;
+}
+
+.preview h1 {
+  font-size: 1.5em;
+}
+.preview h2 {
+  font-size: 1.3em;
+}
+.preview h3 {
+  font-size: 1.2em;
+}
+.preview h2::before, .preview h3::before {
+  content: '';
+}
+
 /* authenticate */
 
 .tab {
@@ -139,8 +192,22 @@ input {
   overflow: visible;
 }
 
+textarea {
+	-webkit-box-sizing:content-box;
+	-moz-box-sizing:content-box;
+	box-sizing:content-box;
+}
+
+textarea {
+	/* Move the label to the top */
+	vertical-align:top;
+
+	/* Turn off scroll bars in IE unless needed */
+	overflow:auto;
+}
+
 /* webkit glow */
-input:focus {
+input:focus, textarea:focus {
 	outline: 0;
 }
 
