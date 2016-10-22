@@ -16,7 +16,7 @@ You can write your answer in the left box, and you will see a preview in the rig
 You can write links [like this](https://hackcampus.io/), and format your text in **bold** and *italics* like this.
 `
 
-const fields = mapValues(wireFormats.questions.properties, question => markdownTextArea())
+const fields = mapValues(wireFormats.questions.properties, question => markdownTextArea(sampleAnswer))
 
 const questions = Component({
   children: fields,
@@ -33,6 +33,9 @@ const questions = Component({
     }
   },
   view (model, dispatch, children) {
+    const {
+      application,
+    } = model
     return html`
       <div class="questions">
         <p>The answers you give here help us assess your technical skills as well as your attitude towards software development.</p>
@@ -42,13 +45,13 @@ const questions = Component({
         <h3>What is the coolest thing you have built?</h3>
         <p>This could be a hackathon project, or something you have been building on weekends and evenings. Ideally this shouldn't be a school project (unless you came up with the idea yourself!). If you have relevant work experience, definitely mention it too.</p>
         <p><em>This is the most useful question for us - the best answers contain links to code you've written, eg. on GitHub or your website, or links to working projects!</em></p>
-        ${children.bestProject({startingValue: sampleAnswer})}
+        ${children.bestProject({startingValue: application && application.bestProject})}
         </div>
-        
+
         <div class="question">
         <h3>What technology excites you the most?</h3>
         <p>We want to bring together people who believe that technology can always be improved - some amazing technological advancements are just around the corner. What technology excites you the most? Why is it so exciting?</p>
-        ${children.mostExcitingTechnology({startingValue: sampleAnswer})}
+        ${children.mostExcitingTechnology({startingValue: application && application.mostExcitingTechnology})}
         </div>
 
         <div class="question">
@@ -66,11 +69,11 @@ const questions = Component({
         <p>Some questions to consider:</p>
         <ul>
           <li>What components would the system have and how would they interact?</li>
-          <li>How long would this take to build?</li>
           <li>What is going to be the most difficult and/or time-consuming task?</li>
           <li>What tech stack would you use? Why?</li>
+          <li>How long would this take to build?</li>
         </ul>
-        ${children.applicationDesign({startingValue: sampleAnswer})}
+        ${children.applicationDesign({startingValue: application && application.applicationDesign})}
         </div>
 
         <div class="question">
@@ -87,7 +90,7 @@ const questions = Component({
           <li>Is anything wrong with its style?</li>
           <li>Should your team-mate have written this function in the first place?</li>
         </ul>
-        ${children.codeReview({startingValue: sampleAnswer})}
+        ${children.codeReview({startingValue: application && application.codeReview})}
         </div>
       </div>
     `

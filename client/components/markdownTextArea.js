@@ -3,7 +3,7 @@ const markdown = require('markdown-it')({
   linkify: true,
 })
 
-module.exports = () => ({
+module.exports = (emptyValue = '') => ({
   init () {
     return {
       model: {
@@ -25,8 +25,10 @@ module.exports = () => ({
   view (model, dispatch) {
     const {started, startingValue} = model
     let {value} = model
-    if (!started && startingValue) {
+    if (!started) {
       value = startingValue
+        ? startingValue
+        : emptyValue
     }
     // FIXME hackhackhackhack
     // bel for some reason does not like hrefs wrapped in ""s...?
@@ -39,7 +41,7 @@ module.exports = () => ({
         <div class="textareaContainer">
           <textarea
             oninput=${e => dispatch(e.target.value)}
-            onfocus=${() => !started && dispatch('')}
+            onfocus=${() => !started && !startingValue && dispatch('')}
           >${value}</textarea>
         </div>
         <div class="previewContainer">${html(`<div class=preview>${renderedValue}</div>`)}</div>
