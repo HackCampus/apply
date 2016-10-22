@@ -9,14 +9,16 @@ const api = require('./api')
 const Component = require('./component')
 const getCompleted = require('./getCompleted')
 const getFormResponses = require('./getFormResponses')
+const uninterrupted = require('./pull-uninterrupted')
 
 const authenticate = require('./components/authenticate')
 const completedBar = require('./components/completedBar')
+const finishApplication = require('./components/finishApplication')
 const link = require('./components/link')
 const personalDetails = require('./components/personalDetails')
-const techPreferences = require('./components/techPreferences')
 const questions = require('./components/questions')
-const finishApplication = require('./components/finishApplication')
+const statusBar = require('./components/statusBar')
+const techPreferences = require('./components/techPreferences')
 
 const noErrors = u({
   errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
@@ -58,7 +60,7 @@ module.exports = Component({
       }
       case 'fetchApplicationSuccess': {
         const newModel = u({application: payload, readOnly: false}, model)
-        return {model: newModel, effect: null}
+        return {model: newModel, effect: action('autosave')}
       }
       case 'fetchApplicationNotFound': {
         const newModel = u({readOnly: false}, model)
@@ -82,11 +84,15 @@ module.exports = Component({
         if (!isEmpty(techPreferencesResponses)) {
           effect.push(action('saveTechPreferences', techPreferencesResponses))
         }
-        const newModel = model // TODO
+        const newModel = u({
+          statusMessage: 'Saving...',
+        }, model)
         return {model: newModel, effect}
       }
       case 'saveApplicationSuccess': {
-        const newModel = noErrors(model)
+        const newModel = u({
+          statusMessage: '',
+        }, noErrors(model))
         return {model: newModel, effect: null}
       }
       case 'saveApplicationUserError': {
@@ -121,29 +127,27 @@ module.exports = Component({
     }
   },
   view (model, dispatch, children) {
-    const {application, user, readOnly} = model
+    const {
+      application,
+      errorFields,
+      errorMessage,
+      readOnly,
+      statusMessage,
+      user,
+    } = model
     const section = (name, header, content) => html`
       <div class="${name}">
         <h2>${header}</h2>
         <div>${content}</div>
       </div>
     `
-    const completed = {
-      personalDetails: getCompleted(model.children.personalDetails, application),
-      techPreferences: getCompleted(model.children.techPreferences, application && application.techPreferences),
-      questions: getCompleted(model.children.questions, application),
-    }
-    delete completed.personalDetails.contactEmail
-    delete completed.personalDetails.otherYearOfStudy
-    delete completed.personalDetails.otherGraduationYear
-    delete completed.personalDetails.otherCourseType
-    delete completed.personalDetails.otherUniversity
     const saveApplication = () =>
       dispatch(action('saveApplication'))
+    const completed = this.getCompleted(model)
     // readOnly may be also set by the subcomponent - don't override it unless needed
     const props = readOnly
-      ? {application, user, readOnly}
-      : {application, user}
+      ? {application, user, errorFields, readOnly}
+      : {application, user, errorFields}
     return html`
       <div class="apply">
         <h1>Apply to HackCampus</h1>
@@ -154,6 +158,7 @@ module.exports = Component({
         ${section('step4', 'Step 4: Finish your application', user ? children.finishApplication({
           saveApplication
         }) : '')}
+        ${statusBar(statusMessage, errorMessage)}
         ${completedBar(completed)}
       </div>
     `
@@ -207,6 +212,30 @@ module.exports = Component({
           })
         )
       }
+      case 'autosave': {
+        return pull(
+          sources.actions(),
+          pull.filter(action =>
+            ['personalDetails', 'techPreferences', 'questions'].indexOf(action.child) !== -1
+          ),
+          uninterrupted(3000),
+          pull.map(() => action('saveApplication'))
+        )
+      }
     }
+  },
+  getCompleted (model) {
+    const application = model.application || {}
+    const completed = {
+      personalDetails: getCompleted(model.children.personalDetails, application),
+      techPreferences: getCompleted(model.children.techPreferences, application.techPreferences),
+      questions: getCompleted(model.children.questions, application),
+    }
+    delete completed.personalDetails.contactEmail
+    delete completed.personalDetails.otherYearOfStudy
+    delete completed.personalDetails.otherGraduationYear
+    delete completed.personalDetails.otherCourseType
+    delete completed.personalDetails.otherUniversity
+    return completed
   },
 })
