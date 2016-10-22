@@ -7,13 +7,16 @@ const action = (type, payload) => ({type, payload})
 
 const api = require('./api')
 const Component = require('./component')
+const getCompleted = require('./getCompleted')
 const getFormResponses = require('./getFormResponses')
 
 const authenticate = require('./components/authenticate')
+const completedBar = require('./components/completedBar')
 const link = require('./components/link')
 const personalDetails = require('./components/personalDetails')
 const techPreferences = require('./components/techPreferences')
 const questions = require('./components/questions')
+const finishApplication = require('./components/finishApplication')
 
 const noErrors = u({
   errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
@@ -33,6 +36,7 @@ module.exports = Component({
     personalDetails,
     techPreferences,
     questions,
+    finishApplication,
   },
   init () {
     return {
@@ -124,6 +128,18 @@ module.exports = Component({
         <div>${content}</div>
       </div>
     `
+    const completed = {
+      personalDetails: getCompleted(model.children.personalDetails, application),
+      techPreferences: getCompleted(model.children.techPreferences, application && application.techPreferences),
+      questions: getCompleted(model.children.questions, application),
+    }
+    delete completed.personalDetails.contactEmail
+    delete completed.personalDetails.otherYearOfStudy
+    delete completed.personalDetails.otherGraduationYear
+    delete completed.personalDetails.otherCourseType
+    delete completed.personalDetails.otherUniversity
+    const saveApplication = () =>
+      dispatch(action('saveApplication'))
     // readOnly may be also set by the subcomponent - don't override it unless needed
     const props = readOnly
       ? {application, user, readOnly}
@@ -135,7 +151,10 @@ module.exports = Component({
         ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(props) : '')}
         ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
         ${section('step3', 'Step 3: Personal & technical questions', user ? children.questions(props) : '')}
-        <div class="toolbar">${link('Save', () => dispatch(action('saveApplication')))}</div>
+        ${section('step4', 'Step 4: Finish your application', user ? children.finishApplication({
+          saveApplication
+        }) : '')}
+        ${completedBar(completed)}
       </div>
     `
   },
