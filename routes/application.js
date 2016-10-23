@@ -6,48 +6,57 @@ const validate = require('../middlewares/validate')
 const {Database, Application, TechPreference} = require('../models')
 const wireFormats = require('../wireFormats')
 
-function updateApplication (userId, update) {
-  const application = Application.where({userId}).fetch()
-    .then(application => {
-      if (!application) {
-        return new Application({userId}).save()
-      }
-      return application
-    })
-  return (isEmpty(update)
-    ? application
-    : application.then(a => a.save(update, {patch: true})))
-    .then(application => application.serialize())
+module.exports = function (app) {
+  app.get('/me/application',
+    authorized,
+    getApplication(true))
+
+  app.put('/me/application',
+    authorized, validate(wireFormats.application),
+    putApplication)
+
+  app.put('/me/application/techpreferences',
+    authorized, validate(wireFormats.techPreferences),
+    putTechPreferences)
 }
 
-function formatApplicationObject (application) {
-  if (application.dateOfBirth instanceof Date) {
-    application.dateOfBirth = application.dateOfBirth.toISOString().substr(0, 10)
+function getApplication (createNew = false) {
+  return function (req, res, handleError) {
+    const userId = req.user.id
+    Application.where({userId}).fetch()
+      .then(application => {
+        if (application) return application
+        if (createNew) {
+          return new Application({userId}).save()
+        } else {
+          throw {status: 'Not Found'}
+        }
+      })
+      .then(application => {
+        const applicationObject = formatApplicationObject(application.serialize())
+        return getTechPreferences(application.id).then(techPreferences => {
+          applicationObject.techPreferences = techPreferences
+          res.json(applicationObject)
+        })
+      })
+      .catch(error => {
+        if (error instanceof Error) {
+          console.log(error)
+          handleError({status: 'Internal Server Error'})
+        } else {
+          handleError(error)
+        }
+      })
   }
-  return application
 }
 
-function verifyFinished (application) {
-  wireFormats.optionalFields
-  const emptyFields = []
-  for (let field in application) {
-    if (field === 'updatedAt' || field === 'finishedAt') continue
-    const response = application[field]
-    if ((response == null || response === '') && !wireFormats.optionalFields[field]) {
-      emptyFields.push(field)
-    }
+function putApplication (req, res, handleError) {
+  if (req.body.finished) {
+    delete req.body.finished
+    return handleApplicationFinish(req, res, handleError)
+  } else {
+    return handleApplicationUpdate(req, res, handleError)
   }
-  return {
-    finished: emptyFields.length === 0,
-    errors: emptyFields
-  }
-}
-
-function finishApplication (application) {
-  const now = new Date().toJSON()
-  return Application.where('id', application.id).fetch()
-    .save({finishedAt: now}, {patch: true})
-    .then(application => application.serialize())
 }
 
 function handleApplicationFinish (req, res, handleError) {
@@ -79,32 +88,57 @@ function handleApplicationUpdate (req, res, handleError) {
     })
 }
 
-function getApplication (req, res, handleError) {
-  Application.where({userId: req.params.userId}).fetch()
-    .then(application => {
-      if (application) {
-        const applicationObject = formatApplicationObject(application.serialize())
-        return getTechPreferences(application.id).then(techPreferences => {
-          applicationObject.techPreferences = techPreferences
-          res.json(applicationObject)
-        })
-      } else {
-        handleError({status: 'Not Found'})
-      }
-    })
-    .catch(error => {
-      console.log(error)
-      handleError({status: 'Internal Server Error'})
-    })
+function verifyFinished (application) {
+  wireFormats.optionalFields
+  const emptyFields = []
+  for (let field in application) {
+    if (field === 'updatedAt' || field === 'finishedAt') continue
+    const response = application[field]
+    if ((response == null || response === '') && !wireFormats.optionalFields[field]) {
+      emptyFields.push(field)
+    }
+  }
+  return {
+    finished: emptyFields.length === 0,
+    errors: emptyFields
+  }
 }
 
-function putApplication (req, res, handleError) {
-  if (req.body.finished) {
-    delete req.body.finished
-    return handleApplicationFinish(req, res, handleError)
-  } else {
-    return handleApplicationUpdate(req, res, handleError)
+function updateApplication (userId, update) {
+  const application = Application.where({userId}).fetch()
+    .then(application => {
+      if (!application) {
+        return new Application({userId}).save()
+      }
+      return application
+    })
+  return (isEmpty(update)
+    ? application
+    : application.then(a => a.save(update, {patch: true})))
+    .then(application => application.serialize())
+}
+
+function formatApplicationObject (application) {
+  if (application.dateOfBirth instanceof Date) {
+    application.dateOfBirth = application.dateOfBirth.toISOString().substr(0, 10)
   }
+  return application
+}
+
+function finishApplication (application) {
+  const now = new Date().toJSON()
+  return Application.where('id', application.id).fetch()
+    .then(application => application.save({finishedAt: now}, {patch: true}))
+    .then(application => application.serialize())
+}
+
+function putTechPreferences (req, res, handleError) {
+  updateTechPreferences(req.user.id, req.body)
+    .then(techPreferences => { res.json(techPreferences) })
+    .catch(err => {
+      console.log(err)
+      handleError({status: 'Internal Server Error'})
+    })
 }
 
 function getTechPreferences (applicationId) {
@@ -117,18 +151,6 @@ function getTechPreferences (applicationId) {
         techPreferences[technology] = preference
       }
       return techPreferences
-    })
-}
-
-function saveTechPreference ({applicationId, technology, preference}, transaction) {
-  return TechPreference.where({applicationId, technology})
-    .fetch()
-    .then(row => {
-      if (row) {
-        return row.save({preference}, {patch: true, transacting: transaction})
-      } else {
-        return new TechPreference({applicationId, technology, preference}).save({}, {transacting: transaction})
-      }
     })
 }
 
@@ -153,27 +175,14 @@ function updateTechPreferences (userId, newPreferences) {
     })
 }
 
-function putTechPreferences (req, res, handleError) {
-  updateTechPreferences(req.user.id, req.body)
-    .then(techPreferences => { res.json(techPreferences) })
-    .catch(err => {
-      console.log(err)
-      handleError({status: 'Internal Server Error'})
+function saveTechPreference ({applicationId, technology, preference}, transaction) {
+  return TechPreference.where({applicationId, technology})
+    .fetch()
+    .then(row => {
+      if (row) {
+        return row.save({preference}, {patch: true, transacting: transaction})
+      } else {
+        return new TechPreference({applicationId, technology, preference}).save({}, {transacting: transaction})
+      }
     })
-}
-
-module.exports = function (app) {
-  app.get('/users/:userId/application', getApplication)
-
-  app.get('/me/application', authorized, (req, res, handleError) => {
-    res.redirect(`/users/${req.user.id}/application`)
-  })
-
-  app.put('/me/application',
-    authorized, validate(wireFormats.application),
-    putApplication)
-
-  app.put('/me/application/techpreferences',
-    authorized, validate(wireFormats.techPreferences),
-    putTechPreferences)
 }

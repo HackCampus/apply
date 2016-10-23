@@ -58,7 +58,7 @@ module.exports = Component({
     switch (type) {
       case 'authenticated': {
         const newModel = u({user: payload, readOnly: true}, model)
-        return {model: newModel, effect: action('fetchApplication', payload.id)}
+        return {model: newModel, effect: action('fetchApplication')}
       }
       case 'fetchApplicationSuccess': {
         const newModel = u({application: payload, readOnly: false}, model)
@@ -94,6 +94,7 @@ module.exports = Component({
       case 'saveApplicationSuccess': {
         const newModel = u({
           statusMessage: '',
+          application: payload,
         }, noErrors(model))
         return {model: newModel, effect: null}
       }
@@ -140,9 +141,8 @@ module.exports = Component({
         )
       }
       case 'fetchApplication': {
-        const userId = effect.payload
         return pull(
-          api.get(`/users/${userId}/application`),
+          api.get(`/me/application`),
           pull.map(({statusText, data}) => {
             switch (statusText) {
               case 'OK': return action('fetchApplicationSuccess', data)
