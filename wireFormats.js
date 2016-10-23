@@ -43,7 +43,6 @@ const personalDetails = {
     otherGraduationYear: {type: 'string'},
     cvUrl: {type: 'string', format: 'uri'},
     websiteUrl: {type: 'string'},
-    linkedinUrl: {type: 'string'},
     referer: {enum: ['friend', 'hackathon', 'campus event', 'Facebook', 'other']},
     refererDetail: {type: 'string'},
   }
@@ -55,7 +54,6 @@ const optionalFields = {
   otherYearOfStudy: true,
   otherGraduationYear: true,
   websiteUrl: true,
-  linkedinUrl: true,
   refererDetail: true,
 }
 

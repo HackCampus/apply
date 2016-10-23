@@ -3,6 +3,7 @@ exports.up = function (knex, Promise) {
     t.increments('id').unsigned().primary()
     t.dateTime('createdAt').notNull().defaultsTo(knex.fn.now())
     t.dateTime('updatedAt').nullable()
+    t.dateTime('finishedAt').nullable()
 
     t.integer('userId')
       .unsigned()
@@ -25,6 +26,17 @@ exports.up = function (knex, Promise) {
     t.string('otherYearOfStudy')
     t.string('graduationYear')
     t.string('otherGraduationYear')
+
+    t.string('cvUrl')
+    t.string('websiteUrl')
+
+    t.string('referer')
+    t.string('refererDetail')
+
+    t.text('bestProject')
+    t.text('mostExcitingTechnology')
+    t.text('applicationDesign')
+    t.text('codeReview')
   })
 }
 
