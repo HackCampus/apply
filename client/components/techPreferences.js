@@ -26,7 +26,7 @@ const techPreferences = Component({
     }
   },
   view (model, dispatch, children) {
-    const {application} = model
+    const {application, readOnly} = model
     return html`
       <div class="techpreferences">
         <p>Help us match you to the perfect role by telling us what your technologies of choice are.</p>
@@ -42,9 +42,11 @@ const techPreferences = Component({
           </tr>
           ${technologies.map(tech =>
             html`<tr class="field"><td>${tech}</td><td>${
-              children[tech](application
-                ? {startingValue: application.techPreferences[tech]}
-                : {})
+              application && readOnly
+                ? application.techPreferences[tech]
+                : children[tech](application
+                  ? {startingValue: application.techPreferences[tech]}
+                  : {})
             }</td></tr>`)}
         </table>
       </div>

@@ -9,9 +9,7 @@ module.exports = Component({
   children: {},
   init () {
     return {
-      model: {
-        // saveApplication: from parent
-      },
+      model: {},
       effect: null,
     }
   },
@@ -24,8 +22,18 @@ module.exports = Component({
   view (model, dispatch, children) {
     const {
       completed,
+      finished,
       finishApplication,
     } = model
+    if (finished) {
+      return html`
+        <div class="finishApplication">
+          <p>That's it! Thanks a lot for taking the time to complete the application.</p>
+          <p>We have received your application.</p>
+          <p>We will be in touch with you by the end of January latest, letting you know how your application went.</p>
+        </div>
+      `
+    }
     const isCompleted = (() => {
       for (let sectionName in completed) {
         const section = completed[sectionName]
@@ -40,7 +48,7 @@ module.exports = Component({
         <div class="finishApplication">
           <p>That's it! Thanks a lot for taking the time to complete the application.</p>
           <p>${link('Click here', finishApplication)} to finalise your application.</p>
-          <p>We will be in touch with you by the end of January latest, letting you know how your application went.</p>
+          <p><strong>You will not be able to edit your application once you have finalised it, so please double-check that everything is correct!</strong></p>
         </div>
       `
       : html`

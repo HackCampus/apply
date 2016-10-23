@@ -7,6 +7,7 @@ module.exports = (emptyValue = '') => ({
   init () {
     return {
       model: {
+        // readOnly: set by parent
         started: false,
         // startingValue: set by parent
         value: '',
@@ -23,7 +24,7 @@ module.exports = (emptyValue = '') => ({
     }
   },
   view (model, dispatch) {
-    const {started, startingValue} = model
+    const {readOnly, started, startingValue} = model
     let {value} = model
     if (!started) {
       value = startingValue
@@ -38,12 +39,16 @@ module.exports = (emptyValue = '') => ({
     })
     return html`
       <div class="markdownTextArea">
-        <div class="textareaContainer">
-          <textarea
-            oninput=${e => dispatch(e.target.value)}
-            onfocus=${() => !started && !startingValue && dispatch('')}
-          >${value}</textarea>
-        </div>
+        ${!readOnly
+          ? html`
+            <div class="textareaContainer">
+              <textarea
+                oninput=${e => dispatch(e.target.value)}
+                onfocus=${() => !started && !startingValue && dispatch('')}
+              >${value}</textarea>
+            </div>`
+          : ''
+        }
         <div class="previewContainer">${html(`<div class=preview>${renderedValue}</div>`)}</div>
       </div>
     `

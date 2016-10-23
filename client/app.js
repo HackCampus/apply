@@ -194,7 +194,6 @@ module.exports = Component({
       application,
       errorFields,
       errorMessage,
-      readOnly,
       statusMessage,
       user,
     } = model
@@ -207,6 +206,8 @@ module.exports = Component({
     const finishApplication = () =>
       dispatch(action('saveApplication', {finished: true}))
     const completed = this.getCompleted(model)
+    const finished = application && application.finishedAt != null
+    const readOnly = model.readOnly || finished
     // readOnly may be also set by the subcomponent - don't override it unless needed
     const props = readOnly
       ? {application, user, errorFields, readOnly}
@@ -220,6 +221,7 @@ module.exports = Component({
         ${section('step3', 'Step 3: Personal & technical questions', user ? children.questions(props) : '')}
         ${section('step4', 'Step 4: Finish your application', user ? children.finishApplication({
           completed,
+          finished,
           finishApplication,
         }) : '')}
         ${statusBar(statusMessage, errorMessage)}

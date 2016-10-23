@@ -36,12 +36,13 @@ const questions = Component({
     const {
       application,
       errorFields,
+      readOnly,
     } = model
     const question = (name, title, description) => html`
       <div class="question">
       <h3 class=${errorFields[name] ? 'error' : ''}>${title}</h3>
       ${description}
-      ${children[name]({startingValue: application && application[name]})}
+      ${children[name]({startingValue: application && application[name], readOnly})}
       </div>
       `
     return html`
