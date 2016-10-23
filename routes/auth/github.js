@@ -1,6 +1,6 @@
 const GitHubStrategy = require('passport-github2')
 
-const {User} = require('../../models')
+const {Authentication, User} = require('../../models')
 const config = require('../../../config')
 
 function setReturnTo (req, res, next) {
@@ -14,17 +14,32 @@ module.exports = (passport, app) => {
     clientSecret: config.github.clientSecret,
     callbackURL: `${config.host}/auth/github/callback`,
     scope: config.github.scope,
-  }, (accessToken, refreshToken, profile, done) => {
-    const {id, emails} = profile
+    passReqToCallback: true,
+  }, (req, accessToken, refreshToken, profile, done) => {
+    const {emails} = profile
     const email = emails[0].value // passport profile normalisation making things difficult...
-    User.createWithGithub(email, accessToken)
-      .then(user => done(null, user))
-      .catch(err => done(err))
+    if (req.user) {
+      Authentication.where({
+        type: 'github',
+        userId: req.user.id,
+      }).save({
+        identifier: email,
+        token: accessToken,
+      }, {patch: true})
+        .then(() => done(null, req.user))
+        .catch(err => done(err))
+    } else {
+      User.createWithToken(email, accessToken, 'github')
+        .then(user => done(null, user))
+        .catch(err => done(err))
+    }
   }))
 
-  app.get('/auth/github', setReturnTo, passport.authenticate('github'))
   app.get('/auth/github/callback', passport.authenticate('github', {
     successReturnToOrRedirect: '/',
     failureRedirect: '/',
   }))
+
+  app.get('/auth/github', setReturnTo, passport.authenticate('github'))
+  app.get('/connect/github', setReturnTo, passport.authorize('github'))
 }

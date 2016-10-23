@@ -84,9 +84,9 @@ User.createWithPassword = function (email, password) {
   return User.createWithAuthentication(email, authentication)
 }
 
-User.createWithGithub = function (email, accessToken) {
+User.createWithToken = function (email, accessToken, provider) {
   const authentication = {
-    type: 'github',
+    type: provider,
     identifier: email,
     token: accessToken,
   }
