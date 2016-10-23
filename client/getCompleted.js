@@ -4,7 +4,7 @@ module.exports = function getCompleted (model, application) {
   const completed = {}
   for (let field in model.children) {
     const {value, started} = model.children[field]
-    completed[field] = (started && !empty(value)) || !empty(application[field])
+    completed[field] = !empty(started ? value : application[field])
   }
   return completed
 }

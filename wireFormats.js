@@ -49,6 +49,16 @@ const personalDetails = {
   }
 }
 
+const optionalFields = {
+  otherUniversity: true,
+  otherCourseType: true,
+  otherYearOfStudy: true,
+  otherGraduationYear: true,
+  websiteUrl: true,
+  linkedinUrl: true,
+  refererDetail: true,
+}
+
 const questions = {
   type: 'object',
   properties: {
@@ -83,6 +93,7 @@ module.exports = {
   password,
   register,
   personalDetails,
+  optionalFields,
   questions,
   techPreferences,
   application,

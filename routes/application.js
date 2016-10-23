@@ -17,6 +17,7 @@ function updateApplication (userId, update) {
   if (isEmpty(update)) {
     return application
   } else {
+    update.updatedAt = new Date().toJSON()
     return application.then(a => a.save(update, {patch: true}))
   }
 }
@@ -28,14 +29,47 @@ function formatApplicationObject (application) {
   return application
 }
 
+function verifyFinished (application) {
+  wireFormats.optionalFields
+  const emptyFields = []
+  for (let field in application) {
+    const response = application[field]
+    if ((response == null || response === '') && !wireFormats.optionalFields[field]) {
+      emptyFields.push(field)
+    }
+  }
+  return {
+    finished: emptyFields.length === 0,
+    errors: emptyFields
+  }
+}
+
 function handleApplicationUpdate (req, res, handleError) {
-  updateApplication(req.user.id, req.body)
-    .then(application => formatApplicationObject(application.toJSON()))
-    .then(application => { res.json(application) })
-    .catch(err => {
-      console.log(err)
-      handleError({status: 'Internal Server Error'})
-    })
+  const success = application => {
+    res.json(formatApplicationObject(application.serialize()))
+  }
+  if (req.body.finished) {
+    delete req.body.finished
+    updateApplication(req.user.id, req.body)
+      .then(application => {
+        const {finished, errors} = verifyFinished(application.serialize())
+        if (finished) {
+          return success(application)
+        } else {
+          return handleError({
+            status: 'Bad Request',
+            error: {errors},
+          })
+        }
+      })
+  } else {
+    updateApplication(req.user.id, req.body)
+      .then(application => success(application))
+      .catch(err => {
+        console.log(err)
+        handleError({status: 'Internal Server Error'})
+      })
+  }
 }
 
 function getTechPreferences(applicationId) {

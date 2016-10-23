@@ -3,7 +3,7 @@ const isEmpty = require('lodash/isempty')
 const u = require('updeep')
 const extend = require('xtend')
 
-const action = (type, payload) => ({type, payload})
+const wireFormats = require('../wireFormats')
 
 const api = require('./api')
 const Component = require('./component')
@@ -19,6 +19,8 @@ const personalDetails = require('./components/personalDetails')
 const questions = require('./components/questions')
 const statusBar = require('./components/statusBar')
 const techPreferences = require('./components/techPreferences')
+
+const action = (type, payload) => ({type, payload})
 
 const noErrors = u({
   errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
@@ -78,7 +80,7 @@ module.exports = Component({
         }
         const techPreferencesResponses = getFormResponses(model.children.techPreferences)
         const questionsResponses = getFormResponses(model.children.questions)
-        const application = extend(personalDetailsResponses, questionsResponses)
+        const application = extend(personalDetailsResponses, questionsResponses, payload)
 
         const effect = [action('saveApplication', application)]
         if (!isEmpty(techPreferencesResponses)) {
@@ -202,8 +204,8 @@ module.exports = Component({
         <div>${content}</div>
       </div>
     `
-    const saveApplication = () =>
-      dispatch(action('saveApplication'))
+    const finishApplication = () =>
+      dispatch(action('saveApplication', {finished: true}))
     const completed = this.getCompleted(model)
     // readOnly may be also set by the subcomponent - don't override it unless needed
     const props = readOnly
@@ -217,7 +219,8 @@ module.exports = Component({
         ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
         ${section('step3', 'Step 3: Personal & technical questions', user ? children.questions(props) : '')}
         ${section('step4', 'Step 4: Finish your application', user ? children.finishApplication({
-          saveApplication
+          completed,
+          finishApplication,
         }) : '')}
         ${statusBar(statusMessage, errorMessage)}
         ${completedBar(completed)}
@@ -231,11 +234,9 @@ module.exports = Component({
       techPreferences: getCompleted(model.children.techPreferences, application.techPreferences),
       questions: getCompleted(model.children.questions, application),
     }
-    delete completed.personalDetails.contactEmail
-    delete completed.personalDetails.otherYearOfStudy
-    delete completed.personalDetails.otherGraduationYear
-    delete completed.personalDetails.otherCourseType
-    delete completed.personalDetails.otherUniversity
+    for (let field in wireFormats.optionalFields) {
+      delete completed.personalDetails[field]
+    }
     return completed
   },
 })
