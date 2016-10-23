@@ -7,10 +7,14 @@ module.exports = function (app) {
     .then(user => {
       user.related('authentication').fetch({columns: ['type']})
       .then(authMethods => {
+        const connectedAccounts = {}
+        authMethods.pluck('type').forEach(t => {
+          connectedAccounts[t] = true
+        })
         res.json({
           id: user.id,
           email: user.get('email'),
-          connectedAccounts: authMethods.pluck('type'),
+          connectedAccounts,
         })
       })
     })

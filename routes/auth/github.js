@@ -22,10 +22,22 @@ module.exports = (passport, app) => {
       Authentication.where({
         type: 'github',
         userId: req.user.id,
-      }).save({
-        identifier: email,
-        token: accessToken,
-      }, {patch: true})
+      }).fetch()
+        .then(auth => {
+          if (auth) {
+            return auth.save({
+              identifier: email,
+              token: accessToken,
+            }, {patch: true})
+          } else {
+            return new Authentication({
+              type: 'github',
+              userId: req.user.id,
+              identifier: email,
+              token: accessToken
+            }).save()
+          }
+        })
         .then(() => done(null, req.user))
         .catch(err => done(err))
     } else {

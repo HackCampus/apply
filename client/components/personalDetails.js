@@ -52,6 +52,7 @@ const personalDetails = Component({
   view (model, dispatch, children) {
     const {
       application, // fetched from the server
+      connect,
       errorFields,
       readOnly,
       user,
@@ -83,6 +84,8 @@ const personalDetails = Component({
       }
       return html`<div class="field"><span class=${labelClass}>${label}:</span> ${commentElement}<br />\xA0\xA0${fieldElement}</div>`
     }
+    const connectField = (provider, label) => html`
+    <div class="field"><span>${label}:</span><br />\xA0\xA0${user && user.connectedAccounts[provider] ? `connected :)` : link(`connect your account`, () => connect(provider))}</div>`
     return html`
       <div class="form">
         <h3>Basic information</h3>
@@ -105,7 +108,7 @@ const personalDetails = Component({
         <p>Please make sure your CV is publicly accessible and is up to date. Not having a working CV link will greatly reduce your chances of being accepted in the programme.</p>
         ${field('link to your CV', 'cvUrl')}
         ${field('website', 'websiteUrl', 'optional')}
-        ${field('LinkedIn', 'linkedinUrl', 'optional')}
+        ${connectField('github', 'GitHub')}
         ${model.errorMessage ? html`<div class="error">${model.errorMessage}</div>` : ''}
         <h3>Where did you find out about us?</h3>
         <p>If you were referred by a friend, or a previous HackCampus intern, we'd love to know their name. You obviously don't have to provide this if you or they don't want to!</p>

@@ -1,5 +1,6 @@
 const {pull, html} = require('inu')
 const isEmpty = require('lodash/isempty')
+const cat = require('pull-cat')
 const u = require('updeep')
 const extend = require('xtend')
 
@@ -92,6 +93,7 @@ module.exports = Component({
         return {model: newModel, effect}
       }
       case 'saveApplicationSuccess': {
+        console.log('save application success!')
         const newModel = u({
           statusMessage: '',
           application: payload,
@@ -124,6 +126,9 @@ module.exports = Component({
       case 'saveTechPreferencesError': {
         const newModel = serverError(model)
         return {model: newModel, effect: null}
+      }
+      case 'connect': {
+        return {model, effect: action('connect', payload)}
       }
       default:
         return {model, effect: null}
@@ -187,6 +192,13 @@ module.exports = Component({
           pull.map(() => action('saveApplication'))
         )
       }
+      case 'connect': {
+        // FIXME if the application hasn't saved on time, the latest data might be lost.
+        // how to dispatch 'saveApplication', wait for 'saveApplicationSuccess' and only
+        // then redirect?
+        const provider = effect.payload
+        window.location.href = `/connect/${provider}`
+      }
     }
   },
   view (model, dispatch, children) {
@@ -205,6 +217,8 @@ module.exports = Component({
     `
     const finishApplication = () =>
       dispatch(action('saveApplication', {finished: true}))
+    const connect = provider =>
+      dispatch(action('connect', provider))
     const completed = this.getCompleted(model)
     const finished = application && application.finishedAt != null
     const readOnly = model.readOnly || finished
@@ -216,7 +230,7 @@ module.exports = Component({
       <div class="apply">
         <h1>Apply to HackCampus</h1>
         ${section('step0', 'Step 0: Authenticate', children.authenticate())}
-        ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(props) : '')}
+        ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(extend(props, {connect})) : '')}
         ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
         ${section('step3', 'Step 3: Personal & technical questions', user ? children.questions(props) : '')}
         ${section('step4', 'Step 4: Finish your application', user ? children.finishApplication({
