@@ -3,6 +3,7 @@ const passport = require('passport')
 const {User} = require('../../models')
 
 const github = require('./github')
+const linkedin = require('./linkedin')
 const password = require('./password')
 
 module.exports = app => {
@@ -15,10 +16,11 @@ module.exports = app => {
 
   passport.deserializeUser((id, done) => {
     User.where('id', id).fetch()
-    .then(user => { done(null, user) })
-    .catch(err => { done(err) })
+      .then(user => { done(null, user) })
+      .catch(err => { done(err) })
   })
 
   github(passport, app)
+  linkedin(passport, app)
   password(passport, app)
 }

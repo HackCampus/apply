@@ -109,6 +109,7 @@ const personalDetails = Component({
         ${field('link to your CV', 'cvUrl')}
         ${field('website', 'websiteUrl', 'optional')}
         ${connectField('github', 'GitHub')}
+        ${connectField('linkedin', 'LinkedIn')}
         ${model.errorMessage ? html`<div class="error">${model.errorMessage}</div>` : ''}
         <h3>Where did you find out about us?</h3>
         <p>If you were referred by a friend, or a previous HackCampus intern, we'd love to know their name. You obviously don't have to provide this if you or they don't want to!</p>

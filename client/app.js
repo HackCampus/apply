@@ -1,6 +1,5 @@
 const {pull, html} = require('inu')
 const isEmpty = require('lodash/isempty')
-const cat = require('pull-cat')
 const u = require('updeep')
 const extend = require('xtend')
 
