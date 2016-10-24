@@ -6,6 +6,8 @@ exports.up = function(knex, Promise) {
 
     t.string('email').notNull().unique()
     t.index('email')
+
+    t.string('role').defaultsTo('applicant')
   })
 };
 
