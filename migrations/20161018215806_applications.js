@@ -35,7 +35,7 @@ exports.up = function (knex, Promise) {
 
     t.text('bestProject')
     t.text('mostExcitingTechnology')
-    t.text('applicationDesign')
+    t.text('implementation')
     t.text('codeReview')
   })
 }

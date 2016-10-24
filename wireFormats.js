@@ -62,7 +62,7 @@ const questions = {
   properties: {
     bestProject: {type: 'string'},
     mostExcitingTechnology: {type: 'string'},
-    applicationDesign: {type: 'string'},
+    implementation: {type: 'string'},
     codeReview: {type: 'string'},
   }
 }

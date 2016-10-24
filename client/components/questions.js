@@ -68,7 +68,7 @@ const questions = Component({
         )}
 
         ${question(
-          'applicationDesign',
+          'implementation',
           'Can you get from a vague idea to a working system?',
           html`<div>
           <p>Take a look at the following idea for a web app and tell us how you would implement it. The details are intentionally vague - in a startup environment, you often have to take initiative and come up with your own solutions to badly defined problems.</p>
