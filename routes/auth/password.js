@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const djangoHashers = require('node-django-hashers')
 const {Strategy: LocalStrategy} = require('passport-local')
 const status = require('statuses')
 
@@ -6,6 +7,8 @@ const errors = require('../../errors')
 const validateRequest = require('../../middlewares/validate')
 const {User} = require('../../models')
 const wireFormats = require('../../wireFormats')
+
+const djangoHasher = djangoHashers.getHasher('pbkdf2_sha256')
 
 module.exports = (passport, app) => {
   // Registration
@@ -37,12 +40,22 @@ module.exports = (passport, app) => {
       if (!passwordAuth) {
         return reject({status: 'Unauthorized', error: errors.noPassword})
       }
-      const hashedPassword = passwordAuth.get('token')
-      bcrypt.compare(password, hashedPassword, (err, passwordsMatch) => {
+
+      const done = (err, passwordsMatch) => {
         if (err) return reject({status: 'Unknown', error: err})
         if (!passwordsMatch) return resolve(false)
         return resolve(user)
-      })
+      }
+
+      const hashedPassword = passwordAuth.get('token')
+      if (hashedPassword.startsWith('pbkdf2_sha256')) {
+        // old users
+        const passwordsMatch = djangoHasher.verify(password, hashedPassword)
+        done(null, passwordsMatch)
+      } else {
+        // new users
+        bcrypt.compare(password, hashedPassword, done)
+      }
     }))
     .then(user => done(null, user))
     .catch(err => done(err))
