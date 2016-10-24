@@ -13,6 +13,11 @@ exports.up = function(knex, Promise) {
       .references('id')
       .inTable('users')
       .onDelete('cascade')
+
+    // each user should only have one connected account per provider
+    t.unique(['userId', 'type'])
+    // each provider account should not be associated to more than one user
+    t.unique(['type', 'identifier'])
   })
 };
 

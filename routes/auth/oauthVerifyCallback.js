@@ -26,10 +26,14 @@ module.exports = provider =>
           }
         })
         .then(() => done(null, req.user))
-        .catch(err => done(err))
+        .catch(error => {
+          if (error.constraint === 'authentication_type_identifier_unique') {
+            return done(null, false, {message: 'A different user has already connected this account - is it yours?'})
+          }
+        })
     } else {
       User.createWithToken(email, accessToken, provider)
         .then(user => done(null, user))
-        .catch(err => done(err))
+        .catch(error => done(error))
     }
   }

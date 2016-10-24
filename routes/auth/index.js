@@ -20,6 +20,10 @@ module.exports = app => {
       .catch(err => { done(err) })
   })
 
+  app.get('/auth/error', (req, res) => {
+    res.send('Authentication failed. If you tried to connect an account, check that you haven\'t already started another application with that account.')
+  })
+
   github(passport, app)
   linkedin(passport, app)
   password(passport, app)

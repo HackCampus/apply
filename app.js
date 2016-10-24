@@ -35,8 +35,8 @@ application(app)
 
 // single page app
 app.get('/', require('./shell'))
-app.use((req, res, handleError) => { handleError({status: 'Not Found'}) })
 
+app.use((req, res, handleError) => { handleError({status: 'Not Found'}) })
 app.use(errorHandler)
 
 const server = http.createServer(app)

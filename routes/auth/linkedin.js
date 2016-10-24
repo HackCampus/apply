@@ -17,7 +17,7 @@ module.exports = (passport, app) => {
 
   app.get('/auth/linkedin/callback', passport.authenticate('linkedin', {
     successReturnToOrRedirect: '/',
-    failureRedirect: '/',
+    failureRedirect: '/auth/error',
   }))
 
   app.get('/auth/linkedin', setReturnTo, passport.authenticate('linkedin'))
