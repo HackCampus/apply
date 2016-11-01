@@ -1,60 +1,45 @@
-# spec
+# Apply to HackCampus
 
-a user should be able to authenticate with email+password or github
-a user should not be able to register an account with an email that's already used
-a user has a single associated application (or none)
-applicant should be able to enter their application
-applicant should be able to start application without having registered
-'save' should prompt for user details
-application should be be associated with a single user
-email verification
+This is the web app that powers all the applications to HackCampus.
 
-# random
+## Dependencies
 
-undo/redo/saved state with hash of url
-can do anonymous editing with it
+- Node 6.3.x (the node version should be quite recent as we're using a couple of ES6 features)
+- PostgreSQL 9.5 (will probably work with older versions - we're only doing basic stuff)
 
-# todo
+## 1. Get the JS dependencies
 
-- [ ] oauth: linkedin, github
-- [ ] test in non-es6 env
+```
+npm install
+```
 
+## 2. Set up a local dev database
 
-# fields
+This is only tested on 9.5, but it should also work on older versions, we're not doing anything fancy.
 
-## contact details (private)
+Postgres stores all its data in a single directory, I would recommend putting it somewhere outside of the repo so that you don't accidentally commit it. In the following commands, this directory is called `db/`, but you can call it anything you want.
 
-username
-email
-password
-verified (hidden)
+```
+initdb -D db/
+postgres -D db/ # leave this running in a terminal while you run the other commands
+createuser hackcampus --createdb --login --host=localhost --port=5432
+createdb hackcampus --owner=hackcampus
+```
 
-## public profile
+Then, in the project directory, run:
 
-first name
-last name
-gender
-date of birth
-university
-course
-year of study: 3 of 4
-graduation year
-links:
-  - website: <a>http://lachenmayer.me</a>
-  - github: <a>https://github.com/lachenmayer</a>
-  - linkedin: <a>https://www.linkedin.com/in/harrylachenmayer</a>
-cv file upload
+```
+npm run migrate-latest
+```
 
+## 3. Run the backend
 
-# inu things
+```
+npm run develop-server
+```
 
-unclear in docs that state is {model, effect}
+## 4. Run the frontend
 
-
-json patch
-https://tools.ietf.org/html/rfc6902
-
-# dev db setup
-
-create role hackcampus with createdb login password 'hackcampus';
-create database hackcampus with owner hackcampus;
+```
+npm run develop-client
+```
