@@ -3,8 +3,8 @@ const {Authentication, User} = require('../../models')
 // make sure `passReqToCallback: true` in your strategy!
 module.exports = provider =>
   function oauthVerifyCallback (req, accessToken, refreshToken, profile, done) {
-    const {id} = profile
     if (req.user) {
+      const {id} = profile
       Authentication.where({
         type: provider,
         userId: req.user.id,
@@ -31,7 +31,9 @@ module.exports = provider =>
           }
         })
     } else {
-      User.createWithToken(email, accessToken, provider)
+      const {emails, id} = profile
+      const email = emails[0].value // passport profile normalisation making things difficult...
+      User.createWithToken(provider, email, id, accessToken)
         .then(user => done(null, user))
         .catch(error => done(error))
     }

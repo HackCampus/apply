@@ -49,6 +49,7 @@
     "nodemon": "^1.10.2",
     "passport": "^0.3.2",
     "passport-github2": "^0.1.10",
+    "passport-linkedin-oauth2": "^1.4.1",
     "passport-local": "^1.0.0",
     "pg": "^6.1.0",
     "pg-query-stream": "^1.0.0",

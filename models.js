@@ -84,10 +84,10 @@ User.createWithPassword = function (email, password) {
   return User.createWithAuthentication(email, authentication)
 }
 
-User.createWithToken = function (email, accessToken, provider) {
+User.createWithToken = function (provider, email, providerId, accessToken) {
   const authentication = {
     type: provider,
-    identifier: email,
+    identifier: providerId,
     token: accessToken,
   }
   return User.createWithAuthentication(email, authentication)
