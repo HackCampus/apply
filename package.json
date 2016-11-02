@@ -7,6 +7,8 @@
     "clean": "rm -rf build/",
     "develop-server": "./node_modules/.bin/nodemon --ignore build/ --ignore client/ app.js",
     "develop-client": "npm run clean && ./node_modules/.bin/nodemon --ext js,css --ignore build/ build.js",
+    "migrate-latest": "./node_modules/.bin/knex migrate:latest",
+    "migrate-rollback": "./node_modules/.bin/knex migrate:rollback",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
