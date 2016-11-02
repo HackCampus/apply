@@ -4,6 +4,7 @@ exports.up = function (knex, Promise) {
     t.dateTime('createdAt').notNull().defaultsTo(knex.fn.now())
     t.dateTime('updatedAt').nullable()
     t.dateTime('finishedAt').nullable()
+    t.integer('programmeYear').unsigned().notNull()
 
     t.integer('userId')
       .unsigned()

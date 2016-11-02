@@ -60,15 +60,17 @@ module.exports = Component({
         const newModel = u({user: payload, readOnly: true}, model)
         return {model: newModel, effect: action('fetchApplication')}
       }
-      case 'fetchApplicationSuccess': {
+      case 'fetchApplicationSuccess':
+      case 'createApplicationSuccess': {
         const newModel = u({application: payload, readOnly: false}, model)
         return {model: newModel, effect: action('autosave')}
       }
       case 'fetchApplicationNotFound': {
         const newModel = u({readOnly: false}, model)
-        return {model: newModel, effect: null}
+        return {model: newModel, effect: action('createApplication')}
       }
-      case 'fetchApplicationError': {
+      case 'fetchApplicationError':
+      case 'createApplicationError': {
         const newModel = serverError(newModel)
         return {model: newModel, effect: null}
       }
@@ -92,7 +94,6 @@ module.exports = Component({
         return {model: newModel, effect}
       }
       case 'saveApplicationSuccess': {
-        console.log('save application success!')
         const newModel = u({
           statusMessage: '',
           application: payload,
@@ -134,6 +135,10 @@ module.exports = Component({
     }
   },
   run (effect, sources, action) {
+    const get = (url, handler) =>
+      pull(api.get(url), pull.map(handler))
+    const put = (url, body, handler) =>
+      pull(api.put(url, body), pull.map(handler))
     switch (effect.type) {
       case 'waitForUser': {
         return pull(
@@ -144,42 +149,41 @@ module.exports = Component({
           pull.map(user => action('authenticated', user))
         )
       }
+      case 'createApplication': {
+        return put('/me/application', {}, ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('createApplicationSuccess', data)
+            default: return action('createApplicationError', data)
+          }
+        })
+      }
       case 'fetchApplication': {
-        return pull(
-          api.get(`/me/application`),
-          pull.map(({statusText, data}) => {
-            switch (statusText) {
-              case 'OK': return action('fetchApplicationSuccess', data)
-              case 'Not Found': return action('fetchApplicationNotFound', data)
-              default: return action('fetchApplicationError', data)
-            }
-          })
-        )
+        return get('/me/application', ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('fetchApplicationSuccess', data)
+            case 'Not Found': return action('fetchApplicationNotFound', data)
+            default: return action('fetchApplicationError', data)
+          }
+        })
       }
       case 'saveApplication': {
         const application = effect.payload
-        return pull(
-          api.put('/me/application', application),
-          pull.map(({statusText, data}) => {
-            switch (statusText) {
-              case 'OK': return action('saveApplicationSuccess', data)
-              case 'Bad Request': return action('saveApplicationUserError', data)
-              default: return action('saveApplicationError', data)
-            }
-          })
-        )
+        return put('/me/application', application, ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('saveApplicationSuccess', data)
+            case 'Bad Request': return action('saveApplicationUserError', data)
+            default: return action('saveApplicationError', data)
+          }
+        })
       }
       case 'saveTechPreferences': {
         const techPreferences = effect.payload
-        return pull(
-          api.put('/me/application/techpreferences', techPreferences),
-          pull.map(({statusText, data}) => {
-            switch (statusText) {
-              case 'OK': return action('saveTechPreferencesSuccess', data)
-              default: return action('saveTechPreferencesError', data)
-            }
-          })
-        )
+        return put('/me/application/techpreferences', techPreferences, ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('saveTechPreferencesSuccess', data)
+            default: return action('saveTechPreferencesError', data)
+          }
+        })
       }
       case 'autosave': {
         return pull(

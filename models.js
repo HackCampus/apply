@@ -44,7 +44,7 @@ const User = bookshelf.Model.extend({
   },
 
   application: function () {
-    return this.hasOne(Application, 'userId')
+    return this.hasMany(Application, 'userId')
   },
 })
 

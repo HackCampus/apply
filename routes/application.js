@@ -1,5 +1,7 @@
 const isEmpty = require('lodash/isempty')
 
+const constants = require('../constants')
+
 const authorized = require('../middlewares/authorized')
 const validate = require('../middlewares/validate')
 
@@ -9,7 +11,7 @@ const wireFormats = require('../wireFormats')
 module.exports = function (app) {
   app.get('/me/application',
     authorized,
-    getApplication(true))
+    getApplication)
 
   app.put('/me/application',
     authorized, validate(wireFormats.application),
@@ -20,34 +22,29 @@ module.exports = function (app) {
     putTechPreferences)
 }
 
-function getApplication (createNew = false) {
-  return function (req, res, handleError) {
-    const userId = req.user.id
-    Application.where({userId}).fetch()
-      .then(application => {
-        if (application) return application
-        if (createNew) {
-          return new Application({userId}).save()
-        } else {
-          throw {status: 'Not Found'}
-        }
-      })
-      .then(application => {
-        const applicationObject = formatApplicationObject(application.serialize())
-        return getTechPreferences(application.id).then(techPreferences => {
-          applicationObject.techPreferences = techPreferences
-          res.json(applicationObject)
-        })
-      })
-      .catch(error => {
-        if (error instanceof Error) {
-          console.log(error)
-          handleError({status: 'Internal Server Error'})
-        } else {
-          handleError(error)
-        }
-      })
-  }
+// Application - handlers
+
+function getApplication (req, res, handleError) {
+  const userId = req.user.id
+  Application.where({userId, programmeYear: constants.programmeYear}).fetch()
+    .then(application => {
+      if (application) return application
+      // There was no application from this year, but there might be one from a previous year.
+      return Application.where({userId}).fetch()
+    })
+    .then(application => {
+      if (application) return application
+      throw {status: 'Not Found'}
+    })
+    .then(sendApplication(res))
+    .catch(error => {
+      if (error instanceof Error) {
+        console.log(error)
+        handleError({status: 'Internal Server Error'})
+      } else {
+        handleError(error)
+      }
+    })
 }
 
 function putApplication (req, res, handleError) {
@@ -65,7 +62,7 @@ function handleApplicationFinish (req, res, handleError) {
       const {finished, errors} = verifyFinished(application)
       if (finished) {
         return finishApplication(application)
-          .then(application => res.json(formatApplicationObject(application)))
+          .then(sendApplication(res))
       } else {
         return handleError({
           status: 'Bad Request',
@@ -81,12 +78,14 @@ function handleApplicationFinish (req, res, handleError) {
 
 function handleApplicationUpdate (req, res, handleError) {
   return updateApplication(req.user.id, req.body)
-    .then(application => res.json(formatApplicationObject(application)))
+    .then(sendApplication(res))
     .catch(err => {
       console.log(err)
       handleError({status: 'Internal Server Error'})
     })
 }
+
+// Application - helpers
 
 function verifyFinished (application) {
   wireFormats.optionalFields
@@ -106,16 +105,16 @@ function verifyFinished (application) {
 
 function updateApplication (userId, update) {
   const application = Application.where({userId}).fetch()
-    .then(application => {
-      if (!application) {
-        return new Application({userId}).save()
-      }
-      return application
-    })
-  return (isEmpty(update)
+    .then(upsertApplication(userId))
+  return isEmpty(update)
     ? application
-    : application.then(a => a.save(update, {patch: true})))
-    .then(application => application.serialize())
+    : application.then(a => a.save(update, {patch: true}))
+}
+
+function finishApplication (application) {
+  const now = new Date().toJSON()
+  return Application.where('id', application.id).fetch()
+    .then(application => application.save({finishedAt: now}, {patch: true}))
 }
 
 function formatApplicationObject (application) {
@@ -125,12 +124,24 @@ function formatApplicationObject (application) {
   return application
 }
 
-function finishApplication (application) {
-  const now = new Date().toJSON()
-  return Application.where('id', application.id).fetch()
-    .then(application => application.save({finishedAt: now}, {patch: true}))
-    .then(application => application.serialize())
+function upsertApplication (userId) {
+  return application => {
+    if (application) return application
+    return new Application({userId, programmeYear: constants.programmeYear}).save()
+  }
 }
+
+function sendApplication (res) {
+  return application => {
+    const applicationObject = formatApplicationObject(application.serialize())
+    return getTechPreferences(application.id).then(techPreferences => {
+      applicationObject.techPreferences = techPreferences
+      res.json(applicationObject)
+    })
+  }
+}
+
+// Tech preferences - handlers
 
 function putTechPreferences (req, res, handleError) {
   updateTechPreferences(req.user.id, req.body)
@@ -140,6 +151,8 @@ function putTechPreferences (req, res, handleError) {
       handleError({status: 'Internal Server Error'})
     })
 }
+
+// Tech preferences - helpers
 
 function getTechPreferences (applicationId) {
   return TechPreference.where({applicationId}).fetchAll()
