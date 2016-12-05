@@ -1,4 +1,5 @@
 const isEmpty = require('lodash/isempty')
+const extend = require('xtend')
 
 const constants = require('../constants')
 
@@ -26,7 +27,7 @@ module.exports = function (app) {
 
 function getApplication (req, res, handleError) {
   const userId = req.user.id
-  Application.where({userId, programmeYear: constants.programmeYear}).fetch()
+  fetchCurrentApplication(userId)
     .then(application => {
       if (application) return application
       // There was no application from this year, but there might be one from a previous year.
@@ -59,7 +60,7 @@ function putApplication (req, res, handleError) {
 function handleApplicationFinish (req, res, handleError) {
   return updateApplication(req.user.id, req.body)
     .then(application => {
-      const {finished, errors} = verifyFinished(application)
+      const {finished, errors} = verifyFinished(application.toJSON())
       if (finished) {
         return finishApplication(application)
           .then(sendApplication(res))
@@ -87,8 +88,11 @@ function handleApplicationUpdate (req, res, handleError) {
 
 // Application - helpers
 
+// Checks that none of the required fields are empty in the given application.
+// This is a hack to work around the fact that the JSON schema (in wireFormats.js)
+// does not have any required fields set, as we want to do partial updates.
+// Terrible solution - should find a better way.
 function verifyFinished (application) {
-  wireFormats.optionalFields
   const emptyFields = []
   for (let field in application) {
     if (field === 'updatedAt' || field === 'finishedAt') continue
@@ -103,12 +107,41 @@ function verifyFinished (application) {
   }
 }
 
+// Updates the fields passed in the `update` parameter in the application
+// corresponding to the user `userId`.
+// If there is no application, or the application is from a previous year,
+// a new application is created for this year.
 function updateApplication (userId, update) {
-  const application = Application.where({userId}).fetch()
+  const application = fetchCurrentApplication(userId)
+    .then(application => {
+      if (application) return application
+      return createApplicationFromPreviousYear(userId)
+    })
     .then(upsertApplication(userId))
   return isEmpty(update)
     ? application
     : application.then(a => a.save(update, {patch: true}))
+}
+
+// Fetches an application from this year only.
+function fetchCurrentApplication (userId) {
+  return Application.where({userId, programmeYear: constants.programmeYear}).fetch()
+}
+
+// Creates a copy of a previous year's application.
+function createApplicationFromPreviousYear(userId) {
+  return Application.where({userId}).orderBy('programmeYear', 'DESC').fetch()
+    .then(application => {
+      if (!application) return null
+      const now = new Date().toJSON()
+      const newApplication = extend(application.toJSON(), {
+        programmeYear: constants.programmeYear,
+        finishedAt: null,
+      })
+      // so bad... if we don't remove the id, we'll update the current application rather than creating a new one.
+      delete newApplication.id
+      return new Application(newApplication).save()
+    })
 }
 
 function finishApplication (application) {
@@ -168,7 +201,7 @@ function getTechPreferences (applicationId) {
 }
 
 function updateTechPreferences (userId, newPreferences) {
-  return Application.where({userId}).fetch()
+  return fetchCurrentApplication(userId)
     .then(maybeApplication => {
       if (!maybeApplication) {
         throw new Error('no application for user with id ' + userId)

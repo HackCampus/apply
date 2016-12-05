@@ -3,6 +3,7 @@ const isEmpty = require('lodash/isempty')
 const u = require('updeep')
 const extend = require('xtend')
 
+const constants = require('../constants')
 const wireFormats = require('../wireFormats')
 
 const api = require('./api')
@@ -223,7 +224,8 @@ module.exports = Component({
     const connect = provider =>
       dispatch(action('connect', provider))
     const completed = this.getCompleted(model)
-    const finished = application && application.finishedAt != null
+    const oldApplication = application && application.programmeYear !== constants.programmeYear
+    const finished = application && application.finishedAt != null && !oldApplication // people should be able to edit old applications, so that they can re-apply for this year
     const readOnly = model.readOnly || finished
     // readOnly may be also set by the subcomponent - don't override it unless needed
     const props = readOnly
