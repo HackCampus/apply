@@ -34,7 +34,7 @@ module.exports = (emptyValue = '') => ({
     // FIXME hackhackhackhack
     // bel for some reason does not like hrefs wrapped in ""s...?
     // to reproduce: html('<a href="foo"></a>')
-    const renderedValue = markdown.render(value).replace(/href="(.+)"/, function (_, link) {
+    const renderedValue = markdown.render(value).replace(/href="(.+)"/g, function (_, link) {
       return `href=${link}`
     })
     return html`
