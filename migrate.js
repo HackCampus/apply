@@ -39,10 +39,19 @@ const createApplication = (userId, user, application) => {
   if (gender !== 'male' && gender !== 'female') {
     gender = 'other'
   }
+
+  const programmeYear =
+    application.is_old_applicant
+      ? 2015
+      : user.date_joined < new Date('2016-06-01')
+        ? 2016
+        : 2017
+
   return new Application({
     userId,
     createdAt: user.date_joined,
     finishedAt: application.end_time,
+    programmeYear,
     firstName: application.first_name,
     lastName: application.last_name,
     contactEmail: user.email,
