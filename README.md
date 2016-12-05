@@ -4,7 +4,7 @@ This is the web app that powers all the applications to HackCampus.
 
 ## Dependencies
 
-- Node 6.3.x (the node version should be quite recent as we're using a couple of ES6 features)
+- Node 6.x.x (the node version should be quite recent as we're using a couple of ES6 features)
 - PostgreSQL 9.5 (will probably work with older versions - we're only doing basic stuff)
 
 ## 1. Get the JS dependencies
