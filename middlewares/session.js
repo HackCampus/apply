@@ -23,5 +23,6 @@ function memoryStore () {
 
 module.exports = function () {
   const redisUrl = env.redisUrl
+  console.log(redisUrl)
   return redisUrl == null ? memoryStore() : redisStore(redisUrl)
 }
