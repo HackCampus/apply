@@ -1,4 +1,10 @@
+const env = require('../../env')
+
 module.exports = function setReturnTo (req, res, next) {
-  req.session.returnTo = req.headers.referer
+  if (req.session) {
+    req.session.returnTo = req.headers.referer
+  } else {
+    return res.redirect(env.host)
+  }
   next()
 }

@@ -14,7 +14,7 @@ module.exports = {
 
   // sessions
   sessionSecret: env('SESSION_SECRET'), // express-session
-  redisUrl: production && env('REDIS_URL'), // store sessions in memory during development
+  redisUrl: production ? env('REDIS_URL') : null, // store sessions in memory during development
 
   // Knex env
   database: {
