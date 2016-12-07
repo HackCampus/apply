@@ -16,6 +16,8 @@ const source = require('vinyl-source-stream')
 
 const build = 'build'
 
+const development = process.env.NODE_ENV === 'development'
+
 gulp.task('app', () => {
   mkdirp.sync(build)
   return browserify({
@@ -24,10 +26,10 @@ gulp.task('app', () => {
     debug: true,
   })
   .transform(babelify, {presets: ['es2015']})
-  // .transform(uglifyify, {global: true})
+  .transform(uglifyify, {global: true})
   .bundle()
   .on('error', e => {
-    exec(`osascript -e 'display notification "${e.message}" with title "hackcampus"'`)
+    development && exec(`osascript -e 'display notification "${e.message}" with title "hackcampus"'`)
     throw e
   })
   .pipe(exorcist(path.join(build, 'app.js.map')))
@@ -44,7 +46,7 @@ gulp.task('styles', () =>
 )
 
 gulp.task('default', ['app', 'styles'], () => {
-  exec(`osascript -e 'display notification "build finished" with title "hackcampus"'`)
+  development && exec(`osascript -e 'display notification "build finished" with title "hackcampus"'`)
 })
 
 gulp.start.call(gulp, 'default')
