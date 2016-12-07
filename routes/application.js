@@ -1,4 +1,4 @@
-const isEmpty = require('lodash/isempty')
+const isEmpty = require('lodash.isempty')
 const extend = require('xtend')
 
 const constants = require('../constants')

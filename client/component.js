@@ -1,5 +1,5 @@
 // TODO: children as array (polymorphic map)
-const mapValues = require('lodash/mapvalues')
+const mapValues = require('lodash.mapvalues')
 const pullMany = require('pull-many')
 const u = require('updeep')
 const extend = require('xtend')

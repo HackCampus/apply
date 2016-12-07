@@ -1,6 +1,6 @@
 const {html, pull} = require('inu')
-const isEmpty = require('lodash/isempty')
-const mapValues = require('lodash/mapvalues')
+const isEmpty = require('lodash.isempty')
+const mapValues = require('lodash.mapvalues')
 const u = require('updeep')
 const extend = require('xtend')
 
