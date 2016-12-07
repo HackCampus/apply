@@ -109,6 +109,21 @@ const questions = Component({
           </ul>
           </div>`
         )}
+
+        ${question(
+          'perfectRole',
+          'What would your perfect role look like?',
+          html`<div>
+          <p>We want to find the perfect role for you this summer. We will attempt to match you with companies based on the technologies you have mentioned, as well as the answers you have given in the rest of the questionnaire. This is an opportunity for us to give us some more information on what you would really want to do, for example:</p>
+          <ul>
+            <li>Do you prefer to work on the frontend or backend? Or something different altogether?</li>
+            <li>Is there a specific technology you really want to work with?</li>
+            <li>Is there anything you definitely do not want to do?</li>
+            <li>Did a specific company really catch your eye?</li>
+          </ul>
+          <p>Of course, if you're not fussy, you don't have to answer this question.</p>
+          </div>`
+        )}
       </div>
     `
   },

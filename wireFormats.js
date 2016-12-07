@@ -64,6 +64,7 @@ const questions = {
     mostExcitingTechnology: {type: 'string'},
     implementation: {type: 'string'},
     codeReview: {type: 'string'},
+    perfectRole: {type: 'string'},
   }
 }
 
