@@ -16,7 +16,7 @@ const source = require('vinyl-source-stream')
 
 const build = 'build'
 
-const development = process.env.NODE_ENV === 'development'
+const development = process.env.NODE_ENV !== 'production'
 
 gulp.task('app', () => {
   mkdirp.sync(build)
@@ -26,7 +26,7 @@ gulp.task('app', () => {
     debug: true,
   })
   .transform(babelify, {presets: ['es2015']})
-  .transform(uglifyify, {global: true})
+  // .transform(uglifyify, {global: true})
   .bundle()
   .on('error', e => {
     development && exec(`osascript -e 'display notification "${e.message}" with title "hackcampus"'`)

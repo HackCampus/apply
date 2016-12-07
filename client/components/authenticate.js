@@ -194,10 +194,11 @@ module.exports = Component({
             onEnter: register,
             confirmValue: passwordField.value
           }))}
-          <div>${model.error === errors.emailTaken ? html`
-            <span class="error">An application has already been started with this email address.
-            Do you want to try <a onclick=${() => dispatch(action('select', tabs.existingApplication))}>logging in with this email address?</a>
-            </span>` : ''}
+          <div>
+            ${model.error === errors.emailTaken ? html`
+              <span class="error">An application has already been started with this email address.
+              Do you want to try <a onclick=${() => dispatch(action('select', tabs.existingApplication))}>logging in with this email address?</a>
+              </span>` : ''}
           </div>
         </div>
         <div>${link('Register with email/password', register, {class: valid ? 'enabled' : 'disabled'})}</div>
@@ -218,6 +219,11 @@ module.exports = Component({
         <div class="entry">
           ${field('email', children.email({onEnter: login}))}
           ${field('password', children.password({onEnter: login}))}
+          <div>
+            ${model.error === errors.loginIncorrect ? html`
+              <span class="error">Your login details are incorrect. :(</span>
+              ` : ''}
+          </div>
         </div>
         <div>${link('Log in with email/password', login, {class: valid ? 'enabled' : 'disabled'})}</div>
       </div>

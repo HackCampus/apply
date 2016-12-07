@@ -35,6 +35,9 @@ module.exports = (passport, app) => {
     User.where('email', email)
     .fetch({withRelated: ['authentication']})
     .then(user => new Promise((resolve, reject) => {
+      if (user == null) {
+        return reject({status: 'Unauthorized', error: errors.loginIncorrect})
+      }
       const auth = user.related('authentication')
       const passwordAuth = auth.findWhere({type: 'password'})
       if (!passwordAuth) {
