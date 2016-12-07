@@ -13,14 +13,8 @@ module.exports = {
 
   // Knex env
   database: {
-    client: env('DB_CLIENT'),
-    connection: {
-      host: env('DB_HOST'),
-      user: env('DB_USER'),
-      password: env('DB_PASSWORD'),
-      database: env('DB_NAME'),
-      charset: 'utf8',
-    },
+    client: env('DATABASE_CLIENT'),
+    connection: env('DATABASE_URL'),
     migrations: {
       tableName: env('MIGRATIONS_TABLENAME'),
     },
