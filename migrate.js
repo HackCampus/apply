@@ -6,7 +6,16 @@ const toStream = require('pull-stream-to-stream')
 const env = require('./env')
 
 const {Database, Authentication, User, Application} = require('./models')
-const oldDb = knex(env.oldDatabase)
+const oldDb = knex({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    user: 'harry',
+    password: '',
+    database: 'old',
+    charset: 'utf8',
+  },
+})
 
 const log = (x, ...messages) => {console.log(...messages, x); return x}
 
