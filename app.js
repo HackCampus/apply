@@ -1,12 +1,12 @@
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const express = require('express')
-const session = require('express-session')
 const http = require('http')
 const morgan = require('morgan')
 const path = require('path')
 
 const errorHandler = require('./middlewares/errors')
+const session = require('./middlewares/session')
 
 const application = require('./routes/application')
 const auth = require('./routes/auth')
@@ -18,11 +18,7 @@ const port = process.env.PORT || 3000
 const app = express()
 
 app.use(morgan('dev'))
-app.use(session({
-  secret: env.sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-}))
+app.use(session())
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use('/static', express.static(path.join(__dirname, 'build')))
