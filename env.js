@@ -1,16 +1,12 @@
 require('localenv')
 
-function env (varName) {
-  const value = process.env[varName]
-  if (value == null) console.warn(`warning: expected environment variable ${varName} to be set.`)
-  return value
-}
+const {env, envNumber} = require('./envHelpers')
 
 const production = process.env.NODE_ENV === 'production'
 
 module.exports = {
   host: env('HOST'),
-  saltRounds: env('BCRYPT_SALT_ROUNDS'), // bcrypt
+  saltRounds: envNumber('BCRYPT_SALT_ROUNDS'),
 
   // sessions
   sessionSecret: env('SESSION_SECRET'), // express-session

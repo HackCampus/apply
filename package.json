@@ -14,7 +14,7 @@
     "develop-client": "npm run clean && nodemon --ext js,css --ignore build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava --timeout=5s"
   },
   "author": "",
   "license": "ISC",
@@ -73,6 +73,7 @@
   },
   "devDependencies": {
     "ava": "^0.16.0",
-    "hippie": "^0.5.0"
+    "hippie": "^0.5.0",
+    "sinon": "^1.17.6"
   }
 }

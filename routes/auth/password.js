@@ -46,7 +46,7 @@ module.exports = (passport, app) => {
 
       const done = (err, passwordsMatch) => {
         if (err) return reject({status: 'Unknown', error: err})
-        if (!passwordsMatch) return resolve(false)
+        if (!passwordsMatch) return reject({status: 'Unauthorized', error: errors.loginIncorrect})
         return resolve(user)
       }
 
