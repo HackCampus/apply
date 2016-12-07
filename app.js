@@ -12,14 +12,14 @@ const application = require('./routes/application')
 const auth = require('./routes/auth')
 const user = require('./routes/user')
 
-const config = require('../config')
+const env = require('./env')
 
 const port = process.env.PORT || 3000
 const app = express()
 
 app.use(morgan('dev'))
 app.use(session({
-  secret: config.sessionSecret,
+  secret: env.sessionSecret,
   resave: false,
   saveUninitialized: false,
 }))

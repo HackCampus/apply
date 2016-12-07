@@ -3,7 +3,7 @@ const {promisify} = require('bluebird')
 const Bookshelf = require('bookshelf')
 const Knex = require('knex')
 
-const config = require('../config')
+const env = require('./env')
 const knexConfig = require('./knexfile')
 
 const knex = Knex(knexConfig)
@@ -28,7 +28,7 @@ const User = bookshelf.Model.extend({
   },
   createPasswordAuthentication: function (authentication, transaction) {
     const {type, identifier, token} = authentication
-    return genSalt(config.saltRounds)
+    return genSalt(env.saltRounds)
       .then(salt => hash(token, salt))
       .then(hash =>
         new Authentication({

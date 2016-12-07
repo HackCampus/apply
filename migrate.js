@@ -3,10 +3,10 @@ const pullPromise = require('pull-promise')
 const pull = require('pull-stream')
 const toStream = require('pull-stream-to-stream')
 
-const config = require('../config')
+const env = require('./env')
 
 const {Database, Authentication, User, Application} = require('./models')
-const oldDb = knex(config.oldDatabase)
+const oldDb = knex(env.oldDatabase)
 
 const log = (x, ...messages) => {console.log(...messages, x); return x}
 

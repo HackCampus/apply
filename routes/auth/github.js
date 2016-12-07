@@ -1,16 +1,16 @@
 const GitHubStrategy = require('passport-github2')
 
-const config = require('../../../config')
+const env = require('../../env')
 
 const setReturnTo = require('./setReturnTo')
 const verify = require('./oauthVerifyCallback')
 
 module.exports = (passport, app) => {
   passport.use(new GitHubStrategy({
-    clientID: config.github.clientId,
-    clientSecret: config.github.clientSecret,
-    callbackURL: `${config.host}/auth/github/callback`,
-    scope: config.github.scope,
+    clientID: env.github.clientId,
+    clientSecret: env.github.clientSecret,
+    callbackURL: `${env.host}/auth/github/callback`,
+    scope: env.github.scope,
     passReqToCallback: true,
   }, verify('github')))
 

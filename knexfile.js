@@ -1,2 +1,2 @@
-const config = require('../config')
-module.exports = config.database
+const env = require('./env')
+module.exports = env.database

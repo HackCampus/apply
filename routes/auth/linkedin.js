@@ -1,16 +1,16 @@
 const LinkedInStrategy = require('passport-linkedin-oauth2').Strategy
 
-const config = require('../../../config')
+const env = require('../../env')
 
 const setReturnTo = require('./setReturnTo')
 const verify = require('./oauthVerifyCallback')
 
 module.exports = (passport, app) => {
   passport.use(new LinkedInStrategy({
-    clientID: config.linkedin.clientId,
-    clientSecret: config.linkedin.clientSecret,
-    callbackURL: `${config.host}/auth/linkedin/callback`,
-    scope: config.linkedin.scope,
+    clientID: env.linkedin.clientId,
+    clientSecret: env.linkedin.clientSecret,
+    callbackURL: `${env.host}/auth/linkedin/callback`,
+    scope: env.linkedin.scope,
     passReqToCallback: true,
     state: true, // required by linkedin, see https://github.com/auth0/passport-linkedin-oauth2#auto-handle-state-param
   }, verify('linkedin')))
