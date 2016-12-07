@@ -1,2 +1,2 @@
-web: npm run server
+web: npm start
 migrate: npm run migrate-latest

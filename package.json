@@ -1,5 +1,5 @@
 {
-  "name": "hackers.hackcampus.io",
+  "name": "hackcampus-apply",
   "version": "1.0.0",
   "description": "Internship applications for HackCampus",
   "main": "app.js",
@@ -9,7 +9,6 @@
   },
   "scripts": {
     "clean": "rm -rf build/",
-    "server": "node app.js",
     "develop-server": "./node_modules/.bin/nodemon --ignore build/ --ignore client/ app.js",
     "develop-client": "npm run clean && ./node_modules/.bin/nodemon --ext js,css --ignore build/ build.js",
     "migrate-latest": "./node_modules/.bin/knex migrate:latest",
