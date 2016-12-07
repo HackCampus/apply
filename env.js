@@ -6,10 +6,15 @@ function env (varName) {
   return value
 }
 
+const production = process.env.NODE_ENV === 'production'
+
 module.exports = {
   host: env('HOST'),
   saltRounds: env('BCRYPT_SALT_ROUNDS'), // bcrypt
+
+  // sessions
   sessionSecret: env('SESSION_SECRET'), // express-session
+  redisUrl: production && env('REDIS_URL'), // store sessions in memory during development
 
   // Knex env
   database: {

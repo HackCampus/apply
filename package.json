@@ -30,6 +30,7 @@
     "bookshelf": "^0.10.0",
     "browserify": "^13.1.0",
     "classnames": "^2.2.5",
+    "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",
     "css-modulesify": "^0.25.1",
     "cssnano": "^3.7.4",
