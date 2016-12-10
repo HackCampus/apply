@@ -5,7 +5,7 @@ const status = require('statuses')
 
 const errors = require('../../errors')
 const validateRequest = require('../../middlewares/validate')
-const {User} = require('../../database')
+const {errors: {DuplicateEmail}, User} = require('../../database')
 const wireFormats = require('../../wireFormats')
 
 const djangoHasher = djangoHashers.getHasher('pbkdf2_sha256')
@@ -20,7 +20,7 @@ module.exports = (passport, app) => {
     User.createWithPassword(email, password)
     .then(user => { res.status(status('Created')).json(user.toJSON()) })
     .catch(error => {
-      if (error.constraint === 'users_email_unique') { /*1*/
+      if (error instanceof DuplicateEmail) { /*1*/
         return handleError({status: 'Conflict', error: errors.emailTaken})
       }
       return handleError({status: 'Unknown', error})

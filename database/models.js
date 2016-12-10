@@ -14,6 +14,7 @@ module.exports = function (knexInstance) {
     AuthenticationTypeError: class AuthenticationTypeError extends Error {},
     AuthenticationNotImplemented: class AuthenticationNotImplemented extends Error {},
     DuplicateKey: class DuplicateKey extends Error {},
+    DuplicateEmail: class DuplicateEmail extends Error {},
   }
 
   const User = bookshelf.Model.extend({
@@ -21,15 +22,15 @@ module.exports = function (knexInstance) {
     hasTimeStamps: ['createdAt', 'updatedAt'],
 
     // relations
-    authentication: function () {
+    authentication () {
       return this.hasMany(Authentication, 'userId')
     },
-    application: function () {
+    application () {
       return this.hasMany(Application, 'userId')
     },
 
     // convenience methods
-    createAuthentication: function (authentication, transaction) {
+    createAuthentication (authentication, transaction) {
       const {type, token, identifier} = authentication
       if (type == null || token == null || identifier == null) {
         throw new errors.AuthenticationTypeError(`authentication object needs to be of shape {type, token, identifier}`)
@@ -56,6 +57,17 @@ module.exports = function (knexInstance) {
         type, identifier, token, userId: this.id,
       }).save(null, {transacting: transaction})
     },
+
+    updateAuthentication (authentication, transaction) {
+      const auth = this.related('authentication')
+      const existingAuthentication = auth.findWhere({userId: this.id, type: authentication.type})
+      if (existingAuthentication) {
+        return existingAuthentication
+          .save(authentication, {patch: true, transacting: transaction})
+      } else {
+        return this.createAuthentication(authentication, transaction)
+      }
+    }
   })
 
   User.createWithAuthentication = function (email, authentication) {
@@ -63,27 +75,18 @@ module.exports = function (knexInstance) {
       new User({email})
         .save(null, {transacting: transaction})
         .tap(user => user.createAuthentication(authentication, transaction))
+        .catch(error => {
+          switch (error.constraint) {
+            case 'users_email_unique':
+              throw new errors.DuplicateEmail()
+            case 'authentication_type_identifier_unique':
+              throw new errors.DuplicateKey()
+            default:
+              throw error
+          }
+        })
         .then(transaction.commit)
         .catch(transaction.rollback)
-    )
-  }
-
-  User.updateAuthentication = function (email, authentication) {
-    return bookshelf.transaction(transaction =>
-      User.where('email', email).fetch({
-        withRelated: ['authentication'],
-        transacting: transaction,
-      }).then(user => {
-        const auth = user.related('authentication')
-        const existingAuthentication = auth.findWhere({userId: user.id, type: authentication.type})
-        if (existingAuthentication) {
-          return existingAuthentication
-            .save(authentication, {patch: true, transacting: transaction})
-            .then(_ => user)
-        } else {
-          return user.createAuthentication(authentication)
-        }
-      })
     )
   }
 
@@ -105,10 +108,13 @@ module.exports = function (knexInstance) {
     }
     return User.createWithAuthentication(email, authentication)
       .catch(error => {
-        switch (error.constraint) {
-          case 'users_email_unique':
-            return User.updateAuthentication(email, authentication)
-          case 'authentication_type_identifier_unique':
+        switch (error.constructor) {
+          case errors.DuplicateEmail:
+            return User.where('email', email).fetch(user => {
+              return user.updateAuthentication(authentication)
+                .then(_ => user)
+            })
+          case errors.DuplicateKey:
             throw new errors.DuplicateKey(`authentication key ${JSON.stringify(authentication)} for user ${email} already exists for another user`)
         }
         throw error

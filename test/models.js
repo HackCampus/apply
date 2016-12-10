@@ -88,11 +88,6 @@ test('User.createWithToken on an existing user updates instead', t => {
   }).then(user => {
     const userJson = user.toJSON()
     t.is(userJson.email, 'duplicate@bar.baz')
-    const authentications = user.related('authentication').toJSON()
-    t.is(authentications.length, 1)
-    const authentication = authentications[0]
-    t.is(authentication.identifier, 'newid')
-    t.is(authentication.token, 'newtoken')
   })
 })
 
@@ -105,6 +100,25 @@ test('User.createWithToken throws with same keys for different users', t => {
   }
   return User.createWithToken(authentication.type, 'firstuser@bar.baz', authentication.identifier, authentication.token).then(_ => {
     t.throws(User.createWithToken(authentication.type, 'seconduser-DIFFERENT@bar.baz', authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
+  })
+})
+
+test('User.updateAuthentication with no existing authentication', t => {
+  const {User} = models
+  const authentication = {
+    type: 'github',
+    identifier: 'update-auth-id',
+    token: 'update-auth-key',
+  }
+  return User.createWithPassword('update-auth@foo.bar', 'foobar').then(user => {
+    return user.updateAuthentication(authentication)
+      .then(newAuth => {
+        const auth = newAuth.toJSON()
+        t.is(auth.userId, user.id)
+        t.is(auth.type, authentication.type)
+        t.is(auth.identifier, authentication.identifier)
+        t.is(auth.token, authentication.token)
+      })
   })
 })
 
