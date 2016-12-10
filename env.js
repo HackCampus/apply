@@ -1,4 +1,5 @@
-require('localenv')
+const localenv = require('localenv/noload')
+localenv.inject_env(__dirname + '/.env')
 
 const {env, envNumber} = require('./envHelpers')
 

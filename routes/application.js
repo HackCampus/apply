@@ -9,25 +9,41 @@ const validate = require('../middlewares/validate')
 const {Database, Application, TechPreference} = require('../database')
 const wireFormats = require('../wireFormats')
 
-module.exports = function (app) {
+module.exports = {
+  routes,
+
+  testing: {
+    getApplication,
+    updateApplication,
+    updateTechPreferences,
+  },
+}
+
+function routes (app) {
   app.get('/me/application',
     authorized,
-    getApplication)
+    handleGetApplication)
 
   app.put('/me/application',
-    authorized, validate(wireFormats.application),
-    putApplication)
+    authorized,
+    validate(wireFormats.application),
+    handlePutApplication)
 
   app.put('/me/application/techpreferences',
-    authorized, validate(wireFormats.techPreferences),
-    putTechPreferences)
+    authorized,
+    validate(wireFormats.techPreferences),
+    handlePutTechPreferences)
 }
 
 // Application - handlers
 
-function getApplication (req, res, handleError) {
+function handleGetApplication (req, res, handleError) {
   const userId = req.user.id
-  fetchCurrentApplication(userId)
+  return getApplication(userId, handleError).then(sendApplication(res))
+}
+
+function getApplication (userId, handleError) {
+  return fetchCurrentApplication(userId)
     .then(application => {
       if (application) return application
       // There was no application from this year, but there might be one from a previous year.
@@ -37,7 +53,6 @@ function getApplication (req, res, handleError) {
       if (application) return application
       throw {status: 'Not Found'}
     })
-    .then(sendApplication(res))
     .catch(error => {
       if (error instanceof Error) {
         console.log(error)
@@ -48,16 +63,16 @@ function getApplication (req, res, handleError) {
     })
 }
 
-function putApplication (req, res, handleError) {
+function handlePutApplication (req, res, handleError) {
   if (req.body.finished) {
     delete req.body.finished
-    return handleApplicationFinish(req, res, handleError)
+    return handleFinishApplication(req, res, handleError)
   } else {
-    return handleApplicationUpdate(req, res, handleError)
+    return handleUpdateApplication(req, res, handleError)
   }
 }
 
-function handleApplicationFinish (req, res, handleError) {
+function handleFinishApplication (req, res, handleError) {
   return updateApplication(req.user.id, req.body)
     .then(application => {
       const {finished, errors} = verifyFinished(application.toJSON())
@@ -77,7 +92,7 @@ function handleApplicationFinish (req, res, handleError) {
     })
 }
 
-function handleApplicationUpdate (req, res, handleError) {
+function handleUpdateApplication (req, res, handleError) {
   return updateApplication(req.user.id, req.body)
     .then(sendApplication(res))
     .catch(err => {
@@ -91,7 +106,7 @@ function handleApplicationUpdate (req, res, handleError) {
 // Checks that none of the required fields are empty in the given application.
 // This is a hack to work around the fact that the JSON schema (in wireFormats.js)
 // does not have any required fields set, as we want to do partial updates.
-// Terrible solution - should find a better way.
+// Terrible solution - should find a better way to do finished applications.
 function verifyFinished (application) {
   const emptyFields = []
   for (let field in application) {
@@ -176,7 +191,7 @@ function sendApplication (res) {
 
 // Tech preferences - handlers
 
-function putTechPreferences (req, res, handleError) {
+function handlePutTechPreferences (req, res, handleError) {
   updateTechPreferences(req.user.id, req.body)
     .then(techPreferences => { res.json(techPreferences) })
     .catch(err => {

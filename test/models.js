@@ -104,7 +104,7 @@ test('User.createWithToken throws with same keys for different users', t => {
     token: 'thesamekey',
   }
   return User.createWithToken(authentication.type, 'firstuser@bar.baz', authentication.identifier, authentication.token).then(_ => {
-    t.throws(User.createWithToken(authentication.type, 'seconduser-DIFFERENT@bar.baz', authentication.identifier, authentication.token), /.*already exists for another user.*/)
+    t.throws(User.createWithToken(authentication.type, 'seconduser-DIFFERENT@bar.baz', authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
   })
 })
 

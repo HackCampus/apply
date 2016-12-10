@@ -27,7 +27,7 @@ app.disable('x-powered-by')
 // routes
 auth(app)
 user(app)
-application(app)
+application.routes(app)
 
 // single page app
 app.get('/', require('./shell'))

@@ -11,9 +11,9 @@ module.exports = function (knexInstance) {
   const hash = promisify(bcrypt.hash)
 
   const errors = {
-    authenticationTypeError: () => new Error(`authentication object needs to be of shape {type, token, identifier}`),
-    authenticationNotImplemented: type => new Error(`authentication type ${type} not implemented`),
-    duplicateKey: (authentication, email) => new Error(`authentication key ${JSON.stringify(authentication)} for user ${email} already exists for another user`),
+    AuthenticationTypeError: class AuthenticationTypeError extends Error {},
+    AuthenticationNotImplemented: class AuthenticationNotImplemented extends Error {},
+    DuplicateKey: class DuplicateKey extends Error {},
   }
 
   const User = bookshelf.Model.extend({
@@ -32,12 +32,12 @@ module.exports = function (knexInstance) {
     createAuthentication: function (authentication, transaction) {
       const {type, token, identifier} = authentication
       if (type == null || token == null || identifier == null) {
-        throw errors.authenticationTypeError()
+        throw new errors.AuthenticationTypeError(`authentication object needs to be of shape {type, token, identifier}`)
       }
       switch (type) {
         case 'password': return this.createPasswordAuthentication(authentication, transaction)
         case 'github': return this.createTokenAuthentication(authentication, transaction)
-        default: throw errors.authenticationNotImplemented(type)
+        default: throw new errors.AuthenticationNotImplemented(`authentication type ${type} not implemented`)
       }
     },
     createPasswordAuthentication: function (authentication, transaction) {
@@ -81,7 +81,7 @@ module.exports = function (knexInstance) {
             .save(authentication, {patch: true, transacting: transaction})
             .catch(error => {
               if (error.constraint === 'authentication_type_identifier_unique') {
-                throw errors.duplicateKey(authentication, email)
+                throw new errors.DuplicateKey(`authentication key ${JSON.stringify(authentication)} for user ${email} already exists for another user`)
               }
               throw error
             }).then(_ => user)
@@ -101,7 +101,7 @@ module.exports = function (knexInstance) {
     return User.createWithAuthentication(email, authentication)
   }
 
-  // throws errors.duplicateKey
+  // throws errors.DuplicateKey
   User.createWithToken = function (provider, email, providerId, accessToken) {
     const authentication = {
       type: provider,
@@ -114,7 +114,7 @@ module.exports = function (knexInstance) {
           case 'users_email_unique':
             return User.updateAuthentication(email, authentication)
           case 'authentication_type_identifier_unique':
-            throw errors.duplicateKey(authentication, email)
+            throw new errors.DuplicateKey(`authentication key ${JSON.stringify(authentication)} for user ${email} already exists for another user`)
         }
         throw error
       })

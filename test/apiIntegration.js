@@ -4,6 +4,8 @@ const hippie = require('hippie')
 const extend = require('xtend')
 hippie.assert.showDiff = true
 
+require('../app') // serve
+
 const api = () =>
   hippie()
   .json()
