@@ -79,12 +79,7 @@ module.exports = function (knexInstance) {
         if (existingAuthentication) {
           return existingAuthentication
             .save(authentication, {patch: true, transacting: transaction})
-            .catch(error => {
-              if (error.constraint === 'authentication_type_identifier_unique') {
-                throw new errors.DuplicateKey(`authentication key ${JSON.stringify(authentication)} for user ${email} already exists for another user`)
-              }
-              throw error
-            }).then(_ => user)
+            .then(_ => user)
         } else {
           return user.createAuthentication(authentication)
         }

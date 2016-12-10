@@ -43,13 +43,13 @@ test('User.createWithAuthentication exists', sinon.test(function (t) {
 }))
 
 test('User.createWithAuthentication throws with junk input', sinon.test(function (t) {
-  const {User} = models
-  t.throws(User.createWithAuthentication('foo@bar.baz', {junk: true}))
+  const {User, errors} = models
+  t.throws(User.createWithAuthentication('foo@bar.baz', {junk: true}), error => error instanceof errors.AuthenticationTypeError)
 }))
 
 test('User.createWithAuthentication throws with a garbage authentication type', sinon.test(function (t) {
-  const {User} = models
-  t.throws(User.createWithAuthentication('foo@bar.baz', {type: 'junk', identifier: 'foo', token: 'foo'}))
+  const {User, errors} = models
+  t.throws(User.createWithAuthentication('foo@bar.baz', {type: 'junk', identifier: 'foo', token: 'foo'}), error => error instanceof errors.AuthenticationNotImplemented)
 }))
 
 test('User.createWithPassword & fetch', t => {
