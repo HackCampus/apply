@@ -6,7 +6,7 @@ const constants = require('../constants')
 const authorized = require('../middlewares/authorized')
 const validate = require('../middlewares/validate')
 
-const {Database, Application, TechPreference} = require('../models')
+const {Database, Application, TechPreference} = require('../database')
 const wireFormats = require('../wireFormats')
 
 module.exports = function (app) {

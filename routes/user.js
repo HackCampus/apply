@@ -1,5 +1,5 @@
 const authorized = require('../middlewares/authorized')
-const {User} = require('../models')
+const {User} = require('../database')
 
 module.exports = function (app) {
   app.get('/me', authorized, (req, res) => {

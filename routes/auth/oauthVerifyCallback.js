@@ -1,4 +1,4 @@
-const {Authentication, User} = require('../../models')
+const {Authentication, User} = require('../../database')
 
 // make sure `passReqToCallback: true` in your strategy!
 module.exports = provider =>

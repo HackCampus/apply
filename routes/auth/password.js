@@ -5,7 +5,7 @@ const status = require('statuses')
 
 const errors = require('../../errors')
 const validateRequest = require('../../middlewares/validate')
-const {User} = require('../../models')
+const {User} = require('../../database')
 const wireFormats = require('../../wireFormats')
 
 const djangoHasher = djangoHashers.getHasher('pbkdf2_sha256')

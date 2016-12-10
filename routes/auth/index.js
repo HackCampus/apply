@@ -1,6 +1,6 @@
 const passport = require('passport')
 
-const {User} = require('../../models')
+const {User} = require('../../database')
 
 const github = require('./github')
 const linkedin = require('./linkedin')

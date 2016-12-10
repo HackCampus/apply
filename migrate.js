@@ -5,7 +5,7 @@ const toStream = require('pull-stream-to-stream')
 
 const env = require('./env')
 
-const {Database, Authentication, User, Application} = require('./models')
+const {Database, Authentication, User, Application} = require('./database')
 const oldDb = knex({
   client: 'pg',
   connection: {

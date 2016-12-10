@@ -1,2 +1,2 @@
-const env = require('./env')
-module.exports = env.database
+// This file is required by the knex CLI.
+module.exports = require('./database/knexConfig')
