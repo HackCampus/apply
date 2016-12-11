@@ -40,7 +40,8 @@ module.exports = function (models) {
       .then(application => {
         if (application) return application
         // There was no application from this year, but there might be one from a previous year.
-        return Application.where({userId}).fetch()
+        // Create a new one.
+        return createApplicationFromPreviousYear(userId)
       })
       .then(application => {
         if (application) return application
@@ -138,13 +139,20 @@ module.exports = function (models) {
   }
 
   // Creates a copy of a previous year's application.
+  // If an application from this year exists already, does nothing.
   function createApplicationFromPreviousYear(userId) {
     return Application.where({userId}).orderBy('programmeYear', 'DESC').fetch()
       .then(application => {
         if (!application) return null
         const now = new Date().toJSON()
-        const newApplication = extend(application.toJSON(), {
+        const applicationJson = application.toJSON()
+        if (applicationJson.programmeYear === constants.programmeYear) {
+          logger.error('createApplicationFromPreviousYear was called even though a current application exists')
+          return application
+        }
+        const newApplication = extend(applicationJson, {
           programmeYear: constants.programmeYear,
+          updatedAt: new Date(),
           finishedAt: null,
         })
         // so bad... if we don't remove the id, we'll update the current application rather than creating a new one.

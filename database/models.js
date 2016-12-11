@@ -69,7 +69,7 @@ module.exports = function (knexInstance) {
       const auth = this.related('authentication')
       const existingAuthentication = auth.findWhere({userId: this.id, type: authentication.type})
       if (existingAuthentication) {
-        authentication.updatedAt = Date.now()
+        authentication.updatedAt = new Date()
         return existingAuthentication
           .save(authentication, {patch: true, transacting: transaction})
           .catch(error => {

@@ -41,7 +41,7 @@ test('getApplication works', t => {
     })
 })
 
-test('getApplication works for previous year', t => {
+test('getApplication creates a new application for old ones', t => {
   const {Application, User} = models
   const {getApplication} = methods
   const handleError = spy()
@@ -51,7 +51,8 @@ test('getApplication works for previous year', t => {
     .then(applicationModel => {
       t.false(handleError.called)
       const application = applicationModel.toJSON()
-      t.is(application.programmeYear, 2015)
+      t.is(application.programmeYear, 2017) // note!
+      t.falsy(application.finishedAt)
       t.is(application.firstName, 'foozle')
     })
 })
