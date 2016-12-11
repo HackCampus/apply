@@ -11,8 +11,8 @@ const errorHandler = require('./middlewares/errors')
 const session = require('./middlewares/session')
 
 const application = require('./routes/application')(models)
-const auth = require('./routes/auth')
-const user = require('./routes/user')
+const auth = require('./routes/auth')(models)
+const user = require('./routes/user')(models)
 
 const env = require('./env')
 
@@ -27,8 +27,8 @@ app.use('/static', express.static(path.join(__dirname, 'build')))
 app.disable('x-powered-by')
 
 // routes
-auth(app)
-user(app)
+auth.routes(app)
+user.routes(app)
 application.routes(app)
 
 // single page app
