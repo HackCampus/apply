@@ -36,7 +36,7 @@ module.exports = {
   github: {
     clientId: env('GITHUB_CLIENT_ID'),
     clientSecret: env('GITHUB_CLIENT_SECRET'),
-    scope: [], // no scope: read-only access to public information (includes public user profile info, public repository info, and gists)
+    scope: ['user:email'],
   },
   linkedin: {
     clientId: env('LINKEDIN_CLIENT_ID'),
