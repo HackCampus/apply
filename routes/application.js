@@ -2,6 +2,7 @@ const isEmpty = require('lodash.isempty')
 const extend = require('xtend')
 
 const constants = require('../constants')
+const logger = require('../logger')
 
 const authorized = require('../middlewares/authorized')
 const validate = require('../middlewares/validate')
@@ -47,7 +48,7 @@ module.exports = function (models) {
       })
       .catch(error => {
         if (error instanceof Error) {
-          console.log(error)
+          logger.error(error)
           handleError({status: 'Internal Server Error'})
         } else {
           handleError(error)
@@ -57,6 +58,7 @@ module.exports = function (models) {
 
   function handlePutApplication (req, res, handleError) {
     if (req.body.finished) {
+      req.log.info({userId: req.body.userId, applicationId: req.body.id}, 'application finished')
       delete req.body.finished
       return handleFinishApplication(req, res, handleError)
     } else {

@@ -2,12 +2,13 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const express = require('express')
 const http = require('http')
-const morgan = require('morgan')
 const path = require('path')
 
 const models = require('./database')
+const logger = require('./logger')
 
 const errorHandler = require('./middlewares/errors')
+const requestLogger = require('./middlewares/requestLogger')
 const session = require('./middlewares/session')
 
 const application = require('./routes/application')(models)
@@ -19,7 +20,7 @@ const env = require('./env')
 const port = process.env.PORT || 3000
 const app = express()
 
-app.use(morgan('dev'))
+app.use(requestLogger(logger))
 app.use(session())
 app.use(bodyParser.json())
 app.use(cookieParser())

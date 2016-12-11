@@ -3,6 +3,7 @@ const {promisify} = require('bluebird')
 const Bookshelf = require('bookshelf')
 
 const env = require('../env')
+const logger = require('../logger')
 
 module.exports = function (knexInstance) {
   const bookshelf = Bookshelf(knexInstance)
@@ -35,6 +36,7 @@ module.exports = function (knexInstance) {
       if (type == null || token == null || identifier == null) {
         throw new errors.AuthenticationTypeError(`authentication object needs to be of shape {type, token, identifier}`)
       }
+      logger.info({id: this.id, type}, 'authentication created')
       switch (type) {
         case 'password': return this.createPasswordAuthentication(authentication, transaction)
         case 'github': return this.createTokenAuthentication(authentication, transaction)

@@ -4,9 +4,9 @@ const status = require('statuses')
 //   status: HTTP status string or number
 //   message: json object sent to the client or nothing
 module.exports = (error, req, res, next) => {
-  console.error(error)
+  req.log.info(error)
   if (error.status === 'Unknown') {
-    console.error(error.error)
+    req.log.fatal(error.error)
     return res.status(500).end()
   }
   res.status(error.status ? status(error.status) : 500)
