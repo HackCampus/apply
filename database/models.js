@@ -56,6 +56,11 @@ module.exports = function (knexInstance) {
       return new Authentication({
         type, identifier, token, userId: this.id,
       }).save(null, {transacting: transaction})
+        .catch(error => {
+          if (error.constraint === 'authentication_type_identifier_unique') {
+            throw new errors.DuplicateKey()
+          }
+        })
     },
 
     updateAuthentication (authentication, transaction) {
@@ -64,6 +69,11 @@ module.exports = function (knexInstance) {
       if (existingAuthentication) {
         return existingAuthentication
           .save(authentication, {patch: true, transacting: transaction})
+          .catch(error => {
+            if (error.constraint === 'authentication_type_identifier_unique') {
+              throw new errors.DuplicateKey()
+            }
+          })
       } else {
         return this.createAuthentication(authentication, transaction)
       }
@@ -110,6 +120,8 @@ module.exports = function (knexInstance) {
       .catch(error => {
         switch (error.constructor) {
           case errors.DuplicateEmail:
+            // We can update someone's OAuth key based on their email - this
+            // relies on the fact that emails are unique on all supported platforms.
             return User.where('email', email).fetch(user => {
               return user.updateAuthentication(authentication)
                 .then(_ => user)

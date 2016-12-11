@@ -2,6 +2,7 @@ const test = require('ava')
 const sinon = require('sinon')
 
 const oauthVerifyCallback = require('../routes/auth/oauthVerifyCallback')
+const {User} = require('../database')
 
 test.serial.cb('can log in with github access token', t => {
   const verify = oauthVerifyCallback('github')
@@ -23,11 +24,12 @@ test.cb('"different user has already connected" message gets passed to error han
     id: '1337',
     emails: [{value: 'github-oauth-verify-test@foo.bar'}]
   }
-  const someUserReq = {user: {id: 1}}
-  verify(someUserReq, 'fakeaccesstoken', 'fakerefreshtoken', profile, function (err, user, errorMessage) {
-    t.falsy(err)
-    t.falsy(user)
-    t.truthy(errorMessage.message)
-    t.end()
+  new User({id: 1}).fetch().then(user => {
+    verify({user}, 'fakeaccesstoken', 'fakerefreshtoken', profile, function (err, user, errorMessage) {
+      t.falsy(err)
+      t.falsy(user)
+      t.truthy(errorMessage.message)
+      t.end()
+    })
   })
 })

@@ -1,27 +1,18 @@
 const test = require('ava')
-const knex = require('knex')
-const rm = require('rimraf').sync
-const sinon = require('sinon')
 
 const makeModels = require('../database/models')
+const {setupDb, teardownDb} = require('./_testDb')
 
-const testDb = './test.sqlite'
-
-const knexConfig = {
-  client: 'pg',
-  connection: 'postgres://hackcampus:hackcampus@127.0.0.1:5432/test',
-  useNullAsDefault: true,
-}
-
-let models
-let db
-test.before('create db', t => {
-  db = knex(knexConfig)
-  return db.migrate.latest({
-    directory: '../migrations',
-  }).then(() => {
-    models = makeModels(db)
+let db, models
+test.before('setup db', t => {
+  return setupDb().then(database => {
+    db = database
+    models = makeModels(database)
   })
+})
+
+test.after.always('teardown db', t => {
+  return teardownDb(db)
 })
 
 test('all public models are exposed', t => {
@@ -37,20 +28,20 @@ test('can save user with test db', t => {
   return user.save()
 })
 
-test('User.createWithAuthentication exists', sinon.test(function (t) {
+test('User.createWithAuthentication exists', t => {
   const {User} = models
   t.true('createWithAuthentication' in User)
-}))
+})
 
-test('User.createWithAuthentication throws with junk input', sinon.test(function (t) {
+test('User.createWithAuthentication throws with junk input', t => {
   const {User, errors} = models
   t.throws(User.createWithAuthentication('foo@bar.baz', {junk: true}), error => error instanceof errors.AuthenticationTypeError)
-}))
+})
 
-test('User.createWithAuthentication throws with a garbage authentication type', sinon.test(function (t) {
+test('User.createWithAuthentication throws with a garbage authentication type', t => {
   const {User, errors} = models
   t.throws(User.createWithAuthentication('foo@bar.baz', {type: 'junk', identifier: 'foo', token: 'foo'}), error => error instanceof errors.AuthenticationNotImplemented)
-}))
+})
 
 test('User.createWithPassword & fetch', t => {
   const {User} = models
@@ -66,9 +57,11 @@ test('User.createWithPassword & fetch', t => {
   })
 })
 
-test('User.createWithToken', t => {
+test('User.createWithToken returns a user', t => {
   const {User} = models
   return User.createWithToken('github', 'create-with-token@bar.baz', 'foobar', 'barbaz').then(user => {
+    const userJson = user.toJSON()
+    t.is(userJson.email, 'create-with-token@bar.baz')
     return new User({id: user.id}).fetch({withRelated: 'authentication'})
   }).then(user => {
     const userJson = user.toJSON()
@@ -120,8 +113,4 @@ test('User.updateAuthentication with no existing authentication', t => {
         t.is(auth.token, authentication.token)
       })
   })
-})
-
-test.after.always('delete test db', t => {
-  return db.raw('drop schema public cascade; create schema public; grant all on schema public to hackcampus; grant all on schema public to public;')
 })

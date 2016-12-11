@@ -14,7 +14,7 @@
     "develop-client": "npm run clean && nodemon --ext js,css --ignore build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "test": "ava --timeout=5s",
+    "test": "ava --timeout=5s --serial",
     "coverage": "nyc --reporter=html npm test"
   },
   "author": "",

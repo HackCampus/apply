@@ -5,10 +5,12 @@ const http = require('http')
 const morgan = require('morgan')
 const path = require('path')
 
+const models = require('./database')
+
 const errorHandler = require('./middlewares/errors')
 const session = require('./middlewares/session')
 
-const application = require('./routes/application')
+const application = require('./routes/application')(models)
 const auth = require('./routes/auth')
 const user = require('./routes/user')
 
