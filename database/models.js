@@ -32,18 +32,31 @@ module.exports = function (knexInstance) {
 
     // convenience methods
     createAuthentication (authentication, transaction) {
+      const authenticationMethods = {
+        password: this.createPasswordAuthentication,
+        github: this.createTokenAuthentication,
+      }
+
       const {type, token, identifier} = authentication
       if (type == null || token == null || identifier == null) {
         throw new errors.AuthenticationTypeError(`authentication object needs to be of shape {type, token, identifier}`)
       }
-      logger.info({id: this.id, type}, 'authentication created')
+      logger.info({userId: this.id, type}, 'will create authentication')
+
+      let createdAuthentication
       switch (type) {
-        case 'password': return this.createPasswordAuthentication(authentication, transaction)
-        case 'github': return this.createTokenAuthentication(authentication, transaction)
+        case 'password': createdAuthentication = this.createPasswordAuthentication(authentication, transaction); break
+        case 'github': createdAuthentication = this.createTokenAuthentication(authentication, transaction); break
         default: throw new errors.AuthenticationNotImplemented(`authentication type ${type} not implemented`)
       }
+
+      return createdAuthentication
+        .then(auth => {
+          logger.info({userId: this.id, authenticationId: auth.id}, 'successfully created authentication')
+          return auth
+        })
     },
-    createPasswordAuthentication: function (authentication, transaction) {
+    createPasswordAuthentication (authentication, transaction) {
       const {type, identifier, token} = authentication
       return genSalt(env.saltRounds)
         .then(salt => hash(token, salt))
@@ -53,7 +66,7 @@ module.exports = function (knexInstance) {
           }).save(null, {transacting: transaction})
         )
     },
-    createTokenAuthentication: function (authentication, transaction) {
+    createTokenAuthentication (authentication, transaction) {
       const {type, identifier, token} = authentication
       return new Authentication({
         type, identifier, token, userId: this.id,
@@ -62,6 +75,7 @@ module.exports = function (knexInstance) {
           if (error.constraint === 'authentication_type_identifier_unique') {
             throw new errors.DuplicateKey()
           }
+          throw error
         })
     },
 

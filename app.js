@@ -20,7 +20,7 @@ const env = require('./env')
 const port = process.env.PORT || 3000
 const app = express()
 
-app.use(requestLogger(logger))
+// app.use(requestLogger(logger))
 app.use(session())
 app.use(bodyParser.json())
 app.use(cookieParser())
@@ -39,4 +39,4 @@ app.use((req, res, handleError) => { handleError({status: 'Not Found'}) })
 app.use(errorHandler)
 
 const server = http.createServer(app)
-server.listen(port, () => { console.log(port) })
+server.listen(port, () => { logger.info({port}, 'started') })

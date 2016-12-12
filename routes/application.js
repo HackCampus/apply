@@ -59,10 +59,11 @@ module.exports = function (models) {
 
   function handlePutApplication (req, res, handleError) {
     if (req.body.finished) {
-      req.log.info({userId: req.body.userId, applicationId: req.body.id}, 'application finished')
+      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'application finished')
       delete req.body.finished
       return handleFinishApplication(req, res, handleError)
     } else {
+      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'application updated')
       return handleUpdateApplication(req, res, handleError)
     }
   }
@@ -82,7 +83,7 @@ module.exports = function (models) {
         }
       })
       .catch(err => {
-        console.log(err)
+        logger.error(err)
         handleError({status: 'Internal Server Error'})
       })
   }
@@ -91,7 +92,7 @@ module.exports = function (models) {
     return updateApplication(req.user.id, req.body)
       .then(sendApplication(res))
       .catch(err => {
-        console.log(err)
+        logger.error(err)
         handleError({status: 'Internal Server Error'})
       })
   }
@@ -141,6 +142,7 @@ module.exports = function (models) {
   // Creates a copy of a previous year's application.
   // If an application from this year exists already, does nothing.
   function createApplicationFromPreviousYear(userId) {
+    logger.info({userId}, 'will create application from previous year')
     return Application.where({userId}).orderBy('programmeYear', 'DESC').fetch()
       .then(application => {
         if (!application) return null
@@ -197,7 +199,7 @@ module.exports = function (models) {
     updateTechPreferences(req.user.id, req.body)
       .then(techPreferences => { res.json(techPreferences) })
       .catch(err => {
-        console.log(err)
+        logger.error(err)
         handleError({status: 'Internal Server Error'})
       })
   }
