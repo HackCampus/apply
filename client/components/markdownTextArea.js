@@ -31,12 +31,9 @@ module.exports = (emptyValue = '') => ({
         ? startingValue
         : emptyValue
     }
-    // FIXME hackhackhackhack
-    // bel for some reason does not like hrefs wrapped in ""s...?
-    // to reproduce: html('<a href="foo"></a>')
-    const renderedValue = markdown.render(value).replace(/href="(.+)"/g, function (_, link) {
-      return `href=${link}`
-    })
+    const renderedValue = markdown.render(value)
+    const preview = document.createElement('div')
+    preview.innerHTML = renderedValue
     return html`
       <div class="markdownTextArea">
         ${!readOnly
@@ -49,7 +46,7 @@ module.exports = (emptyValue = '') => ({
             </div>`
           : ''
         }
-        <div class="previewContainer">${html(`<div class=preview>${renderedValue}</div>`)}</div>
+        <div class="previewContainer"><div class="preview">${preview}</div></div>
       </div>
     `
   },
