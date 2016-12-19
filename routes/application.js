@@ -32,7 +32,7 @@ module.exports = function (models) {
 
   function handleGetApplication (req, res, handleError) {
     const userId = req.user.id
-    return getApplication(userId, handleError).then(sendApplication(res))
+    return getApplication(userId, handleError).then(sendApplication(res, handleError))
   }
 
   function getApplication (userId, handleError) {
@@ -59,11 +59,11 @@ module.exports = function (models) {
 
   function handlePutApplication (req, res, handleError) {
     if (req.body.finished) {
-      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'application finished')
+      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'finishing application')
       delete req.body.finished
       return handleFinishApplication(req, res, handleError)
     } else {
-      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'application updated')
+      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'updating application')
       return handleUpdateApplication(req, res, handleError)
     }
   }
@@ -74,7 +74,7 @@ module.exports = function (models) {
         const {finished, errors} = verifyFinished(application.toJSON())
         if (finished) {
           return finishApplication(application)
-            .then(sendApplication(res))
+            .then(sendApplication(res, handleError))
         } else {
           return handleError({
             status: 'Bad Request',
@@ -90,7 +90,7 @@ module.exports = function (models) {
 
   function handleUpdateApplication (req, res, handleError) {
     return updateApplication(req.user.id, req.body)
-      .then(sendApplication(res))
+      .then(sendApplication(res, handleError))
       .catch(err => {
         logger.error(err)
         handleError({status: 'Internal Server Error'})
@@ -142,7 +142,6 @@ module.exports = function (models) {
   // Creates a copy of a previous year's application.
   // If an application from this year exists already, does nothing.
   function createApplicationFromPreviousYear(userId) {
-    logger.info({userId}, 'will create application from previous year')
     return Application.where({userId}).orderBy('programmeYear', 'DESC').fetch()
       .then(application => {
         if (!application) return null
@@ -152,6 +151,7 @@ module.exports = function (models) {
           logger.error('createApplicationFromPreviousYear was called even though a current application exists')
           return application
         }
+        logger.info({userId}, 'creating new application from previous year')
         const newApplication = extend(applicationJson, {
           programmeYear: constants.programmeYear,
           updatedAt: new Date(),
@@ -179,12 +179,16 @@ module.exports = function (models) {
   function upsertApplication (userId) {
     return application => {
       if (application) return application
+      logger.info({userId}, 'creating new application')
       return new Application({userId, programmeYear: constants.programmeYear}).save()
     }
   }
 
-  function sendApplication (res) {
+  function sendApplication (res, handleError) {
     return application => {
+      if (!application) {
+        return handleError({status: 'Not Found'})
+      }
       const applicationObject = formatApplicationObject(application.serialize())
       return getTechPreferences(application.id).then(techPreferences => {
         applicationObject.techPreferences = techPreferences
