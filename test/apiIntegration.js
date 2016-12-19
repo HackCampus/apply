@@ -94,6 +94,24 @@ test.cb('application - unauthorized', t => {
   .end(t.end)
 })
 
+test.cb('application - new', t => {
+  const random = (Math.random() + '').slice(2, 10)
+  const credentials = {email: `foo${random}@example.com`, password: 'foobar'}
+  axios.post('http://localhost:3000/users', credentials)
+    .then(() => getCookie(credentials))
+    .then(cookie => {
+      getApplication(cookie)
+      .send()
+      .expectStatus(404)
+      .end(() => {
+        putApplication(cookie)
+        .send({})
+        .expectStatus(200)
+        .end(t.end)
+      })
+    })
+})
+
 test.cb('application - put empty', t => {
   getCookie().then(cookie => {
     putApplication(cookie)
