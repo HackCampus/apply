@@ -99,7 +99,6 @@ test.cb('application - unauthorized', t => {
 test.cb('application - new', t => {
   const random = (Math.random() + '').slice(2, 10)
   const credentials = {email: `foo${random}@example.com`, password: 'foobar'}
-  const log = sinon.spy(console, 'error')
   axios.post('http://localhost:3000/users', credentials)
     .then(() => getCookie(credentials))
     .then(cookie => {
@@ -110,10 +109,7 @@ test.cb('application - new', t => {
         putApplication(cookie)
         .send({})
         .expectStatus(200)
-        .end(() => {
-          t.false(log.called)
-          t.end()
-        })
+        .end(t.end)
       })
     })
 })

@@ -35,8 +35,9 @@ application.routes(app)
 // single page app
 app.get('/', require('./shell'))
 
-app.use((req, res, handleError) => { handleError({status: 'Not Found'}) })
+// error handling
 app.use(errorHandler)
+app.use((req, res, handleError) => { handleError({status: 'Not Found'}) })
 
 const server = http.createServer(app)
 server.listen(port, () => { logger.info({port}, 'started') })

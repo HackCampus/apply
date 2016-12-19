@@ -32,7 +32,7 @@ module.exports = function (models) {
 
   function handleGetApplication (req, res, handleError) {
     const userId = req.user.id
-    return getApplication(userId, handleError).then(sendApplication(res, handleError))
+    return getApplication(userId, handleError).then(sendApplication(res))
   }
 
   function getApplication (userId, handleError) {
@@ -67,7 +67,7 @@ module.exports = function (models) {
         const {finished, errors} = verifyFinished(application.toJSON())
         if (finished) {
           return finishApplication(application)
-            .then(sendApplication(res, handleError))
+            .then(sendApplication(res))
         } else {
           return handleError({
             status: 'Bad Request',
@@ -80,7 +80,7 @@ module.exports = function (models) {
 
   function handleUpdateApplication (req, res, handleError) {
     return updateApplication(req.user.id, req.body)
-      .then(sendApplication(res, handleError))
+      .then(sendApplication(res))
       .catch(internalError(handleError))
   }
 
@@ -171,10 +171,10 @@ module.exports = function (models) {
     }
   }
 
-  function sendApplication (res, handleError) {
+  function sendApplication (res) {
     return application => {
       if (!application) {
-        return handleError({status: 'Not Found'})
+        return
       }
       const applicationObject = formatApplicationObject(application.serialize())
       return getTechPreferences(application.id).then(techPreferences => {
