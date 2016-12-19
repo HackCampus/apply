@@ -45,16 +45,9 @@ module.exports = function (models) {
       })
       .then(application => {
         if (application) return application
-        throw {status: 'Not Found'}
+        return handleError({status: 'Not Found'})
       })
-      .catch(error => {
-        if (error instanceof Error) {
-          logger.error(error)
-          handleError({status: 'Internal Server Error'})
-        } else {
-          handleError(error)
-        }
-      })
+      .catch(internalError(handleError))
   }
 
   function handlePutApplication (req, res, handleError) {
@@ -82,19 +75,13 @@ module.exports = function (models) {
           })
         }
       })
-      .catch(err => {
-        logger.error(err)
-        handleError({status: 'Internal Server Error'})
-      })
+      .catch(internalError(handleError))
   }
 
   function handleUpdateApplication (req, res, handleError) {
     return updateApplication(req.user.id, req.body)
       .then(sendApplication(res, handleError))
-      .catch(err => {
-        logger.error(err)
-        handleError({status: 'Internal Server Error'})
-      })
+      .catch(internalError(handleError))
   }
 
   // Application - helpers
@@ -197,15 +184,19 @@ module.exports = function (models) {
     }
   }
 
+  function internalError (handleError) {
+    return error => {
+      logger.error(error)
+      return handleError({status: 'Internal Server Error'})
+    }
+  }
+
   // Tech preferences - handlers
 
   function handlePutTechPreferences (req, res, handleError) {
     updateTechPreferences(req.user.id, req.body)
       .then(techPreferences => { res.json(techPreferences) })
-      .catch(err => {
-        logger.error(err)
-        handleError({status: 'Internal Server Error'})
-      })
+      .catch(internalError(handleError))
   }
 
   // Tech preferences - helpers
