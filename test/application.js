@@ -18,13 +18,10 @@ test.after.always('teardown db', t => {
   return teardownDb(db)
 })
 
-test('getApplication returns not found', t => {
+test('getApplication throws not found error', t => {
   const {getApplication} = methods
   const handleError = spy()
-  return getApplication(13337, handleError).then(_ => {
-    t.true(handleError.called)
-    t.deepEqual(handleError.args[0][0], {status: 'Not Found'})
-  })
+  return t.throws(getApplication(13337), error => error.status === 'Not Found')
 })
 
 test('getApplication works', t => {

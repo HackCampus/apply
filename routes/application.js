@@ -32,10 +32,63 @@ module.exports = function (models) {
 
   function handleGetApplication (req, res, handleError) {
     const userId = req.user.id
-    return getApplication(userId, handleError).then(sendApplication(res))
+    return getApplication(userId, handleError)
+      .then(sendApplication(res))
+      .catch(error => {
+        if (error.status != null) {
+          return handleError(error)
+        } else {
+          return internalError(error)
+        }
+      })
   }
 
-  function getApplication (userId, handleError) {
+  function handlePutApplication (req, res, handleError) {
+    let handler
+    if (req.body.finished) {
+      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'finishing application')
+      delete req.body.finished
+      handler = handleFinishApplication
+    } else {
+      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'updating application')
+      handler = handleUpdateApplication
+    }
+    return handler(req, res)
+      .catch(error => {
+        if (error.status != null) {
+          return handleError(error)
+        } else {
+          return internalError(error)
+        }
+      })
+  }
+
+  function handleFinishApplication (req, res) {
+    return updateApplication(req.user.id, req.body)
+      .then(application => {
+        const {finished, errors} = verifyFinished(application.toJSON())
+        if (finished) {
+          return finishApplication(application)
+            .then(sendApplication(res))
+        } else {
+          throw {
+            status: 'Bad Request',
+            error: {errors},
+          }
+        }
+      })
+  }
+
+  function handleUpdateApplication (req, res) {
+    return updateApplication(req.user.id, req.body)
+      .then(sendApplication(res))
+  }
+
+  // Application - helpers
+  // Helpers should throw application errors instead of handling them.
+  // It is the responsibility of handler functions to handle the errors.
+
+  function getApplication (userId) {
     return fetchCurrentApplication(userId)
       .then(application => {
         if (application) return application
@@ -45,46 +98,9 @@ module.exports = function (models) {
       })
       .then(application => {
         if (application) return application
-        return handleError({status: 'Not Found'})
+        throw {status: 'Not Found'}
       })
-      .catch(internalError(handleError))
   }
-
-  function handlePutApplication (req, res, handleError) {
-    if (req.body.finished) {
-      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'finishing application')
-      delete req.body.finished
-      return handleFinishApplication(req, res, handleError)
-    } else {
-      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'updating application')
-      return handleUpdateApplication(req, res, handleError)
-    }
-  }
-
-  function handleFinishApplication (req, res, handleError) {
-    return updateApplication(req.user.id, req.body)
-      .then(application => {
-        const {finished, errors} = verifyFinished(application.toJSON())
-        if (finished) {
-          return finishApplication(application)
-            .then(sendApplication(res))
-        } else {
-          return handleError({
-            status: 'Bad Request',
-            error: {errors},
-          })
-        }
-      })
-      .catch(internalError(handleError))
-  }
-
-  function handleUpdateApplication (req, res, handleError) {
-    return updateApplication(req.user.id, req.body)
-      .then(sendApplication(res))
-      .catch(internalError(handleError))
-  }
-
-  // Application - helpers
 
   // Checks that none of the required fields are empty in the given application.
   // This is a hack to work around the fact that the JSON schema (in wireFormats.js)
@@ -174,7 +190,7 @@ module.exports = function (models) {
   function sendApplication (res) {
     return application => {
       if (!application) {
-        return
+        throw {status: 'Not Found'}
       }
       const applicationObject = formatApplicationObject(application.serialize())
       return getTechPreferences(application.id).then(techPreferences => {
