@@ -18,10 +18,8 @@ module.exports = provider =>
         .then(() => done(null, user))
         .catch(error => {
           if (error instanceof errors.DuplicateKey) {
-            logger.error(error, 'duplicate key')
             return done(null, false, {message: 'A different user has already connected this account - is it yours?'})
           } else {
-            logger.error(error, 'unknown')
             return done(error)
           }
         })
