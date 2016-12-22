@@ -46,11 +46,11 @@ module.exports = function (models) {
   function handlePutApplication (req, res, handleError) {
     let handler
     if (req.body.finished) {
-      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'finishing application')
+      logger.info({userId: req.user.id}, 'finishing application')
       delete req.body.finished
       handler = handleFinishApplication
     } else {
-      logger.info({userId: req.body.userId, applicationId: req.body.id}, 'updating application')
+      logger.info({userId: req.user.id}, 'updating application')
       handler = handleUpdateApplication
     }
     return handler(req, res)
