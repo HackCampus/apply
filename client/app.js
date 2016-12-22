@@ -234,7 +234,7 @@ module.exports = Component({
     return html`
       <div class="apply">
         <h1>Apply to HackCampus</h1>
-        <p>Welcome! This is the application form for the <a href="https://hackcampus.io/">HackCampus internship programme</a>. If something doesn't work, we'd appreciate it if you <a href="https://github.com/hackcampus/apply/issues">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
+        <p>Welcome! This is the application form for the <a href="http://hackcampus.io/">HackCampus internship programme</a>. If something doesn't work, we'd appreciate it if you <a href="https://github.com/hackcampus/apply/issues">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
         ${section('step0', 'Step 0: Authenticate', children.authenticate())}
         ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(extend(props, {connect})) : '')}
         ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
