@@ -80,20 +80,26 @@ module.exports = function (knexInstance) {
     },
 
     updateAuthentication (authentication, transaction) {
-      const auth = this.related('authentication')
-      const existingAuthentication = auth.findWhere({userId: this.id, type: authentication.type})
-      if (existingAuthentication) {
-        authentication.updatedAt = new Date()
-        return existingAuthentication
-          .save(authentication, {patch: true, transacting: transaction})
-          .catch(error => {
-            if (error.constraint === 'authentication_type_identifier_unique') {
-              throw new errors.DuplicateKey()
-            }
-          })
-      } else {
-        return this.createAuthentication(authentication, transaction)
-      }
+      return new Authentication({userId: this.id, type: authentication.type})
+        .fetch({transacting: transaction})
+        .then(existingAuthentication => {
+          if (existingAuthentication) {
+            authentication.updatedAt = new Date()
+            return existingAuthentication
+              .save(authentication, {patch: true, transacting: transaction})
+              .catch(error => {
+                if (error.constraint === 'authentication_type_identifier_unique') {
+                  throw new errors.DuplicateKey()
+                } else {
+                  throw error
+                }
+              })
+          } else {
+            return this.createAuthentication(authentication, transaction)
+          }
+        }).catch(error => {
+          throw error // TODO what errors could happen here?
+        })
     }
   })
 

@@ -18,6 +18,8 @@ module.exports = provider =>
         .catch(error => {
           if (error instanceof errors.DuplicateKey) {
             return done(null, false, {message: 'A different user has already connected this account - is it yours?'})
+          } else {
+            return done(error)
           }
         })
     } else {

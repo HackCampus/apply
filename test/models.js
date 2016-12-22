@@ -114,3 +114,28 @@ test('User.updateAuthentication with no existing authentication', t => {
       })
   })
 })
+
+test('User.updateAuthentication with existing authentication', t => {
+  const {User} = models
+  const authentication = {
+    type: 'github',
+    identifier: 'update-auth-id-someone',
+    token: 'update-auth-key-something',
+  }
+  const newAuthentication = {
+    type: 'github',
+    identifier: 'update-auth-id-someone',
+    token: 'update-auth-key-different',
+  }
+  return User.createWithPassword('update-auth-existing@foo.bar', 'foobar').then(user => {
+    return user.updateAuthentication(authentication)
+      .then(() => user.updateAuthentication(newAuthentication))
+      .then(newAuth => {
+        const auth = newAuth.toJSON()
+        t.is(auth.userId, user.id)
+        t.is(auth.type, newAuthentication.type)
+        t.is(auth.identifier, newAuthentication.identifier)
+        t.is(auth.token, newAuthentication.token)
+      })
+  })
+})

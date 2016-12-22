@@ -12,6 +12,7 @@ test.serial.cb('can log in with github access token', t => {
   }
   const noUserReq = {fake: true}
   verify(noUserReq, 'fakeaccesstoken', 'fakerefreshtoken', profile, function (err, user) {
+    t.falsy(err)
     const email = user.get('email')
     t.is(email, 'github-oauth-verify-test@foo.bar')
     t.end()
