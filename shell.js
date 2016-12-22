@@ -3,6 +3,14 @@ const shell = `
 <html>
 <head>
 <meta charset="utf-8">
+<meta property="og:url" content="https://hackcampus-apply.herokuapp.com" />
+<meta property="og:title" content="HackCampus" />
+<meta property="og:description" content="We help the brightest students find software engineering internships at London's best startups. Apply now!" />
+<meta property="description" content="We help the brightest students find software engineering internships at London's best startups. Apply now!" />
+<meta property="og:image" content="https://hackcampus.github.io/images/cover-light.png" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1656" />
+<meta property="og:image:height" content="628" />
 <title>HackCampus</title>
 <link rel="stylesheet" href="/static/app.css" />
 <link href="https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto" rel="stylesheet">
