@@ -14,8 +14,10 @@ module.exports = function (knexInstance) {
   const errors = {
     AuthenticationTypeError: class AuthenticationTypeError extends Error {},
     AuthenticationNotImplemented: class AuthenticationNotImplemented extends Error {},
+    AuthenticationNotFound: class AuthenticationNotFound extends Error {},
     DuplicateKey: class DuplicateKey extends Error {},
     DuplicateEmail: class DuplicateEmail extends Error {},
+    UserNotFound: class UserNotFound extends Error {},
   }
 
   const User = bookshelf.Model.extend({
@@ -45,9 +47,15 @@ module.exports = function (knexInstance) {
 
       let createdAuthentication
       switch (type) {
-        case 'password': createdAuthentication = this.createPasswordAuthentication(authentication, transaction); break
-        case 'github': createdAuthentication = this.createTokenAuthentication(authentication, transaction); break
-        default: throw new errors.AuthenticationNotImplemented(`authentication type ${type} not implemented`)
+        case 'password':
+          createdAuthentication = this.createPasswordAuthentication(authentication, transaction)
+          break
+        case 'github':
+        case 'linkedin':
+          createdAuthentication = this.createTokenAuthentication(authentication, transaction)
+          break
+        default:
+          throw new errors.AuthenticationNotImplemented(`authentication type ${type} not implemented`)
       }
 
       return createdAuthentication
@@ -107,17 +115,15 @@ module.exports = function (knexInstance) {
     return bookshelf.transaction(transaction =>
       new User({email})
         .save(null, {transacting: transaction})
-        .tap(user => user.createAuthentication(authentication, transaction))
         .catch(error => {
           switch (error.constraint) {
             case 'users_email_unique':
               throw new errors.DuplicateEmail()
-            case 'authentication_type_identifier_unique':
-              throw new errors.DuplicateKey()
             default:
               throw error
           }
         })
+        .tap(user => user.createAuthentication(authentication, transaction))
         .then(transaction.commit)
         .catch(transaction.rollback)
     )
@@ -143,17 +149,55 @@ module.exports = function (knexInstance) {
       .catch(error => {
         switch (error.constructor) {
           case errors.DuplicateEmail:
-            // We can update someone's OAuth key based on their email - this
-            // relies on the fact that emails are unique on all supported platforms.
-            return User.where('email', email).fetch(user => {
-              return user.updateAuthentication(authentication)
-                .then(_ => user)
-            })
+            return User.updateAuthenticationFromEmail(email, authentication)
           case errors.DuplicateKey:
-            throw new errors.DuplicateKey(`authentication key ${JSON.stringify(authentication)} for user ${email} already exists for another user`)
+            return User.updateEmailFromAuthentication(email, authentication)
         }
         throw error
       })
+  }
+
+  // We can update a user's OAuth key based on their email - this
+  // relies on the fact that emails are unique on all supported platforms.
+  User.updateAuthenticationFromEmail = function (email, authentication) {
+    return new User({email})
+      .fetch()
+      .tap(user => {
+        if (!user) {
+          throw new errors.UserNotFound()
+        }
+        return user.updateAuthentication(authentication)
+      })
+  }
+
+  // If a user has already registered using OAuth, but their emails have changed
+  // since they did so, we can update their email from their id on that platform.
+  // This relies on the fact that id's are unique on all supported platforms.
+  User.updateEmailFromAuthentication = function (newEmail, authentication) {
+    const {type, identifier, token} = authentication
+    return bookshelf.transaction(transaction => {
+      return new Authentication({type, identifier})
+        .fetch({
+          withRelated: 'user',
+          transacting: transaction,
+        })
+        .then(authentication => {
+          if (!authentication) {
+            throw new errors.AuthenticationNotFound('can not update a user if the authentication with which it is supposed to be updated does not exist')
+          }
+          const user = authentication.related('user')
+          if (!user) {
+            throw new errors.UserNotFound()
+          }
+          return user.save({
+            updatedAt: new Date(),
+            email: newEmail
+          }, {
+            patch: true,
+            transacting: transaction
+          })
+        })
+    })
   }
 
   const Authentication = bookshelf.Model.extend({

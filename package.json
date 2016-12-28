@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf build/",
     "build-client": "npm run clean && node build.js",
-    "start": "npm run build-client && node app.js",
+    "start": "npm run build-client && node index.js",
     "develop-server": "nodemon --ignore build/ --ignore client/ app.js | bunyan",
     "develop-client": "npm run clean && nodemon --ext js,css --ignore build/ build.js",
     "migrate-latest": "knex migrate:latest",
@@ -55,6 +55,7 @@
     "markdown-it": "^8.0.1",
     "mkdirp": "^0.5.1",
     "mock-knex": "^0.3.7",
+    "nock": "^9.0.2",
     "node-django-hashers": "^1.0.8",
     "nodemon": "^1.10.2",
     "passport": "^0.3.2",

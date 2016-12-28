@@ -21,7 +21,9 @@ module.exports = (passport, app) => {
   }), (err, req, res, next) => {
     if (err) {
       if (err.name === 'InternalOAuthError') {
-        // TODO how to handle this properly?
+        if (err.oauthError && err.oauthError.statusCode === 401) {
+          console.log('bad key')
+        }
         res.redirect('/')
         logger.error(err)
         return next()

@@ -29,9 +29,8 @@ module.exports = provider =>
         req.log.error(`failed to get an email in ${provider} auth flow.`)
         return done(null, false, {message: 'Did you grant the necessary permissions?'})
       }
-      const email = emails[0].value // passport profile normalisation making things difficult...
+      const email = emails[0].value
       User.createWithToken(provider, email, id, accessToken)
         .then(user => done(null, user))
-        .catch(error => done(error))
     }
   }

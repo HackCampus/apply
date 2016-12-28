@@ -84,15 +84,42 @@ test('User.createWithToken on an existing user updates instead', t => {
   })
 })
 
-test('User.createWithToken throws with same keys for different users', t => {
+test('User.createWithToken updates the email if a user with the same external id authenticates', t => {
   const {errors, User} = models
   const authentication = {
     type: 'github',
     identifier: 'thesameid',
     token: 'thesamekey',
   }
-  return User.createWithToken(authentication.type, 'firstuser@bar.baz', authentication.identifier, authentication.token).then(_ => {
-    t.throws(User.createWithToken(authentication.type, 'seconduser-DIFFERENT@bar.baz', authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
+  const secondEmail = 'seconduser-DIFFERENT@bar.baz'
+  let firstUser = {}
+  return User.createWithToken(authentication.type, 'firstuser@bar.baz', authentication.identifier, authentication.token).then(user => {
+    firstUser = user.toJSON()
+    return User.createWithToken(authentication.type, secondEmail, authentication.identifier, authentication.token)
+  }).then(userModel => {
+    const secondUser = userModel.toJSON()
+    t.true(firstUser.updatedAt !== secondUser.updatedAt)
+    t.is(firstUser.id, secondUser.id)
+    t.is(secondUser.email, secondEmail)
+  })
+})
+
+test('User.createWithToken throws if a user signs up with a different email but there is an email/password auth for that user', t => {
+  const {errors, User} = models
+  const authentication = {
+    type: 'github',
+    identifier: 'asdfasdfaasdf',
+    token: 'thesamekey',
+  }
+  const firstEmail = 'firstuser12341234@bar.baz'
+  const secondEmail_DIFFERENT = 'seconduser-DIFFERENT12341234@bar.baz'
+  let firstUser = {}
+  return User.createWithPassword(firstEmail, 'somepassword').then(user => {
+    return User.createWithToken(authentication.type, firstEmail, authentication.identifier, authentication.token)
+  })
+  .then(user => {
+    firstUser = user.toJSON()
+    t.throws(User.createWithToken(authentication.type, secondEmail_DIFFERENT, authentication.identifier, authentication.token), error => error instanceof errors.CanNotChangeEmailWithPassword)
   })
 })
 

@@ -17,7 +17,6 @@ const user = require('./routes/user')(models)
 
 const env = require('./env')
 
-const port = process.env.PORT || 3000
 const app = express()
 
 // app.use(requestLogger(logger))
@@ -42,4 +41,7 @@ app.use((req, res, handleError) => {
 })
 
 const server = http.createServer(app)
-server.listen(port, () => { logger.info({port}, 'started') })
+
+module.exports = function (port) {
+  server.listen(port, () => { logger.info({port}, 'started') })
+}

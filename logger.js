@@ -5,4 +5,10 @@ const logger = bunyan.createLogger({
   serializers: bunyan.stdSerializers,
 })
 
+// const logger = {
+//   error: console.error,
+//   fatal: console.error,
+//   info: console.log,
+// }
+
 module.exports = logger

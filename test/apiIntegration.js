@@ -6,18 +6,20 @@ const extend = require('xtend')
 hippie.assert.showDiff = true
 
 process.env.NODE_ENV = 'production'
-require('../app') // serve
+const port = require('./_serve')()
+
+const host = `http://127.0.0.1:${port}`
 
 const api = () =>
   hippie()
   .json()
-  .base('http://localhost:3000')
+  .base(host)
 
 const testCredentials = {email: 'foo@bar.baz', password: 'foobar'}
 
 const getCookie = credentialOverrides =>
   axios
-    .post('http://localhost:3000/auth/password', extend(testCredentials, credentialOverrides))
+    .post(`${host}/auth/password`, extend(testCredentials, credentialOverrides))
     .then(res => res.headers['set-cookie'][0])
 
 // === register ===
@@ -99,7 +101,7 @@ test.cb('application - unauthorized', t => {
 test.cb('application - new', t => {
   const random = (Math.random() + '').slice(2, 10)
   const credentials = {email: `foo${random}@example.com`, password: 'foobar'}
-  axios.post('http://localhost:3000/users', credentials)
+  axios.post(`${host}/users`, credentials)
     .then(() => getCookie(credentials))
     .then(cookie => {
       getApplication(cookie)
