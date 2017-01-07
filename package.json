@@ -10,7 +10,7 @@
     "clean": "rm -rf build/",
     "build-client": "npm run clean && node build.js",
     "start": "npm run build-client && node index.js",
-    "develop-server": "nodemon --ignore build/ --ignore client/ app.js | bunyan",
+    "develop-server": "nodemon --ignore build/ --ignore client/ index.js | bunyan",
     "develop-client": "npm run clean && nodemon --ext js,css --ignore build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
