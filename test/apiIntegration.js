@@ -85,11 +85,11 @@ const changePassword = cookie =>
   .header('cookie', cookie)
   .post('/me/password')
 
-test.cb('change password - unauthorized', t => {
-  changePassword('')
+test('change password - unauthorized', t => {
+  return changePassword('')
   .send({password: 'newpasswordpls'})
   .expectStatus(401)
-  .end(t.end)
+  .end()
 })
 
 test('change password - can log in only with new password', t => {
@@ -102,9 +102,15 @@ test('change password - can log in only with new password', t => {
     .then(() => getCookie(credentials))
     .then(cookie =>
       changePassword(cookie)
-      .send({password: newPassword})
-      .expectStatus(200)
+      .send({junk: 'something something'})
+      .expectStatus(400)
       .end()
+      .then(() =>
+        changePassword(cookie)
+        .send({password: newPassword})
+        .expectStatus(200)
+        .end()
+      )
     )
     .then(() =>
       login()
