@@ -1,5 +1,6 @@
 const {pull, html} = require('inu')
 const isEmpty = require('lodash.isempty')
+const debounce = require('pull-debounce')
 const u = require('updeep')
 const extend = require('xtend')
 
@@ -10,7 +11,6 @@ const api = require('./api')
 const Component = require('./component')
 const getCompleted = require('./getCompleted')
 const getFormResponses = require('./getFormResponses')
-const uninterrupted = require('./pull-uninterrupted')
 
 const authenticate = require('./components/authenticate')
 const completedBar = require('./components/completedBar')
@@ -192,7 +192,7 @@ module.exports = Component({
           pull.filter(action =>
             ['personalDetails', 'techPreferences', 'questions'].indexOf(action.child) !== -1
           ),
-          uninterrupted(3000),
+          debounce(3000),
           pull.map(() => action('saveApplication'))
         )
       }
