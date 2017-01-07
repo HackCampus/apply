@@ -78,6 +78,49 @@ test.cb('login - wrong login gives you unauthorized response', t => {
   .end(t.end)
 })
 
+// change password
+
+const changePassword = cookie =>
+  api()
+  .header('cookie', cookie)
+  .post('/me/password')
+
+test.cb('change password - unauthorized', t => {
+  changePassword('')
+  .send({password: 'newpasswordpls'})
+  .expectStatus(401)
+  .end(t.end)
+})
+
+test('change password - can log in only with new password', t => {
+  const random = (Math.random() + '').slice(2, 10)
+  const email = `foo${random}@example.com`
+  const oldPassword = 'oldpassword'
+  const newPassword = 'newpassword'
+  const credentials = {email, password: oldPassword}
+  return axios.post(`${host}/users`, credentials)
+    .then(() => getCookie(credentials))
+    .then(cookie =>
+      changePassword(cookie)
+      .send({password: newPassword})
+      .expectStatus(200)
+      .end()
+    )
+    .then(() =>
+      login()
+      .send({email, password: oldPassword})
+      .expectStatus(401)
+      .end()
+    )
+    .then(() =>
+      login()
+      .send({email, password: newPassword})
+      .expectStatus(200)
+      .expectHeader('set-cookie', /.*/)
+      .end()
+    )
+})
+
 // === application ===
 
 const getApplication = cookie =>
