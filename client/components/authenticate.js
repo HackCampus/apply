@@ -163,9 +163,12 @@ module.exports = Component({
     const radio = (id, content) =>
       link(content, () => select(id), {class: model.tab === id ? 'disabled' : ''})
     return html`
-      <div>
-        ${radio(tabs.newApplication, 'Start a new application')} |
-        ${radio(tabs.existingApplication, 'Edit an existing application')}
+      <div class="margin">
+        <div class="field">
+          <span>Action:</span><br />
+          \xA0\xA0- ${radio(tabs.newApplication, 'Register - start a new application')}<br />
+          \xA0\xA0- ${radio(tabs.existingApplication, 'Log in - edit an existing application')}<br />
+        </div>
         ${(() => {
           switch (model.tab) {
             case tabs.newApplication:
@@ -192,7 +195,7 @@ module.exports = Component({
     const register = () => valid && dispatch(action('register', {email: emailField.value, password: passwordField.value}))
     return html`
       <div>
-        <div class="entry">
+        <div class="margin">
           ${field('email', children.email({onEnter: register}))}
           ${field('password', children.password({onEnter: register}))}
           ${field('confirm password', children.confirmPassword({
@@ -221,7 +224,7 @@ module.exports = Component({
     const login = () => valid && dispatch(action('login', {email: emailField.value, password: passwordField.value}))
     return html`
       <div>
-        <div class="entry">
+        <div class="margin">
           ${field('email', children.email({onEnter: login}))}
           ${field('password', children.password({onEnter: login}))}
           <div>
