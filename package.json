@@ -75,7 +75,7 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
+    "ava": "https://github.com/avajs/ava.git",
     "hippie": "^0.5.0",
     "mock-knex": "^0.3.7",
     "nock": "^9.0.2",

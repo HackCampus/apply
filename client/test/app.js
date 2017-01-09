@@ -19,6 +19,10 @@ function timedSource(data) {
 
 const action = (type, payload) => ({type, payload})
 
+test('init', t => {
+  t.snapshot(app.init())
+})
+
 test.cb('autosave - ignore everything other than application updates', t => {
   const actions = () => pull.values([action('ignore me')])
   const sources = {actions}
