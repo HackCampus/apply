@@ -30,11 +30,16 @@ module.exports = Component({
     email: validatedTextField({format: 'email'}, {autocomplete: 'email'}),
     password: passwordField({minLength: 6}),
     confirmPassword: passwordField({minLength: 6}),
+    changePassword: passwordField({minLength: 6}),
+    confirmChangePassword: passwordField({minLength: 6}),
   },
   init () {
     return {
       model: {
+        // TODO password/changePassword should probably go in one string/"enum" field
+        // because they're mutually exclusive (need to be authenticated to change password).
         password: false,
+        changePassword: false,
         tab: tabs.newApplication,
         error: null,
         user: null,
@@ -49,10 +54,16 @@ module.exports = Component({
       case 'login':
       case 'oauth':
       case 'loadUser':
+      case 'changePassword':
         return {model, effect: a}
 
-      case 'password': {
+      case 'showPasswordFields': {
         const newModel = u({password: true}, model)
+        return {model: newModel, effect: null}
+      }
+
+      case 'showChangePasswordFields': {
+        const newModel = u({changePassword: true}, model)
         return {model: newModel, effect: null}
       }
 
@@ -79,11 +90,21 @@ module.exports = Component({
         return {model: newModel, effect: null}
       }
 
-      case 'userLoadedSuccess': {
+      case 'loadUserSuccess': {
         const newModel = u({user: a.payload}, model)
         return {model: newModel, effect: null}
       }
-      case 'userLoadedError': {
+      case 'loadUserError': {
+        console.error(a.payload)
+        return {model, effect: null}
+      }
+
+      case 'changePasswordSuccess': {
+        const newModel = u({changePassword: false}, model)
+        return {model: newModel, effect: null}
+      }
+      case 'changePasswordError': {
+        console.error(a.payload)
         return {model, effect: null}
       }
 
@@ -125,8 +146,20 @@ module.exports = Component({
           api.get('/me'),
           pull.map(({statusText, data}) => {
             switch (statusText) {
-              case 'OK': return action('userLoadedSuccess', data)
-              default: return action('userLoadedError', data)
+              case 'OK': return action('loadUserSuccess', data)
+              default: return action('loadUserError', data)
+            }
+          })
+        )
+      }
+      case 'changePassword': {
+        const password = effect.payload
+        return pull(
+          api.post('/me/password', {password}),
+          pull.map(({statusText, data}) => {
+            switch (statusText) {
+              case 'OK': return action('changePasswordSuccess', data)
+              default: return action('changePasswordError', data)
             }
           })
         )
@@ -140,20 +173,46 @@ module.exports = Component({
       : this.notAuthenticatedView(model, dispatch, children)
   },
   authenticatedView (model, dispatch, children) {
-    const {user} = model
+    const {
+      user,
+      changePassword,
+    } = model
+    const {email} = user
     return html`
       <div class="authenticated">
-        You are authenticated as <strong>${user.email}</strong>. (<a href="/signout">Sign out</a>)
+        You are authenticated as <strong>${email}</strong>.
+        <div class="margin">
+          ${listField('Actions', [
+            html`<a href="/signout">Sign out</a>`,
+            link('Change password', () => dispatch(action('showChangePasswordFields'))),
+          ])}
+        </div>
+        ${changePassword ? this.changePasswordView(model, dispatch, children) : ''}
+      </div>
+    `
+  },
+  changePasswordView (model, dispatch, children) {
+    const changePasswordField = model.children.changePassword
+    const password = changePasswordField.value
+    const confirmChangePasswordField = model.children.confirmChangePassword
+    const confirmPassword = confirmChangePasswordField.value
+    const enabled = password === confirmPassword
+    const changePassword = () => enabled && dispatch(action('changePassword', password))
+    return html`
+      <div class="margin">
+        ${field('new password', children.changePassword({onEnter: changePassword}))}
+        ${field('confirm new password', children.confirmChangePassword({onEnter: changePassword}))}
+        <div class="field">${link('Change password', changePassword, {class: enabled ? '' : 'disabled'})}</div>
       </div>
     `
   },
   notAuthenticatedView (model, dispatch, children) {
     return html`
-      <div class="form">
+      <div>
         ${listField('Authentication method', [
           link('GitHub', () => dispatch(action('oauth', 'github'))),
           link('LinkedIn', () => dispatch(action('oauth', 'linkedin'))),
-          link('email/password', () => dispatch(action('password'))),
+          link('email/password', () => dispatch(action('showPasswordFields'))),
         ])}
         ${model.password ? this.passwordView(model, dispatch, children) : ''}
       </div>
@@ -210,7 +269,7 @@ module.exports = Component({
               </span>` : ''}
           </div>
         </div>
-        <div>${link('Register with email/password', register, {class: valid ? 'enabled' : 'disabled'})}</div>
+        <div class="field">${link('Register with email/password', register, {class: valid ? 'enabled' : 'disabled'})}</div>
       </div>
     `
   },
@@ -234,7 +293,7 @@ module.exports = Component({
               ` : ''}
           </div>
         </div>
-        <div>${link('Log in with email/password', login, {class: valid ? 'enabled' : 'disabled'})}</div>
+        <div class="field">${link('Log in with email/password', login, {class: valid ? 'enabled' : 'disabled'})}</div>
       </div>
     `
   },

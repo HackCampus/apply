@@ -19,7 +19,18 @@ Object {
     "application": null,
     "children": Object {
       "authenticate": Object {
+        "changePassword": false,
         "children": Object {
+          "changePassword": Object {
+            "errors": Array [],
+            "started": false,
+            "value": "",
+          },
+          "confirmChangePassword": Object {
+            "errors": Array [],
+            "started": false,
+            "value": "",
+          },
           "confirmPassword": Object {
             "errors": Array [],
             "started": false,
@@ -748,7 +759,7 @@ exports[`view - authenticated 1`] = `
         <p>Welcome! This is the application form for the <a href=\"http://hackcampus.io/\">HackCampus internship programme</a>. If something doesn\'t work, we\'d appreciate it if you <a href=\"https://github.com/hackcampus/apply/issues\">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
-        <div><div class=\"form\">
+        <div><div>
         <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
         
       </div></div>
@@ -1204,7 +1215,19 @@ exports[`view - change password 1`] = `
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
         <div><div class=\"authenticated\">
-        You are authenticated as <strong>foo@bar.baz</strong>. (<a href=\"/signout\">Sign out</a>)
+        You are authenticated as <strong>foo@bar.baz</strong>.
+        <div class=\"margin\">
+          <div class=\"field\"><p>Actions:</p><p>   - <a href=\"/signout\">Sign out</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">Change password</a></p></div>
+        </div>
+        <div class=\"margin\">
+        <div class=\"field\"><p>new password:</p>  <div style=\"display: inline-block;\">
+        <input type=\"password\" size=\"3\" value=\"\" class=\"textfield passwordfield invalid\" />
+      </div></div>
+        <div class=\"field\"><p>confirm new password:</p>  <div style=\"display: inline-block;\">
+        <input type=\"password\" size=\"3\" value=\"\" class=\"textfield passwordfield invalid\" />
+      </div></div>
+        <div class=\"field\"><a href=\"javascript:void(\'hey there ✌︎\')\" class=\"\">Change password</a></div>
+      </div>
       </div></div>
       </div>
         <div class=\"step1\">
@@ -1658,7 +1681,11 @@ exports[`view - completed (but not finished) application 1`] = `
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
         <div><div class=\"authenticated\">
-        You are authenticated as <strong>foo@bar.baz</strong>. (<a href=\"/signout\">Sign out</a>)
+        You are authenticated as <strong>foo@bar.baz</strong>.
+        <div class=\"margin\">
+          <div class=\"field\"><p>Actions:</p><p>   - <a href=\"/signout\">Sign out</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">Change password</a></p></div>
+        </div>
+        
       </div></div>
       </div>
         <div class=\"step1\">
@@ -2076,7 +2103,7 @@ exports[`view - email/password 1`] = `
         <p>Welcome! This is the application form for the <a href=\"http://hackcampus.io/\">HackCampus internship programme</a>. If something doesn\'t work, we\'d appreciate it if you <a href=\"https://github.com/hackcampus/apply/issues\">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
-        <div><div class=\"form\">
+        <div><div>
         <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
         <div class=\"margin\">
         <div class=\"field\"><p>Actions:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\" class=\"disabled\">Register - start a new application</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\" class=\"\">Log in - edit an existing application</a></p></div>
@@ -2093,7 +2120,7 @@ exports[`view - email/password 1`] = `
             
           </div>
         </div>
-        <div><a href=\"javascript:void(\'hey there ✌︎\')\" class=\"disabled\">Register with email/password</a></div>
+        <div class=\"field\"><a href=\"javascript:void(\'hey there ✌︎\')\" class=\"disabled\">Register with email/password</a></div>
       </div>
       </div>
       </div></div>
@@ -2134,7 +2161,11 @@ exports[`view - finished application 1`] = `
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
         <div><div class=\"authenticated\">
-        You are authenticated as <strong>foo@bar.baz</strong>. (<a href=\"/signout\">Sign out</a>)
+        You are authenticated as <strong>foo@bar.baz</strong>.
+        <div class=\"margin\">
+          <div class=\"field\"><p>Actions:</p><p>   - <a href=\"/signout\">Sign out</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">Change password</a></p></div>
+        </div>
+        
       </div></div>
       </div>
         <div class=\"step1\">
@@ -2539,7 +2570,7 @@ exports[`view - initial 1`] = `
         <p>Welcome! This is the application form for the <a href=\"http://hackcampus.io/\">HackCampus internship programme</a>. If something doesn\'t work, we\'d appreciate it if you <a href=\"https://github.com/hackcampus/apply/issues\">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
-        <div><div class=\"form\">
+        <div><div>
         <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
         
       </div></div>
