@@ -1203,9 +1203,8 @@ exports[`view - change password 1`] = `
         <p>Welcome! This is the application form for the <a href=\"http://hackcampus.io/\">HackCampus internship programme</a>. If something doesn\'t work, we\'d appreciate it if you <a href=\"https://github.com/hackcampus/apply/issues\">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
-        <div><div class=\"form\">
-        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
-        
+        <div><div class=\"authenticated\">
+        You are authenticated as <strong>foo@bar.baz</strong>. (<a href=\"/signout\">Sign out</a>)
       </div></div>
       </div>
         <div class=\"step1\">
@@ -1658,9 +1657,8 @@ exports[`view - completed (but not finished) application 1`] = `
         <p>Welcome! This is the application form for the <a href=\"http://hackcampus.io/\">HackCampus internship programme</a>. If something doesn\'t work, we\'d appreciate it if you <a href=\"https://github.com/hackcampus/apply/issues\">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
-        <div><div class=\"form\">
-        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
-        
+        <div><div class=\"authenticated\">
+        You are authenticated as <strong>foo@bar.baz</strong>. (<a href=\"/signout\">Sign out</a>)
       </div></div>
       </div>
         <div class=\"step1\">
@@ -2135,9 +2133,8 @@ exports[`view - finished application 1`] = `
         <p>Welcome! This is the application form for the <a href=\"http://hackcampus.io/\">HackCampus internship programme</a>. If something doesn\'t work, we\'d appreciate it if you <a href=\"https://github.com/hackcampus/apply/issues\">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
-        <div><div class=\"form\">
-        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
-        
+        <div><div class=\"authenticated\">
+        You are authenticated as <strong>foo@bar.baz</strong>. (<a href=\"/signout\">Sign out</a>)
       </div></div>
       </div>
         <div class=\"step1\">

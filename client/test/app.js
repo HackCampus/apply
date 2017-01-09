@@ -66,6 +66,7 @@ test('view - change password', t => {
 
   const {model} = app.init()
   model.user = fakeUser()
+  model.children.authenticate.user = fakeUser()
   model.children.authenticate.changePassword = true
   const dispatch = sinon.stub()
   const view = app.view(model, dispatch)
@@ -80,6 +81,7 @@ test('view - completed (but not finished) application', t => {
 
   const {model} = app.init()
   model.user = fakeUser()
+  model.children.authenticate.user = fakeUser()
   model.application = fakeApplication()
   model.application.finishedAt = null
   const dispatch = sinon.stub()
@@ -96,6 +98,7 @@ test('view - finished application', t => {
 
   const {model} = app.init()
   model.user = fakeUser()
+  model.children.authenticate.user = fakeUser()
   model.application = fakeApplication()
   const dispatch = sinon.stub()
   const view = app.view(model, dispatch)
