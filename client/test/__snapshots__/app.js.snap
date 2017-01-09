@@ -741,3 +741,43 @@ Object {
   },
 }
 `;
+
+exports[`view 1`] = `
+"<div class="apply">
+        <h1>Apply to HackCampus</h1>
+        <p>Welcome! This is the application form for the <a href="http://hackcampus.io/">HackCampus internship programme</a>. If something doesn't work, we'd appreciate it if you <a href="https://github.com/hackcampus/apply/issues">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
+        <div class="step0">
+        <h2>Step 0: Authenticate</h2>
+        <div><div class="form">
+        <div><a href="javascript:void('hey there ✌︎')">Authenticate with GitHub</a> | <a href="javascript:void('hey there ✌︎')">Authenticate with email/password</a></div>
+        
+      </div></div>
+      </div>
+        <div class="step1">
+        <h2>Step 1: Personal details</h2>
+        <div></div>
+      </div>
+        <div class="step2">
+        <h2>Step 2: Tech preferences</h2>
+        <div></div>
+      </div>
+        <div class="step3">
+        <h2>Step 3: Personal &amp; technical questions</h2>
+        <div></div>
+      </div>
+        <div class="step4">
+        <h2>Step 4: Finish your application</h2>
+        <div></div>
+      </div>
+        <div class="statusBar status"></div>
+        <div class="completedBar">
+      <div class="personalDetails">
+            <div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div>
+          </div><div class="techPreferences">
+            <div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div>
+          </div><div class="questions">
+            <div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div>
+          </div>
+    </div>
+      </div>"
+`;
