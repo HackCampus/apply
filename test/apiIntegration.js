@@ -83,7 +83,7 @@ test('login/register - happy case', t => {
 const changePassword = cookie =>
   api()
   .header('cookie', cookie)
-  .post('/me/password')
+  .put('/me/password')
 
 test('change password - unauthorized', t => {
   return changePassword('')

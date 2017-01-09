@@ -70,7 +70,7 @@ module.exports = (passport, app) => {
   })
 
   // Change password
-  app.post('/me/password', authorized, (req, res, handleError) => {
+  app.put('/me/password', authorized, (req, res, handleError) => {
     const {user, body} = req
     const {password} = body
     if (typeof password !== 'string') {

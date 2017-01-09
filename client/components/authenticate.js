@@ -155,7 +155,7 @@ module.exports = Component({
       case 'changePassword': {
         const password = effect.payload
         return pull(
-          api.post('/me/password', {password}),
+          api.put('/me/password', {password}),
           pull.map(({statusText, data}) => {
             switch (statusText) {
               case 'OK': return action('changePasswordSuccess', data)
