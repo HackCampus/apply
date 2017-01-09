@@ -37,6 +37,15 @@ test('view - initial', t => {
   t.false(dispatch.called)
 })
 
+test('view - email/password', t => {
+  const {model} = app.init()
+  model.children.authenticate.password = true
+  const dispatch = sinon.stub()
+  const view = app.view(model, dispatch)
+  t.snapshot(view.toString())
+  t.false(dispatch.called)
+})
+
 test('view - authenticated', t => {
   // We need to do this because we call document.createElement() in the markdownTextArea component.
   // Can be removed when that is no longer the case.
@@ -44,6 +53,20 @@ test('view - authenticated', t => {
 
   const {model} = app.init()
   model.user = fakeUser()
+  const dispatch = sinon.stub()
+  const view = app.view(model, dispatch)
+  t.snapshot(view.toString())
+  t.false(dispatch.called)
+})
+
+test('view - change password', t => {
+  // We need to do this because we call document.createElement() in the markdownTextArea component.
+  // Can be removed when that is no longer the case.
+  global.document = require('min-document')
+
+  const {model} = app.init()
+  model.user = fakeUser()
+  model.children.authenticate.changePassword = true
   const dispatch = sinon.stub()
   const view = app.view(model, dispatch)
   t.snapshot(view.toString())
