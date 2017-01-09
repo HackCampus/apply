@@ -37,6 +37,8 @@ test('view - initial', t => {
   t.false(dispatch.called)
 })
 
+// TODO the following tests should be in a separate file that only tests
+// the "authenticate" component.
 test('view - email/password', t => {
   const {model} = app.init()
   model.children.authenticate.password = true
