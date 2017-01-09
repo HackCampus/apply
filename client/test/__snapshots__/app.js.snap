@@ -749,12 +749,7 @@ exports[`view - authenticated 1`] = `
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
         <div><div class=\"form\">
-        <div class=\"field\">
-          <span>Authentication method:</span><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a>
-        </div>
+        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
         
       </div></div>
       </div>
@@ -1209,12 +1204,7 @@ exports[`view - completed (but not finished) application 1`] = `
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
         <div><div class=\"form\">
-        <div class=\"field\">
-          <span>Authentication method:</span><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a>
-        </div>
+        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
         
       </div></div>
       </div>
@@ -1634,12 +1624,7 @@ exports[`view - finished application 1`] = `
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
         <div><div class=\"form\">
-        <div class=\"field\">
-          <span>Authentication method:</span><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a>
-        </div>
+        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
         
       </div></div>
       </div>
@@ -2046,12 +2031,7 @@ exports[`view - initial 1`] = `
         <div class=\"step0\">
         <h2>Step 0: Authenticate</h2>
         <div><div class=\"form\">
-        <div class=\"field\">
-          <span>Authentication method:</span><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a><br />
-            - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a>
-        </div>
+        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">GitHub</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">LinkedIn</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">email/password</a></p></div>
         
       </div></div>
       </div>

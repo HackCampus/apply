@@ -99,6 +99,9 @@ li::before {
 .field {
   font-family: 'Roboto Mono', monospace;
 }
+.field p {
+  margin: 0;
+}
 
 .comment {
   font-style: italic;

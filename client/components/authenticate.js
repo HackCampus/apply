@@ -20,7 +20,10 @@ const tabs = {
 }
 
 const field = (label, content) =>
-  html`<div class="field"><span>${label}:</span><br />\xA0\xA0${content}</div>`
+  html`<div class="field"><p>${label}:</p>\xA0\xA0${content}</div>`
+
+const listField = (label, content /* array */) =>
+  html`<div class="field"><p>${label}:</p>${content.map(content => html`<p>\xA0\xA0 - ${content}</p>`)}</div>`
 
 module.exports = Component({
   children: {
@@ -147,12 +150,11 @@ module.exports = Component({
   notAuthenticatedView (model, dispatch, children) {
     return html`
       <div class="form">
-        <div class="field">
-          <span>Authentication method:</span><br />
-          \xA0\xA0- ${link('GitHub', () => dispatch(action('oauth', 'github')))}<br />
-          \xA0\xA0- ${link('LinkedIn', () => dispatch(action('oauth', 'linkedin')))}<br />
-          \xA0\xA0- ${link('email/password', () => dispatch(action('password')))}
-        </div>
+        ${listField('Authentication method', [
+          link('GitHub', () => dispatch(action('oauth', 'github'))),
+          link('LinkedIn', () => dispatch(action('oauth', 'linkedin'))),
+          link('email/password', () => dispatch(action('password'))),
+        ])}
         ${model.password ? this.passwordView(model, dispatch, children) : ''}
       </div>
     `
@@ -164,11 +166,10 @@ module.exports = Component({
       link(content, () => select(id), {class: model.tab === id ? 'disabled' : ''})
     return html`
       <div class="margin">
-        <div class="field">
-          <span>Action:</span><br />
-          \xA0\xA0- ${radio(tabs.newApplication, 'Register - start a new application')}<br />
-          \xA0\xA0- ${radio(tabs.existingApplication, 'Log in - edit an existing application')}<br />
-        </div>
+        ${listField('Actions', [
+          radio(tabs.newApplication, 'Register - start a new application'),
+          radio(tabs.existingApplication, 'Log in - edit an existing application'),
+        ])}
         ${(() => {
           switch (model.tab) {
             case tabs.newApplication:
