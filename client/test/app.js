@@ -7,6 +7,9 @@ const app = require('../app')
 const fakeUser = () =>
   ({"id":1337,"email":"foo@bar.baz","connectedAccounts":{"github":true,"linkedin":false}})
 
+const fakeApplication = () =>
+  ({"id":631,"createdAt":"2016-12-10T18:58:00.135Z","updatedAt":null,"finishedAt":"2017-01-09T21:04:28.697Z","programmeYear":2017,"userId":2042,"firstName":"Foo","lastName":"Bar","contactEmail":"foo@bar.baz","gender":"other","dateOfBirth":"1993-01-27","university":"other (eg. international)","otherUniversity":"test university","courseName":"MSc in Unit Testing (Minor in Integration Testing)","courseType":"other","otherCourseType":"student of life","yearOfStudy":"other","otherYearOfStudy":"-1","graduationYear":"other","otherGraduationYear":"learning never ends","cvUrl":"http://lachenmayer.me","websiteUrl":"http://lachenmayer.me","referer":"other","refererDetail":"i made it","bestProject":"here's an answer with some *seriously **cool*** [markdown](http://lachenmayer.me).","mostExcitingTechnology":"here's a second answer with some *seriously **cool*** [markdown](http://lachenmayer.me).","implementation":"here's a third answer with some *seriously **cool*** [markdown](http://lachenmayer.me).","codeReview":"it's perfect m8.","perfectRole":"anything goes.","techPreferences":{"React":3,"Groovy / Grails":3,"Angular":0,"C#":3,"CSS":3,"Android":3,"Django":3,"ElasticSearch":3,"Go":3,"Docker":3,"Haskell":3,"iOS":3,"Java":3,"JavaScript":3,"Laravel":3,"MongoDB":3,"MySQL":3,"Neo4J":3,"Node.js":3,"Objective-C":3,"PHP":3,"PostgreSQL":3,"Python":3,"RabbitMQ":3,"Rails":3,"Redis":3,"Ruby":3,"Scala":3,"Swift":3}})
+
 // emits values given in the array after the specified timeouts.
 // data : [[timeout, value]]
 function timedSource(data) {
@@ -40,9 +43,40 @@ test('view - authenticated', t => {
   global.document = require('min-document')
 
   const {model} = app.init()
-  const dispatch = sinon.stub()
   model.user = fakeUser()
+  const dispatch = sinon.stub()
   const view = app.view(model, dispatch)
+  t.snapshot(view.toString())
+  t.false(dispatch.called)
+})
+
+test('view - completed (but not finished) application', t => {
+  // We need to do this because we call document.createElement() in the markdownTextArea component.
+  // Can be removed when that is no longer the case.
+  global.document = require('min-document')
+
+  const {model} = app.init()
+  model.user = fakeUser()
+  model.application = fakeApplication()
+  model.application.finishedAt = null
+  const dispatch = sinon.stub()
+  const view = app.view(model, dispatch)
+
+  t.snapshot(view.toString())
+  t.false(dispatch.called)
+})
+
+test('view - finished application', t => {
+  // We need to do this because we call document.createElement() in the markdownTextArea component.
+  // Can be removed when that is no longer the case.
+  global.document = require('min-document')
+
+  const {model} = app.init()
+  model.user = fakeUser()
+  model.application = fakeApplication()
+  const dispatch = sinon.stub()
+  const view = app.view(model, dispatch)
+
   t.snapshot(view.toString())
   t.false(dispatch.called)
 })
