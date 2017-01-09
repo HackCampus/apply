@@ -4,6 +4,9 @@ const pull = require('pull-stream')
 
 const app = require('../app')
 
+const fakeUser = () =>
+  ({"id":1337,"email":"foo@bar.baz","connectedAccounts":{"github":true,"linkedin":false}})
+
 // emits values given in the array after the specified timeouts.
 // data : [[timeout, value]]
 function timedSource(data) {
@@ -23,9 +26,22 @@ test('init', t => {
   t.snapshot(app.init())
 })
 
-test('view', t => {
+test('view - initial', t => {
   const {model} = app.init()
   const dispatch = sinon.stub()
+  const view = app.view(model, dispatch)
+  t.snapshot(view.toString())
+  t.false(dispatch.called)
+})
+
+test('view - authenticated', t => {
+  // We need to do this because we call document.createElement() in the markdownTextArea component.
+  // Can be removed when that is no longer the case.
+  global.document = require('min-document')
+
+  const {model} = app.init()
+  const dispatch = sinon.stub()
+  model.user = fakeUser()
   const view = app.view(model, dispatch)
   t.snapshot(view.toString())
   t.false(dispatch.called)
