@@ -15,7 +15,7 @@ const api = () =>
   .json()
   .base(host)
 
-const testCredentials = {email: 'foo@bar.baz', password: 'foobar'}
+const testCredentials = {email: 'foo@bar.baz', password: 'helloworld'}
 
 const getCookie = credentialOverrides =>
   axios
@@ -42,14 +42,6 @@ test.cb('register - weird types gets bad request response', t => {
   .end(t.end)
 })
 
-test.cb('register - new account gets created response', t => {
-  const random = (Math.random() + '').slice(2, 10)
-  register()
-  .send({email: `foo${random}@example.com`, password: 'foobar'})
-  .expectStatus(201)
-  .end(t.end)
-})
-
 test.cb('register - already taken', t => {
   register()
   .send(testCredentials)
@@ -63,14 +55,6 @@ const login = () =>
   api()
   .post('/auth/password')
 
-test.cb('login - works', t => {
-  login()
-  .send({email: 'foo@bar.baz', password: 'foobar'})
-  .expectStatus(200)
-  .expectHeader('set-cookie', /.*/)
-  .end(t.end)
-})
-
 test.cb('login - wrong login gives you unauthorized response', t => {
   login()
   .send({email: 'foo@bar.baz', password: 'wrooooooong'})
@@ -78,7 +62,23 @@ test.cb('login - wrong login gives you unauthorized response', t => {
   .end(t.end)
 })
 
-// change password
+test('login/register - happy case', t => {
+  const random = (Math.random() + '').slice(2, 10)
+  const deets = {email: `foo${random}@example.com`, password: 'foobar'}
+  return register()
+  .send(deets)
+  .expectStatus(201)
+  .end()
+  .then(() =>
+    login()
+    .send(deets)
+    .expectStatus(200)
+    .expectHeader('set-cookie', /.*/)
+    .end()
+  )
+})
+
+// === change password ===
 
 const changePassword = cookie =>
   api()
@@ -206,7 +206,10 @@ test.cb('techpreferences - good', t => {
     putTechPreferences(cookie)
     .send({React: 3})
     .expectStatus(200)
-    .expectBody({React: 3})
+    .expect((res, body, next) => {
+      t.is(body.React, 3)
+      next()
+    })
     .end(t.end)
   })
 })
