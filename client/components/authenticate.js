@@ -44,7 +44,7 @@ module.exports = Component({
       // effects
       case 'register':
       case 'login':
-      case 'github':
+      case 'oauth':
       case 'loadUser':
         return {model, effect: a}
 
@@ -114,8 +114,8 @@ module.exports = Component({
           })
         )
       }
-      case 'github': {
-        window.location.href = '/auth/github'
+      case 'oauth': {
+        window.location.href = `/auth/${effect.payload}`
       }
       case 'loadUser': {
         return pull(
@@ -147,7 +147,12 @@ module.exports = Component({
   notAuthenticatedView (model, dispatch, children) {
     return html`
       <div class="form">
-        <div>${link('Authenticate with GitHub', () => dispatch(action('github')))} | ${link('Authenticate with email/password', () => dispatch(action('password')))}</div>
+        <div class="field">
+          <span>Authentication method:</span><br />
+          \xA0\xA0- ${link('GitHub', () => dispatch(action('oauth', 'github')))}<br />
+          \xA0\xA0- ${link('LinkedIn', () => dispatch(action('oauth', 'linkedin')))}<br />
+          \xA0\xA0- ${link('email/password', () => dispatch(action('password')))}
+        </div>
         ${model.password ? this.passwordView(model, dispatch, children) : ''}
       </div>
     `
