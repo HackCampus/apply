@@ -8,9 +8,6 @@ const logger = require('../logger')
 module.exports = function (knexInstance) {
   const bookshelf = Bookshelf(knexInstance)
 
-  const genSalt = promisify(bcrypt.genSalt)
-  const hash = promisify(bcrypt.hash)
-
   const errors = {
     AuthenticationTypeError: class AuthenticationTypeError extends Error {},
     AuthenticationNotImplemented: class AuthenticationNotImplemented extends Error {},
@@ -18,6 +15,30 @@ module.exports = function (knexInstance) {
     DuplicateKey: class DuplicateKey extends Error {},
     DuplicateEmail: class DuplicateEmail extends Error {},
     UserNotFound: class UserNotFound extends Error {},
+  }
+
+  const bcrypt_genSalt = promisify(bcrypt.genSalt)
+  const bcrypt_hash = promisify(bcrypt.hash)
+
+  const hashPassword = password =>
+    bcrypt_genSalt(env.saltRounds)
+      .then(salt => bcrypt_hash(password, salt))
+
+  // Some methods in this file take a second parameter `transaction`.
+  // They should definitely be run in a transaction, but we don't really want
+  // to construct that if we're calling those methods externally, as that would
+  // expose the bookshelf internals.
+  // This method wraps the `next` callback in a transaction if it is not passed
+  // as an argument.
+  const definitelyTransact = transaction => next => {
+    if (transaction == null) {
+      return bookshelf.transaction(transaction =>
+        next(transaction)
+          .then(transaction.commit)
+          .catch(transaction.rollback))
+    } else {
+      return next(transaction)
+    }
   }
 
   const User = bookshelf.Model.extend({
@@ -34,40 +55,41 @@ module.exports = function (knexInstance) {
 
     // convenience methods
     createAuthentication (authentication, transaction) {
-      const authenticationMethods = {
-        password: this.createPasswordAuthentication,
-        github: this.createTokenAuthentication,
-      }
+      return definitelyTransact(transaction)(transaction => {
+        const authenticationMethods = {
+          password: this.createPasswordAuthentication,
+          github: this.createTokenAuthentication,
+        }
 
-      const {type, token, identifier} = authentication
-      if (type == null || token == null || identifier == null) {
-        throw new errors.AuthenticationTypeError(`authentication object needs to be of shape {type, token, identifier}`)
-      }
-      logger.info({userId: this.id, type}, 'will create authentication')
+        const {type, token, identifier} = authentication
+        if (type == null || token == null || identifier == null) {
+          throw new errors.AuthenticationTypeError(`authentication object needs to be of shape {type, token, identifier}`)
+        }
+        logger.info({userId: this.id, type}, 'will create authentication')
 
-      let createdAuthentication
-      switch (type) {
-        case 'password':
-          createdAuthentication = this.createPasswordAuthentication(authentication, transaction)
-          break
-        case 'github':
-        case 'linkedin':
-          createdAuthentication = this.createTokenAuthentication(authentication, transaction)
-          break
-        default:
-          throw new errors.AuthenticationNotImplemented(`authentication type ${type} not implemented`)
-      }
+        let createdAuthentication
+        switch (type) {
+          case 'password':
+            createdAuthentication = this.createPasswordAuthentication(authentication, transaction)
+            break
+          case 'github':
+          case 'linkedin':
+            createdAuthentication = this.createTokenAuthentication(authentication, transaction)
+            break
+          default:
+            throw new errors.AuthenticationNotImplemented(`authentication type ${type} not implemented`)
+        }
 
-      return createdAuthentication
-        .then(auth => {
-          logger.info({userId: this.id, authenticationId: auth.id}, 'successfully created authentication')
-          return auth
-        })
+        return createdAuthentication
+          .then(auth => {
+            logger.info({userId: this.id, authenticationId: auth.id}, 'successfully created authentication')
+            return auth
+          })
+      })
     },
     createPasswordAuthentication (authentication, transaction) {
       const {type, identifier, token} = authentication
-      return genSalt(env.saltRounds)
-        .then(salt => hash(token, salt))
+      return hashPassword(token)
         .then(hash =>
           new Authentication({
             type, identifier, token: hash, userId: this.id,
@@ -88,27 +110,44 @@ module.exports = function (knexInstance) {
     },
 
     updateAuthentication (authentication, transaction) {
-      return new Authentication({userId: this.id, type: authentication.type})
-        .fetch({transacting: transaction})
-        .then(existingAuthentication => {
-          if (existingAuthentication) {
-            authentication.updatedAt = new Date()
-            return existingAuthentication
-              .save(authentication, {patch: true, transacting: transaction})
-              .catch(error => {
-                if (error.constraint === 'authentication_type_identifier_unique') {
-                  throw new errors.DuplicateKey()
-                } else {
-                  throw error
-                }
-              })
-          } else {
-            return this.createAuthentication(authentication, transaction)
+      return definitelyTransact(transaction)(transaction => {
+        return new Authentication({userId: this.id, type: authentication.type})
+          .fetch({transacting: transaction})
+          .then(existingAuthentication => {
+            if (existingAuthentication) {
+              authentication.updatedAt = new Date()
+              return existingAuthentication
+                .save(authentication, {patch: true, transacting: transaction})
+                .catch(error => {
+                  if (error.constraint === 'authentication_type_identifier_unique') {
+                    throw new errors.DuplicateKey()
+                  } else {
+                    throw error
+                  }
+                })
+            } else {
+              return this.createAuthentication(authentication, transaction)
+            }
+          }).catch(error => {
+            throw error // TODO what errors could happen here?
+          })
+      })
+    },
+
+    updatePassword (password, transaction) {
+      const email = this.get('email')
+      return definitelyTransact(transaction)(transaction =>
+        hashPassword(password)
+        .then(hash => {
+          const authentication = {
+            type: 'password',
+            identifier: email,
+            token: hash,
           }
-        }).catch(error => {
-          throw error // TODO what errors could happen here?
+          return this.updateAuthentication(authentication, transaction)
         })
-    }
+      )
+    },
   })
 
   User.createWithAuthentication = function (email, authentication) {

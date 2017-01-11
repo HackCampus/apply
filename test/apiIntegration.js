@@ -15,7 +15,7 @@ const api = () =>
   .json()
   .base(host)
 
-const testCredentials = {email: 'foo@bar.baz', password: 'foobar'}
+const testCredentials = {email: 'foo@bar.baz', password: 'helloworld'}
 
 const getCookie = credentialOverrides =>
   axios
@@ -42,14 +42,6 @@ test.cb('register - weird types gets bad request response', t => {
   .end(t.end)
 })
 
-test.cb('register - new account gets created response', t => {
-  const random = (Math.random() + '').slice(2, 10)
-  register()
-  .send({email: `foo${random}@example.com`, password: 'foobar'})
-  .expectStatus(201)
-  .end(t.end)
-})
-
 test.cb('register - already taken', t => {
   register()
   .send(testCredentials)
@@ -63,19 +55,76 @@ const login = () =>
   api()
   .post('/auth/password')
 
-test.cb('login - works', t => {
-  login()
-  .send({email: 'foo@bar.baz', password: 'foobar'})
-  .expectStatus(200)
-  .expectHeader('set-cookie', /.*/)
-  .end(t.end)
-})
-
 test.cb('login - wrong login gives you unauthorized response', t => {
   login()
   .send({email: 'foo@bar.baz', password: 'wrooooooong'})
   .expectStatus(401)
   .end(t.end)
+})
+
+test('login/register - happy case', t => {
+  const random = (Math.random() + '').slice(2, 10)
+  const deets = {email: `foo${random}@example.com`, password: 'foobar'}
+  return register()
+  .send(deets)
+  .expectStatus(201)
+  .end()
+  .then(() =>
+    login()
+    .send(deets)
+    .expectStatus(200)
+    .expectHeader('set-cookie', /.*/)
+    .end()
+  )
+})
+
+// === change password ===
+
+const changePassword = cookie =>
+  api()
+  .header('cookie', cookie)
+  .put('/me/password')
+
+test('change password - unauthorized', t => {
+  return changePassword('')
+  .send({password: 'newpasswordpls'})
+  .expectStatus(401)
+  .end()
+})
+
+test('change password - can log in only with new password', t => {
+  const random = (Math.random() + '').slice(2, 10)
+  const email = `foo${random}@example.com`
+  const oldPassword = 'oldpassword'
+  const newPassword = 'newpassword'
+  const credentials = {email, password: oldPassword}
+  return axios.post(`${host}/users`, credentials)
+    .then(() => getCookie(credentials))
+    .then(cookie =>
+      changePassword(cookie)
+      .send({junk: 'something something'})
+      .expectStatus(400)
+      .end()
+      .then(() =>
+        changePassword(cookie)
+        .send({password: newPassword})
+        .expectStatus(200)
+        .end()
+      )
+    )
+    .then(() =>
+      login()
+      .send({email, password: oldPassword})
+      .expectStatus(401)
+      .end()
+    )
+    .then(() =>
+      login()
+      .send({email, password: newPassword})
+      .expectStatus(200)
+      .expectHeader('set-cookie', /.*/)
+      .end()
+    )
 })
 
 // === application ===
@@ -157,7 +206,10 @@ test.cb('techpreferences - good', t => {
     putTechPreferences(cookie)
     .send({React: 3})
     .expectStatus(200)
-    .expectBody({React: 3})
+    .expect((res, body, next) => {
+      t.is(body.React, 3)
+      next()
+    })
     .end(t.end)
   })
 })

@@ -99,6 +99,9 @@ li::before {
 .field {
   font-family: 'Roboto Mono', monospace;
 }
+.field p {
+  margin: 0;
+}
 
 .comment {
   font-style: italic;
@@ -176,7 +179,7 @@ textarea {
   border-bottom: 1px solid rgb(255, 110, 45);
 }
 
-.entry {
+.margin {
   margin-top: 1em;
   margin-bottom: 1em;
 }

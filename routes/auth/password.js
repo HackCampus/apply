@@ -4,6 +4,7 @@ const {Strategy: LocalStrategy} = require('passport-local')
 const status = require('statuses')
 
 const errors = require('../../errors')
+const authorized = require('../../middlewares/authorized')
 const validateRequest = require('../../middlewares/validate')
 const {errors: {DuplicateEmail}, User} = require('../../database')
 const wireFormats = require('../../wireFormats')
@@ -66,5 +67,22 @@ module.exports = (passport, app) => {
 
   app.post('/auth/password', passport.authenticate('local'), (req, res) => {
     res.end()
+  })
+
+  // Change password
+  app.put('/me/password', authorized, (req, res, handleError) => {
+    const {user, body} = req
+    const {password} = body
+    if (typeof password !== 'string') {
+      return handleError({status: 'Bad Request'})
+    }
+    const email = user.get('email')
+    req.user.updatePassword(password)
+      .then(() => {
+        res.end()
+      })
+      .catch(error => {
+        return handleError({status: 'Unknown', error})
+      })
   })
 }
