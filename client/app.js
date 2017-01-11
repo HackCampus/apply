@@ -1,6 +1,6 @@
 const {pull, html} = require('inu')
 const isEmpty = require('lodash.isempty')
-const debounce = require('pull-debounce')
+const uninterrupted = require('./pull-uninterrupted')
 const u = require('updeep')
 const extend = require('xtend')
 
@@ -192,7 +192,7 @@ module.exports = Component({
           pull.filter(action =>
             ['personalDetails', 'techPreferences', 'questions'].indexOf(action.child) !== -1
           ),
-          debounce(3000),
+          uninterrupted(3000),
           pull.map(() => action('saveApplication'))
         )
       }

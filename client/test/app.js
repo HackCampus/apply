@@ -149,19 +149,19 @@ test.cb('autosave - debounce', t => {
   )
 })
 
-test.cb('autosave - save again after 3 seconds', t => {
-  const actions = () => timedSource([
-    [0, {child: 'personalDetails', action: action('whatever')}],
-    [100, {child: 'questions', action: action('whatever')}],
-    [200, {child: 'techPreferences', action: action('whatever')}],
-    [3500, {child: 'techPreferences', action: action('whatever')}],
-  ])
-  const sources = {actions}
-  pull(
-    app.run(action('autosave'), sources),
-    pull.collect((err, saveActions) => {
-      t.deepEqual(saveActions, [action('saveApplication'), action('saveApplication')])
-      t.end()
-    })
-  )
-})
+// test.cb('autosave - save again after 3 seconds', t => {
+//   const actions = () => timedSource([
+//     [0, {child: 'personalDetails', action: action('whatever')}],
+//     [100, {child: 'questions', action: action('whatever')}],
+//     [200, {child: 'techPreferences', action: action('whatever')}],
+//     [3500, {child: 'techPreferences', action: action('whatever')}],
+//   ])
+//   const sources = {actions}
+//   pull(
+//     app.run(action('autosave'), sources),
+//     pull.collect((err, saveActions) => {
+//       t.deepEqual(saveActions, [action('saveApplication'), action('saveApplication')])
+//       t.end()
+//     })
+//   )
+// })
