@@ -7,11 +7,11 @@
     "npm": "3.10.8"
   },
   "scripts": {
-    "clean": "rm -rf build/",
-    "build-client": "npm run clean && node build.js",
-    "start": "npm run build-client && node index.js",
-    "develop-server": "nodemon --ignore build/ --ignore client/ index.js | bunyan",
-    "develop-client": "npm run clean && nodemon --ext js,css --ignore build/ build.js",
+    "clean": "rm -rf app/build/",
+    "build-client": "npm run clean && node app/build.js",
+    "start": "npm run build-client && node app/index.js",
+    "develop-server": "nodemon --ignore build/ --ignore client/ app/index.js | bunyan",
+    "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ app/build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "test": "ava --timeout=5s --serial",

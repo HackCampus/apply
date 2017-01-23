@@ -14,14 +14,15 @@ const precss = require('precss')
 const uglifyify = require('uglifyify')
 const source = require('vinyl-source-stream')
 
-const build = 'build'
+const build = path.join('app', 'build')
+const client = path.join('app', 'client')
 
 const development = process.env.NODE_ENV !== 'production'
 
 gulp.task('app', () => {
   mkdirp.sync(build)
   return browserify({
-    entries: ['client/index.js'],
+    entries: [path.join(client, 'index.js')],
     // fullPaths: true, // for disc
     debug: true,
   })
@@ -38,7 +39,7 @@ gulp.task('app', () => {
 })
 
 gulp.task('styles', () =>
-  gulp.src('client/styles/*.css')
+  gulp.src(path.join(client, 'styles', '*.css'))
   .pipe(sourcemaps.init())
   .pipe(postcss([autoprefixer, precss, cssnano()]))
   .pipe(sourcemaps.write('.'))

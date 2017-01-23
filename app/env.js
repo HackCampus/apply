@@ -1,3 +1,4 @@
+// Only loaded in development
 const localenv = require('localenv/noload')
 localenv.inject_env(__dirname + '/.env')
 
