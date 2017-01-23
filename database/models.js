@@ -1,9 +1,8 @@
-const bcrypt = require('bcrypt')
-const {promisify} = require('bluebird')
 const Bookshelf = require('bookshelf')
 
-const env = require('../env')
 const logger = require('../logger')
+
+const hashPassword = require('./hashPassword')
 
 module.exports = function (knexInstance) {
   const bookshelf = Bookshelf(knexInstance)
@@ -16,13 +15,6 @@ module.exports = function (knexInstance) {
     DuplicateEmail: class DuplicateEmail extends Error {},
     UserNotFound: class UserNotFound extends Error {},
   }
-
-  const bcrypt_genSalt = promisify(bcrypt.genSalt)
-  const bcrypt_hash = promisify(bcrypt.hash)
-
-  const hashPassword = password =>
-    bcrypt_genSalt(env.saltRounds)
-      .then(salt => bcrypt_hash(password, salt))
 
   // Some methods in this file take a second parameter `transaction`.
   // They should definitely be run in a transaction, but we don't really want
