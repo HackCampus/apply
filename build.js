@@ -20,23 +20,41 @@ const client = path.join('app', 'client')
 
 const development = process.env.NODE_ENV !== 'production'
 
+const babelifyConfig = {
+  presets: ['es2015'],
+}
+
+if (development) {
+  function bundle () {
+    return browserify({
+      entries: [path.join(client, 'index.js')],
+      fullPaths: true, // for disc
+      debug: true,
+    })
+    .transform(babelify, babelifyConfig)
+    .bundle()
+    .on('error', e => {
+      notifier.notify({
+        title: 'HackCampus',
+        message: e.message,
+      })
+      throw e
+    })
+  }
+} else {
+  function bundle () {
+    return browserify({
+      entries: [path.join(client, 'index.js')],
+    })
+    .transform(babelify, babelifyConfig)
+    .transform(uglifyify, {global: true})
+    .bundle()
+  }
+}
+
 gulp.task('app', () => {
   mkdirp.sync(build)
-  return browserify({
-    entries: [path.join(client, 'index.js')],
-    // fullPaths: true, // for disc
-    debug: true,
-  })
-  .transform(babelify, {presets: ['es2015']})
-  // .transform(uglifyify, {global: true})
-  .bundle()
-  .on('error', e => {
-    development && notifier.notify({
-      title: 'HackCampus',
-      message: e.message,
-    })
-    throw e
-  })
+  return bundle()
   .pipe(exorcist(path.join(build, 'app.js.map')))
   .pipe(source('app.js'))
   .pipe(gulp.dest(build))
