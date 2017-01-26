@@ -9,8 +9,6 @@ const wireFormats = require('../wireFormats')
 
 const api = require('./api')
 const Component = require('./component')
-const getCompleted = require('./getCompleted')
-const getFormResponses = require('./getFormResponses')
 
 const authenticate = require('./components/authenticate')
 const completedBar = require('./components/completedBar')
@@ -262,3 +260,29 @@ module.exports = Component({
     return completed
   },
 })
+
+// Returns an object of booleans indicating whether the given field is completed (ie. not started).
+const empty = x => x == null || x === ''
+function getCompleted (model, previousApplication) {
+  previousAppliation = previousApplication || {}
+  const completed = {}
+  for (let field in model.children) {
+    const {value, started} = model.children[field]
+    completed[field] = !empty(started ? value : previousAppliation[field])
+  }
+  return completed
+}
+
+// Extracts the raw values from fields.
+// Filters out all fields from an application that haven't been started,
+// so that we can do patch updates.
+function getFormResponses (model) {
+  const fields = {}
+  for (let field in model.children) {
+    const {value, started} = model.children[field]
+    if (started) { // only send through the ones that have actually been updated
+      fields[field] = value
+    }
+  }
+  return fields
+}
