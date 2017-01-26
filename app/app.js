@@ -35,6 +35,7 @@ application.routes(app)
 const shell = require('./shell')
 const clientApp = appName => (req, res) => res.send(shell(appName))
 app.get('/', clientApp('apply'))
+app.get('/vet', clientApp('vet'))
 
 // error handling & fallback route.
 app.use(errorHandler)

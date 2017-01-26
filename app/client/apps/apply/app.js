@@ -1,14 +1,14 @@
 const {pull, html} = require('inu')
 const isEmpty = require('lodash.isempty')
-const uninterrupted = require('../../helpers/pull-uninterrupted')
+const uninterrupted = require('../../lib/pull-uninterrupted')
 const u = require('updeep')
 const extend = require('xtend')
 
 const constants = require('../../../constants')
 const wireFormats = require('../../../wireFormats')
 
-const api = require('../../helpers/api')
-const Component = require('../../helpers/component')
+const api = require('../../lib/api')
+const Component = require('../../lib/component')
 
 const authenticate = require('../../components/authenticate')
 const completedBar = require('../../components/completedBar')

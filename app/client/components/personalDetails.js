@@ -6,8 +6,8 @@ const extend = require('xtend')
 
 const wireFormats = require('../../wireFormats')
 
-const api = require('../helpers/api')
-const Component = require('../helpers/component')
+const api = require('../lib/api')
+const Component = require('../lib/component')
 
 const choiceField = require('./choiceField')
 const link = require('./link')

@@ -1,6 +1,6 @@
 const test = require('ava')
 
-const Component = require('../helpers/component')
+const Component = require('../component')
 
 test('init without children', assert => {
   const component = Component({

@@ -4,7 +4,7 @@ const u = require('updeep')
 
 const wireFormats = require('../../wireFormats')
 
-const Component = require('../helpers/component')
+const Component = require('../lib/component')
 
 const choiceField = require('./choiceField')
 

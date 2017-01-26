@@ -1,7 +1,7 @@
 const {html} = require('inu')
 // const u = require('updeep')
 
-const Component = require('../helpers/component')
+const Component = require('../lib/component')
 
 const link = require('./link')
 

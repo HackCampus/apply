@@ -1,5 +1,5 @@
 const {html, pull, start} = require('inu')
-// const log = require('inu-log')
+const log = require('inu-log')
 
 const app = require('./app')
 
