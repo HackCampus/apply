@@ -95,7 +95,6 @@ module.exports = Component({
         return {model: newModel, effect: null}
       }
       case 'loadUserError': {
-        console.error(a.payload)
         return {model, effect: null}
       }
 
