@@ -1,4 +1,4 @@
-const shell = appName =>
+module.exports = appName =>
 `
 <!DOCTYPE html>
 <html>
@@ -30,5 +30,3 @@ ga('send', 'pageview');
 </body>
 </html>
 `
-
-module.exports = appName => (req, res) => res.send(shell(appName))

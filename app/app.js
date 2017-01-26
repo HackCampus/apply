@@ -33,7 +33,8 @@ application.routes(app)
 
 // client-side app routes
 const shell = require('./shell')
-app.get('/', shell('apply'))
+const clientApp = appName => (req, res) => res.send(shell(appName))
+app.get('/', clientApp('apply'))
 
 // error handling & fallback route.
 app.use(errorHandler)
