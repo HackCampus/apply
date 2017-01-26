@@ -7,6 +7,7 @@ const extend = require('xtend')
 const constants = require('../../../constants')
 const wireFormats = require('../../../wireFormats')
 
+const action = require('../../lib/action')
 const api = require('../../lib/api')
 const Component = require('../../lib/component')
 
@@ -18,8 +19,6 @@ const personalDetails = require('../../components/personalDetails')
 const questions = require('../../components/questions')
 const statusBar = require('../../components/statusBar')
 const techPreferences = require('../../components/techPreferences')
-
-const action = (type, payload) => ({type, payload})
 
 const noErrors = u({
   errorFields: u.constant({}), // FIXME if we don't add u.constant, fields never get removed because of how updeep works
