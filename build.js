@@ -25,11 +25,11 @@ const babelifyConfig = {
 }
 
 if (development) {
-  function bundle () {
+  function bundle (entryPath) {
     return browserify({
-      entries: [path.join(client, 'index.js')],
+      entries: [entryPath],
       fullPaths: true, // for disc
-      debug: true,
+      debug: true, // source maps
     })
     .transform(babelify, babelifyConfig)
     .bundle()
@@ -42,9 +42,10 @@ if (development) {
     })
   }
 } else {
-  function bundle () {
+  function bundle (entryPath) {
     return browserify({
-      entries: [path.join(client, 'index.js')],
+      entries: [entryPath],
+      debug: true, // source maps
     })
     .transform(babelify, babelifyConfig)
     .transform(uglifyify, {global: true})
@@ -54,7 +55,7 @@ if (development) {
 
 gulp.task('app', () => {
   mkdirp.sync(build)
-  return bundle()
+  return bundle(path.join(client, 'index.js'))
   .pipe(exorcist(path.join(build, 'app.js.map')))
   .pipe(source('app.js'))
   .pipe(gulp.dest(build))

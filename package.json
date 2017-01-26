@@ -8,7 +8,7 @@
   },
   "scripts": {
     "clean": "rm -rf app/build/",
-    "build-client": "npm run clean && node build.js",
+    "build-client": "npm run clean && NODE_ENV=production node build.js",
     "start": "npm run build-client && node app/index.js",
     "develop-server": "nodemon --ignore build/ --ignore client/ app/index.js | bunyan",
     "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ build.js",
