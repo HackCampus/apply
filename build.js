@@ -9,6 +9,7 @@ const gulp = require('gulp')
 const postcss = require('gulp-postcss')
 const sourcemaps = require('gulp-sourcemaps')
 const mkdirp = require('mkdirp')
+const notifier = require('node-notifier')
 const path = require('path')
 const precss = require('precss')
 const uglifyify = require('uglifyify')
@@ -30,7 +31,10 @@ gulp.task('app', () => {
   // .transform(uglifyify, {global: true})
   .bundle()
   .on('error', e => {
-    development && exec(`osascript -e 'display notification "${e.message}" with title "hackcampus"'`)
+    development && notifier.notify({
+      title: 'HackCampus',
+      message: e.message,
+    })
     throw e
   })
   .pipe(exorcist(path.join(build, 'app.js.map')))
@@ -47,7 +51,10 @@ gulp.task('styles', () =>
 )
 
 gulp.task('default', ['app', 'styles'], () => {
-  development && exec(`osascript -e 'display notification "build finished" with title "hackcampus"'`)
+  development && notifier.notify({
+    title: 'HackCampus',
+    message: 'build finished',
+  })
 })
 
 gulp.start.call(gulp, 'default')
