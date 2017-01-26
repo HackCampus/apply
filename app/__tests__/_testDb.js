@@ -1,4 +1,5 @@
 const knex = require('knex')
+const path = require('path')
 const rm = require('rimraf').sync
 
 const testDb = './test.sqlite'
@@ -16,12 +17,18 @@ module.exports = {
   teardownDb,
 }
 
-function setupDb () {
-  return db.migrate.latest({
-    directory: '../migrations',
-  }).then(() => db).catch(() => db)
+async function setupDb () {
+  try {
+    await db.migrate.latest({
+      directory: path.join(__dirname, '..', '..', 'migrations'),
+    })
+    return db
+  } catch (e) {
+    console.error(e)
+    throw err
+  }
 }
 
 function teardownDb (db) {
-  return db.raw('drop schema public cascade; create schema public; grant all on schema public to hackcampus; grant all on schema public to public;').catch(error => {})
+  return db.raw('drop owned by hackcampus;')
 }
