@@ -76,6 +76,7 @@
   },
   "devDependencies": {
     "ava": "https://github.com/avajs/ava.git",
+    "browserify-incremental": "^3.1.1",
     "hippie": "^0.5.0",
     "jsdom": "^9.9.1",
     "min-document": "^2.19.0",

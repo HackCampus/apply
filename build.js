@@ -1,6 +1,7 @@
 const autoprefixer = require('autoprefixer')
 const babelify = require('babelify')
 const browserify = require('browserify')
+const browserifyIncremental = require('browserify-incremental')
 const {exec} = require('child_process')
 const cssnano = require('cssnano')
 const exorcist = require('exorcist')
@@ -15,8 +16,8 @@ const precss = require('precss')
 const uglifyify = require('uglifyify')
 const source = require('vinyl-source-stream')
 
-const build = path.join('app', 'build')
-const client = path.join('app', 'client')
+const build = path.join(__dirname, 'app', 'build')
+const client = path.join(__dirname, 'app', 'client')
 
 const development = process.env.NODE_ENV !== 'production'
 
@@ -26,12 +27,16 @@ const babelifyConfig = {
 
 if (development) {
   function bundle (entryPath) {
-    return browserify({
+    return browserifyIncremental({
       entries: [entryPath],
       fullPaths: true, // for disc
       debug: true, // source maps
+      cacheFile: path.join(build, '.buildCache.json')
     })
     .transform(babelify, babelifyConfig)
+    .on('time', t => {
+      console.log(`client bundled in ${t}ms`)
+    })
     .bundle()
     .on('error', e => {
       notifier.notify({
@@ -41,7 +46,7 @@ if (development) {
       throw e
     })
   }
-} else {
+} else { // production
   function bundle (entryPath) {
     return browserify({
       entries: [entryPath],
