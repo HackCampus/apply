@@ -31,8 +31,9 @@ auth.routes(app)
 user.routes(app)
 application.routes(app)
 
-// single page app
-app.get('/', require('./shell'))
+// client-side app routes
+const shell = require('./shell')
+app.get('/', shell('apply'))
 
 // error handling & fallback route.
 app.use(errorHandler)

@@ -1,4 +1,5 @@
-const shell = `
+const shell = appName =>
+`
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,12 +13,12 @@ const shell = `
 <meta property="og:image:width" content="1656" />
 <meta property="og:image:height" content="628" />
 <title>HackCampus</title>
-<link rel="stylesheet" href="/static/apply.css" />
+<link rel="stylesheet" href="/static/${appName}.css" />
 <link href="https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto" rel="stylesheet">
 </head>
 <body>
 <div id="container"></div>
-<script src="/static/apply.js"></script>
+<script src="/static/${appName}.js"></script>
 <script>
 (function(s,p,y,w,a,r,e){s['GoogleAnalyticsObject']=a;s[a]=s[a]||function(){
 (s[a].q=s[a].q||[]).push(arguments)},s[a].l=1*new Date();r=p.createElement(y),
@@ -30,4 +31,4 @@ ga('send', 'pageview');
 </html>
 `
 
-module.exports = (req, res) => res.send(shell)
+module.exports = appName => (req, res) => res.send(shell(appName))
