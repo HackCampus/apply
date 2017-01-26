@@ -8,10 +8,10 @@
   },
   "scripts": {
     "clean": "rm -rf app/build/",
-    "build-client": "npm run clean && node app/build.js",
+    "build-client": "npm run clean && node build.js",
     "start": "npm run build-client && node app/index.js",
     "develop-server": "nodemon --ignore build/ --ignore client/ app/index.js | bunyan",
-    "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ app/build.js",
+    "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "test": "ava --timeout=30s --serial",
