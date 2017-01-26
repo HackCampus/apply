@@ -34,9 +34,7 @@ if (development) {
       cacheFile: path.join(build, '.buildCache.json')
     })
     .transform(babelify, babelifyConfig)
-    .on('time', t => {
-      console.log(`client bundled in ${t}ms`)
-    })
+    .on('log', console.log)
     .bundle()
     .on('error', e => {
       notifier.notify({
@@ -58,13 +56,19 @@ if (development) {
   }
 }
 
-gulp.task('app', () => {
-  mkdirp.sync(build)
-  return bundle(path.join(client, 'index.js'))
-  .pipe(exorcist(path.join(build, 'app.js.map')))
-  .pipe(source('app.js'))
-  .pipe(gulp.dest(build))
-})
+// entryPath is relative to `client` directory
+// bundleName output is relative to `build` directory
+function clientApp (entryPath, bundleName) {
+  return () => {
+    mkdirp.sync(build)
+    return bundle(path.join(client, 'index.js'))
+    .pipe(exorcist(path.join(build, `${bundleName}.map`)))
+    .pipe(source(bundleName))
+    .pipe(gulp.dest(build))
+  }
+}
+
+gulp.task('app', clientApp('index.js', 'app.js'))
 
 gulp.task('styles', () =>
   gulp.src(path.join(client, 'styles', '*.css'))
