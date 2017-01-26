@@ -68,7 +68,9 @@ function clientApp (entryPath, bundleName) {
   }
 }
 
-gulp.task('app', clientApp('apps/apply/index.js', 'apply.js'))
+gulp.task('apply', clientApp('apps/apply/index.js', 'apply.js'))
+gulp.task('vet', clientApp('apps/vet/index.js', 'vet.js'))
+gulp.task('clientApps', ['apply', 'vet'])
 
 gulp.task('styles', () =>
   gulp.src(path.join(client, 'styles', '*.css'))
@@ -78,7 +80,7 @@ gulp.task('styles', () =>
   .pipe(gulp.dest(build))
 )
 
-gulp.task('default', ['app', 'styles'], () => {
+gulp.task('default', ['clientApps', 'styles'], () => {
   development && notifier.notify({
     title: 'HackCampus',
     message: 'build finished',
