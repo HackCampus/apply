@@ -264,11 +264,11 @@ module.exports = Component({
 // Returns an object of booleans indicating whether the given field is completed (ie. not started).
 const empty = x => x == null || x === ''
 function getCompleted (model, previousApplication) {
-  previousAppliation = previousApplication || {}
+  previousApplication = previousApplication || {}
   const completed = {}
   for (let field in model.children) {
     const {value, started} = model.children[field]
-    completed[field] = !empty(started ? value : previousAppliation[field])
+    completed[field] = !empty(started ? value : previousApplication[field])
   }
   return completed
 }
