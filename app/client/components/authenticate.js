@@ -5,8 +5,8 @@ const u = require('updeep')
 
 const errors = require('../../errors')
 
-const api = require('../api')
-const Component = require('../component')
+const api = require('../helpers/api')
+const Component = require('../helpers/component')
 
 const link = require('./link')
 const validatedTextField = require('./validatedTextField')

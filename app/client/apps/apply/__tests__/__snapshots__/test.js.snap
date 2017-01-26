@@ -2155,102 +2155,102 @@ exports[`view - email/password 1`] = `
 `;
 
 exports[`view - finished application 1`] = `
-"<div class=\"apply\">
+"<div class="apply">
         <h1>Apply to HackCampus</h1>
-        <p>Welcome! This is the application form for the <a href=\"http://hackcampus.io/\">HackCampus internship programme</a>. If something doesn\'t work, we\'d appreciate it if you <a href=\"https://github.com/hackcampus/apply/issues\">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
-        <div class=\"step0\">
+        <p>Welcome! This is the application form for the <a href="http://hackcampus.io/">HackCampus internship programme</a>. If something doesn't work, we'd appreciate it if you <a href="https://github.com/hackcampus/apply/issues">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
+        <div class="step0">
         <h2>Step 0: Authenticate</h2>
-        <div><div class=\"authenticated\">
+        <div><div class="authenticated">
         You are authenticated as <strong>foo@bar.baz</strong>.
-        <div class=\"margin\">
-          <div class=\"field\"><p>Actions:</p><p>   - <a href=\"/signout\">Sign out</a></p><p>   - <a href=\"javascript:void(\'hey there ✌︎\')\">Change password</a></p></div>
+        <div class="margin">
+          <div class="field"><p>Actions:</p><p>   - <a href="/signout">Sign out</a></p><p>   - <a href="javascript:void('hey there ✌︎')">Change password</a></p></div>
         </div>
         
       </div></div>
       </div>
-        <div class=\"step1\">
+        <div class="step1">
         <h2>Step 1: Personal details</h2>
-        <div><div class=\"form\">
+        <div><div class="form">
         <h3>Basic information</h3>
-        <div class=\"field\"><span class=\"no-error\">first name:</span> <br />  Foo</div>
-        <div class=\"field\"><span class=\"no-error\">last name:</span> <br />  Bar</div>
-        <div class=\"field\"><span class=\"no-error\">contact email:</span> <span class=\"comment\"> // optional - only needed if different from your registration email</span><br />  foo@bar.baz</div>
-        <div class=\"field\"><span class=\"no-error\">gender:</span> <br />  other</div>
-        <div class=\"field\"><span class=\"no-error\">date of birth:</span> <span class=\"comment\"> // <a target=\"_blank\" href=\"http://www.cl.cam.ac.uk/~mgk25/iso-time.html\">YYYY-MM-DD</a></span><br />  1993-01-27</div>
+        <div class="field"><span class="no-error">first name:</span> <br />  Foo</div>
+        <div class="field"><span class="no-error">last name:</span> <br />  Bar</div>
+        <div class="field"><span class="no-error">contact email:</span> <span class="comment"> // optional - only needed if different from your registration email</span><br />  foo@bar.baz</div>
+        <div class="field"><span class="no-error">gender:</span> <br />  other</div>
+        <div class="field"><span class="no-error">date of birth:</span> <span class="comment"> // <a target="_blank" href="http://www.cl.cam.ac.uk/~mgk25/iso-time.html">YYYY-MM-DD</a></span><br />  1993-01-27</div>
         <h3>Your studies</h3>
-        <div class=\"field\"><span class=\"no-error\">university:</span> <br />  other (eg. international)</div>
+        <div class="field"><span class="no-error">university:</span> <br />  other (eg. international)</div>
         
-        <div class=\"field\"><span class=\"no-error\">course name:</span> <span class=\"comment\"> // eg. \"Computer Science\", \"Physics\"</span><br />  MSc in Unit Testing (Minor in Integration Testing)</div>
-        <div class=\"field\"><span class=\"no-error\">course type:</span> <br />  other</div>
+        <div class="field"><span class="no-error">course name:</span> <span class="comment"> // eg. "Computer Science", "Physics"</span><br />  MSc in Unit Testing (Minor in Integration Testing)</div>
+        <div class="field"><span class="no-error">course type:</span> <br />  other</div>
         
-        <div class=\"field\"><span class=\"no-error\">year of study:</span> <br />  other</div>
+        <div class="field"><span class="no-error">year of study:</span> <br />  other</div>
         
-        <div class=\"field\"><span class=\"no-error\">(expected) year of graduation:</span> <br />  other</div>
+        <div class="field"><span class="no-error">(expected) year of graduation:</span> <br />  other</div>
         
         <h3>Links</h3>
         <p>Please make sure your CV is publicly accessible and is up to date. Not having a working CV link will greatly reduce your chances of being accepted in the programme.</p>
-        <div class=\"field\"><span class=\"no-error\">link to your CV:</span> <br />  http://lachenmayer.me</div>
-        <div class=\"field\"><span class=\"no-error\">website:</span> <span class=\"comment\"> // optional</span><br />  http://lachenmayer.me</div>
-        <div class=\"field\"><span>GitHub:</span><br />  connected :)</div>
-        <div class=\"field\"><span>LinkedIn:</span><br />  <a href=\"javascript:void(\'hey there ✌︎\')\">connect your account</a></div>
+        <div class="field"><span class="no-error">link to your CV:</span> <br />  http://lachenmayer.me</div>
+        <div class="field"><span class="no-error">website:</span> <span class="comment"> // optional</span><br />  http://lachenmayer.me</div>
+        <div class="field"><span>GitHub:</span><br />  connected :)</div>
+        <div class="field"><span>LinkedIn:</span><br />  <a href="javascript:void('hey there ✌︎')">connect your account</a></div>
         
         <h3>Where did you find out about us?</h3>
-        <p>If you were referred by a friend, or a previous HackCampus intern, we\'d love to know their name. You obviously don\'t have to provide this if you or they don\'t want to!</p>
-        <div class=\"field\"><span class=\"no-error\">referer:</span> <br />  other</div>
-        <div class=\"field\"><span class=\"no-error\">any details:</span> <span class=\"comment\"> // eg. name of the hackathon/event</span><br />  i made it</div>
+        <p>If you were referred by a friend, or a previous HackCampus intern, we'd love to know their name. You obviously don't have to provide this if you or they don't want to!</p>
+        <div class="field"><span class="no-error">referer:</span> <br />  other</div>
+        <div class="field"><span class="no-error">any details:</span> <span class="comment"> // eg. name of the hackathon/event</span><br />  i made it</div>
       </div></div>
       </div>
-        <div class=\"step2\">
+        <div class="step2">
         <h2>Step 2: Tech preferences</h2>
-        <div><div class=\"techpreferences\">
+        <div><div class="techpreferences">
         <p>Help us match you to the perfect role by telling us what your technologies of choice are.</p>
         <p><strong>0:</strong> I have never used <em>X</em>.</p>
         <p><strong>1:</strong> I have read about <em>X</em>, or I have only used it once, or have used it and would prefer not to work with it.</p>
         <p><strong>2:</strong> I am familiar with <em>X</em>, and/or would be comfortable taking on a role where I have to use <em>X</em>.</p>
         <p><strong>3:</strong> I am completely proficient in <em>X</em>, ie. I have used it for several projects.</p>
-        <p><strong>Note:</strong> <em>You\'re obviously not expected to know all of these technologies! This is a wide cross-section of technologies that the startups taking part in the programme are working with. We only use this to help us to find the right role for you, eg. if you prefer frontend work to backend work. Likewise, if you don\'t find your favourite tech here, don\'t worry - just tell us about what you\'ve built with it in the next section! :)</em></p>
+        <p><strong>Note:</strong> <em>You're obviously not expected to know all of these technologies! This is a wide cross-section of technologies that the startups taking part in the programme are working with. We only use this to help us to find the right role for you, eg. if you prefer frontend work to backend work. Likewise, if you don't find your favourite tech here, don't worry - just tell us about what you've built with it in the next section! :)</em></p>
         <table>
           <tr>
             <th>Technology</th>
             <th>Preference</th>
           </tr>
-          <tr class=\"field\"><td>Android</td><td>3</td></tr><tr class=\"field\"><td>Angular</td><td>0</td></tr><tr class=\"field\"><td>C#</td><td>3</td></tr><tr class=\"field\"><td>CSS</td><td>3</td></tr><tr class=\"field\"><td>Django</td><td>3</td></tr><tr class=\"field\"><td>Docker</td><td>3</td></tr><tr class=\"field\"><td>ElasticSearch</td><td>3</td></tr><tr class=\"field\"><td>Go</td><td>3</td></tr><tr class=\"field\"><td>Groovy / Grails</td><td>3</td></tr><tr class=\"field\"><td>Haskell</td><td>3</td></tr><tr class=\"field\"><td>iOS</td><td>3</td></tr><tr class=\"field\"><td>Java</td><td>3</td></tr><tr class=\"field\"><td>JavaScript</td><td>3</td></tr><tr class=\"field\"><td>Laravel</td><td>3</td></tr><tr class=\"field\"><td>MongoDB</td><td>3</td></tr><tr class=\"field\"><td>MySQL</td><td>3</td></tr><tr class=\"field\"><td>Neo4J</td><td>3</td></tr><tr class=\"field\"><td>Node.js</td><td>3</td></tr><tr class=\"field\"><td>Objective-C</td><td>3</td></tr><tr class=\"field\"><td>PHP</td><td>3</td></tr><tr class=\"field\"><td>PostgreSQL</td><td>3</td></tr><tr class=\"field\"><td>Python</td><td>3</td></tr><tr class=\"field\"><td>RabbitMQ</td><td>3</td></tr><tr class=\"field\"><td>Rails</td><td>3</td></tr><tr class=\"field\"><td>React</td><td>3</td></tr><tr class=\"field\"><td>Redis</td><td>3</td></tr><tr class=\"field\"><td>Ruby</td><td>3</td></tr><tr class=\"field\"><td>Scala</td><td>3</td></tr><tr class=\"field\"><td>Swift</td><td>3</td></tr>
+          <tr class="field"><td>Android</td><td>3</td></tr><tr class="field"><td>Angular</td><td>0</td></tr><tr class="field"><td>C#</td><td>3</td></tr><tr class="field"><td>CSS</td><td>3</td></tr><tr class="field"><td>Django</td><td>3</td></tr><tr class="field"><td>Docker</td><td>3</td></tr><tr class="field"><td>ElasticSearch</td><td>3</td></tr><tr class="field"><td>Go</td><td>3</td></tr><tr class="field"><td>Groovy / Grails</td><td>3</td></tr><tr class="field"><td>Haskell</td><td>3</td></tr><tr class="field"><td>iOS</td><td>3</td></tr><tr class="field"><td>Java</td><td>3</td></tr><tr class="field"><td>JavaScript</td><td>3</td></tr><tr class="field"><td>Laravel</td><td>3</td></tr><tr class="field"><td>MongoDB</td><td>3</td></tr><tr class="field"><td>MySQL</td><td>3</td></tr><tr class="field"><td>Neo4J</td><td>3</td></tr><tr class="field"><td>Node.js</td><td>3</td></tr><tr class="field"><td>Objective-C</td><td>3</td></tr><tr class="field"><td>PHP</td><td>3</td></tr><tr class="field"><td>PostgreSQL</td><td>3</td></tr><tr class="field"><td>Python</td><td>3</td></tr><tr class="field"><td>RabbitMQ</td><td>3</td></tr><tr class="field"><td>Rails</td><td>3</td></tr><tr class="field"><td>React</td><td>3</td></tr><tr class="field"><td>Redis</td><td>3</td></tr><tr class="field"><td>Ruby</td><td>3</td></tr><tr class="field"><td>Scala</td><td>3</td></tr><tr class="field"><td>Swift</td><td>3</td></tr>
         </table>
       </div></div>
       </div>
-        <div class=\"step3\">
+        <div class="step3">
         <h2>Step 3: Personal &amp; technical questions</h2>
-        <div><div class=\"questions\">
+        <div><div class="questions">
         <p>The answers you give here help us assess your technical skills as well as your attitude towards software development.</p>
-        <p>You can use Markdown to format your answers, eg. to add links. If you\'ve never used Markdown before, don\'t worry - it\'s really simple! There\'s a <a target=\"_blank\" href=\"https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet\">cheat sheet</a> here.</p>
+        <p>You can use Markdown to format your answers, eg. to add links. If you've never used Markdown before, don't worry - it's really simple! There's a <a target="_blank" href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">cheat sheet</a> here.</p>
 
-        <div class=\"question\">
-      <h3 class=\"\">What is the coolest thing you have built?</h3>
+        <div class="question">
+      <h3 class="">What is the coolest thing you have built?</h3>
       <div>
-          <p>This could be a hackathon project, or something you have been building on weekends and evenings. Ideally this shouldn\'t be a school project (unless you came up with the idea yourself!). If you have relevant work experience, definitely mention it too.</p>
-          <p><em>This is the most useful question for us - the best answers contain links to code you\'ve written, eg. on GitHub or your website, or links to working projects!</em></p>
+          <p>This could be a hackathon project, or something you have been building on weekends and evenings. Ideally this shouldn't be a school project (unless you came up with the idea yourself!). If you have relevant work experience, definitely mention it too.</p>
+          <p><em>This is the most useful question for us - the best answers contain links to code you've written, eg. on GitHub or your website, or links to working projects!</em></p>
           </div>
-      <div class=\"markdownTextArea\">
+      <div class="markdownTextArea">
         
-        <div class=\"previewContainer\"><div class=\"preview\"><div><p>here\'s an answer with some <em>seriously <strong>cool</strong></em> <a href=\"http://lachenmayer.me\">markdown</a>.</p>
+        <div class="previewContainer"><div class="preview"><div><p>here's an answer with some <em>seriously <strong>cool</strong></em> <a href="http://lachenmayer.me">markdown</a>.</p>
 </div></div></div>
       </div>
       </div>
 
-        <div class=\"question\">
-      <h3 class=\"\">What technology excites you the most?</h3>
+        <div class="question">
+      <h3 class="">What technology excites you the most?</h3>
       <div>
           <p>We want to bring together people who believe that technology can always be improved - some amazing technological advancements are just around the corner. What technology excites you the most? Why is it so exciting?</p>
           </div>
-      <div class=\"markdownTextArea\">
+      <div class="markdownTextArea">
         
-        <div class=\"previewContainer\"><div class=\"preview\"><div><p>here\'s a second answer with some <em>seriously <strong>cool</strong></em> <a href=\"http://lachenmayer.me\">markdown</a>.</p>
+        <div class="previewContainer"><div class="preview"><div><p>here's a second answer with some <em>seriously <strong>cool</strong></em> <a href="http://lachenmayer.me">markdown</a>.</p>
 </div></div></div>
       </div>
       </div>
 
-        <div class=\"question\">
-      <h3 class=\"\">Can you get from a vague idea to a working system?</h3>
+        <div class="question">
+      <h3 class="">Can you get from a vague idea to a working system?</h3>
       <div>
           <p>Take a look at the following idea for a web app and tell us how you would implement it. The details are intentionally vague - in a startup environment, you often have to take initiative and come up with your own solutions to badly defined problems.</p>
           <em>
@@ -2270,233 +2270,233 @@ exports[`view - finished application 1`] = `
             <li>How long would this take to build?</li>
           </ul>
           </div>
-      <div class=\"markdownTextArea\">
+      <div class="markdownTextArea">
         
-        <div class=\"previewContainer\"><div class=\"preview\"><div><p>here\'s a third answer with some <em>seriously <strong>cool</strong></em> <a href=\"http://lachenmayer.me\">markdown</a>.</p>
+        <div class="previewContainer"><div class="preview"><div><p>here's a third answer with some <em>seriously <strong>cool</strong></em> <a href="http://lachenmayer.me">markdown</a>.</p>
 </div></div></div>
       </div>
       </div>
 
-        <div class=\"question\">
-      <h3 class=\"\">Do you have an eye for high-quality code?</h3>
+        <div class="question">
+      <h3 class="">Do you have an eye for high-quality code?</h3>
       <div>
           <p>Imagine you have to give your team-mate a code review for the following code snippet.</p>
           <p>What comments would you give?</p>
-          <div class=\"codeReview\">
-<div id=\"gist41141105\" class=\"gist\">
-<div class=\"gist-file\">
-<div class=\"gist-data\">
-<div class=\"js-gist-file-update-container js-task-list-container file-box\">
-<div id=\"file-codereview-js\" class=\"file\">
-<div itemprop=\"text\" class=\"blob-wrapper data type-javascript\">
-<table data-tab-size=\"8\" class=\"highlight tab-size js-file-line-container\">
+          <div class="codeReview">
+<div id="gist41141105" class="gist">
+<div class="gist-file">
+<div class="gist-data">
+<div class="js-gist-file-update-container js-task-list-container file-box">
+<div id="file-codereview-js" class="file">
+<div itemprop="text" class="blob-wrapper data type-javascript">
+<table data-tab-size="8" class="highlight tab-size js-file-line-container">
 <tbody><tr>
-<td id=\"file-codereview-js-L1\" data-line-number=\"1\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC1\" class=\"blob-code blob-code-inner js-file-line\"><span class=\"pl-c\">// returns strings in short date format like \"Dec 10, 2012\"</span></td>
+<td id="file-codereview-js-L1" data-line-number="1" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC1" class="blob-code blob-code-inner js-file-line"><span class="pl-c">// returns strings in short date format like "Dec 10, 2012"</span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L2\" data-line-number=\"2\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC2\" class=\"blob-code blob-code-inner js-file-line\">  <span class=\"pl-k\">function</span> <span class=\"pl-en\">convertDateToEnglishString</span>(<span class=\"pl-smi\">x</span>, <span class=\"pl-smi\">y</span>, <span class=\"pl-smi\">z</span>)</td>
+<td id="file-codereview-js-L2" data-line-number="2" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC2" class="blob-code blob-code-inner js-file-line">  <span class="pl-k">function</span> <span class="pl-en">convertDateToEnglishString</span>(<span class="pl-smi">x</span>, <span class="pl-smi">y</span>, <span class="pl-smi">z</span>)</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L3\" data-line-number=\"3\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC3\" class=\"blob-code blob-code-inner js-file-line\">  {</td>
+<td id="file-codereview-js-L3" data-line-number="3" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC3" class="blob-code blob-code-inner js-file-line">  {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L4\" data-line-number=\"4\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC4\" class=\"blob-code blob-code-inner js-file-line\">
+<td id="file-codereview-js-L4" data-line-number="4" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC4" class="blob-code blob-code-inner js-file-line">
 </td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L5\" data-line-number=\"5\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC5\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">var</span> d <span class=\"pl-k\">=</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span><span class=\"pl-pds\">\"</span></span>;</td>
+<td id="file-codereview-js-L5" data-line-number="5" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC5" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">var</span> d <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>;</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L6\" data-line-number=\"6\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC6\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">0</span>) {</td>
+<td id="file-codereview-js-L6" data-line-number="6" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC6" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">0</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L7\" data-line-number=\"7\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC7\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Jan<span class=\"pl-pds\">\"</span></span>;</td>
+<td id="file-codereview-js-L7" data-line-number="7" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC7" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Jan<span class="pl-pds">"</span></span>;</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L8\" data-line-number=\"8\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC8\" class=\"blob-code blob-code-inner js-file-line\">    } <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">1</span>) {</td>
+<td id="file-codereview-js-L8" data-line-number="8" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC8" class="blob-code blob-code-inner js-file-line">    } <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">1</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L9\" data-line-number=\"9\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC9\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Feb<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L9" data-line-number="9" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC9" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Feb<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L10\" data-line-number=\"10\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC10\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L10" data-line-number="10" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC10" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L11\" data-line-number=\"11\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC11\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">2</span>) {</td>
+<td id="file-codereview-js-L11" data-line-number="11" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC11" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">2</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L12\" data-line-number=\"12\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC12\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Mar<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L12" data-line-number="12" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC12" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Mar<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L13\" data-line-number=\"13\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC13\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L13" data-line-number="13" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC13" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L14\" data-line-number=\"14\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC14\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">3</span>) {</td>
+<td id="file-codereview-js-L14" data-line-number="14" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC14" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">3</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L15\" data-line-number=\"15\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC15\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Apr<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L15" data-line-number="15" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC15" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Apr<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L16\" data-line-number=\"16\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC16\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L16" data-line-number="16" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC16" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L17\" data-line-number=\"17\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC17\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">4</span>) {</td>
+<td id="file-codereview-js-L17" data-line-number="17" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC17" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">4</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L18\" data-line-number=\"18\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC18\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>May<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L18" data-line-number="18" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC18" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>May<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L19\" data-line-number=\"19\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC19\" class=\"blob-code blob-code-inner js-file-line\">    } <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">5</span>) {</td>
+<td id="file-codereview-js-L19" data-line-number="19" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC19" class="blob-code blob-code-inner js-file-line">    } <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">5</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L20\" data-line-number=\"20\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC20\" class=\"blob-code blob-code-inner js-file-line\">       d <span class=\"pl-k\">+=</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>June<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L20" data-line-number="20" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC20" class="blob-code blob-code-inner js-file-line">       d <span class="pl-k">+=</span> <span class="pl-s"><span class="pl-pds">"</span>June<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L21\" data-line-number=\"21\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC21\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L21" data-line-number="21" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC21" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L22\" data-line-number=\"22\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC22\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">if</span> ( y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">6</span>)</td>
+<td id="file-codereview-js-L22" data-line-number="22" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC22" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">if</span> ( y <span class="pl-k">==</span> <span class="pl-c1">6</span>)</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L23\" data-line-number=\"23\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC23\" class=\"blob-code blob-code-inner js-file-line\">    {</td>
+<td id="file-codereview-js-L23" data-line-number="23" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC23" class="blob-code blob-code-inner js-file-line">    {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L24\" data-line-number=\"24\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC24\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Jul<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L24" data-line-number="24" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC24" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Jul<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L25\" data-line-number=\"25\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC25\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L25" data-line-number="25" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC25" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L26\" data-line-number=\"26\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC26\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">7</span>) {</td>
+<td id="file-codereview-js-L26" data-line-number="26" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC26" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">7</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L27\" data-line-number=\"27\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC27\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Aug<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L27" data-line-number="27" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC27" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Aug<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L28\" data-line-number=\"28\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC28\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L28" data-line-number="28" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC28" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L29\" data-line-number=\"29\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC29\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">8</span>) {</td>
+<td id="file-codereview-js-L29" data-line-number="29" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC29" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">8</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L30\" data-line-number=\"30\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC30\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Sep<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L30" data-line-number="30" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC30" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Sep<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L31\" data-line-number=\"31\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC31\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L31" data-line-number="31" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC31" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L32\" data-line-number=\"32\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC32\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">9</span>) {</td>
+<td id="file-codereview-js-L32" data-line-number="32" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC32" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">9</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L33\" data-line-number=\"33\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC33\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Oct<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L33" data-line-number="33" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC33" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Oct<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L34\" data-line-number=\"34\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC34\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L34" data-line-number="34" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC34" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L35\" data-line-number=\"35\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC35\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">10</span>) {</td>
+<td id="file-codereview-js-L35" data-line-number="35" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC35" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">10</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L36\" data-line-number=\"36\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC36\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Nov<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L36" data-line-number="36" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC36" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Nov<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L37\" data-line-number=\"37\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC37\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L37" data-line-number="37" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC37" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L38\" data-line-number=\"38\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC38\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">else</span> <span class=\"pl-k\">if</span> (y <span class=\"pl-k\">==</span> <span class=\"pl-c1\">11</span>) {</td>
+<td id="file-codereview-js-L38" data-line-number="38" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC38" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">else</span> <span class="pl-k">if</span> (y <span class="pl-k">==</span> <span class="pl-c1">11</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L39\" data-line-number=\"39\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC39\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">=</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>Dec<span class=\"pl-pds\">\"</span></span></td>
+<td id="file-codereview-js-L39" data-line-number="39" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC39" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">=</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>Dec<span class="pl-pds">"</span></span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L40\" data-line-number=\"40\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC40\" class=\"blob-code blob-code-inner js-file-line\">    } <span class=\"pl-k\">else</span> <span class=\"pl-en\">alert</span>(<span class=\"pl-s\"><span class=\"pl-pds\">\"</span>error!<span class=\"pl-pds\">\"</span></span>);</td>
+<td id="file-codereview-js-L40" data-line-number="40" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC40" class="blob-code blob-code-inner js-file-line">    } <span class="pl-k">else</span> <span class="pl-en">alert</span>(<span class="pl-s"><span class="pl-pds">"</span>error!<span class="pl-pds">"</span></span>);</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L41\" data-line-number=\"41\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC41\" class=\"blob-code blob-code-inner js-file-line\">
+<td id="file-codereview-js-L41" data-line-number="41" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC41" class="blob-code blob-code-inner js-file-line">
 </td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L42\" data-line-number=\"42\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC42\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">if</span> (z <span class=\"pl-k\">&lt;</span> <span class=\"pl-c1\">10</span>) {</td>
+<td id="file-codereview-js-L42" data-line-number="42" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC42" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">if</span> (z <span class="pl-k">&lt;</span> <span class="pl-c1">10</span>) {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L43\" data-line-number=\"43\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC43\" class=\"blob-code blob-code-inner js-file-line\">      <span class=\"pl-c\">// Add 0 to day</span></td>
+<td id="file-codereview-js-L43" data-line-number="43" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC43" class="blob-code blob-code-inner js-file-line">      <span class="pl-c">// Add 0 to day</span></td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L44\" data-line-number=\"44\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC44\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">+=</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span> 0<span class=\"pl-pds\">\"</span></span> <span class=\"pl-k\">+</span> z;</td>
+<td id="file-codereview-js-L44" data-line-number="44" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC44" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">+=</span> <span class="pl-s"><span class="pl-pds">"</span> 0<span class="pl-pds">"</span></span> <span class="pl-k">+</span> z;</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L45\" data-line-number=\"45\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC45\" class=\"blob-code blob-code-inner js-file-line\">    } <span class=\"pl-k\">else</span> {</td>
+<td id="file-codereview-js-L45" data-line-number="45" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC45" class="blob-code blob-code-inner js-file-line">    } <span class="pl-k">else</span> {</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L46\" data-line-number=\"46\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC46\" class=\"blob-code blob-code-inner js-file-line\">      d <span class=\"pl-k\">+=</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span> <span class=\"pl-pds\">\"</span></span> <span class=\"pl-k\">+</span> z;</td>
+<td id="file-codereview-js-L46" data-line-number="46" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC46" class="blob-code blob-code-inner js-file-line">      d <span class="pl-k">+=</span> <span class="pl-s"><span class="pl-pds">"</span> <span class="pl-pds">"</span></span> <span class="pl-k">+</span> z;</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L47\" data-line-number=\"47\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC47\" class=\"blob-code blob-code-inner js-file-line\">    }</td>
+<td id="file-codereview-js-L47" data-line-number="47" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC47" class="blob-code blob-code-inner js-file-line">    }</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L48\" data-line-number=\"48\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC48\" class=\"blob-code blob-code-inner js-file-line\">
+<td id="file-codereview-js-L48" data-line-number="48" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC48" class="blob-code blob-code-inner js-file-line">
 </td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L49\" data-line-number=\"49\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC49\" class=\"blob-code blob-code-inner js-file-line\">
+<td id="file-codereview-js-L49" data-line-number="49" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC49" class="blob-code blob-code-inner js-file-line">
 </td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L50\" data-line-number=\"50\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC50\" class=\"blob-code blob-code-inner js-file-line\">    <span class=\"pl-k\">return</span> d <span class=\"pl-k\">+</span> <span class=\"pl-s\"><span class=\"pl-pds\">\"</span>, <span class=\"pl-pds\">\"</span></span> <span class=\"pl-k\">+</span> x;</td>
+<td id="file-codereview-js-L50" data-line-number="50" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC50" class="blob-code blob-code-inner js-file-line">    <span class="pl-k">return</span> d <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>, <span class="pl-pds">"</span></span> <span class="pl-k">+</span> x;</td>
 </tr>
 <tr>
-<td id=\"file-codereview-js-L51\" data-line-number=\"51\" class=\"blob-num js-line-number\"></td>
-<td id=\"file-codereview-js-LC51\" class=\"blob-code blob-code-inner js-file-line\">  }</td>
+<td id="file-codereview-js-L51" data-line-number="51" class="blob-num js-line-number"></td>
+<td id="file-codereview-js-LC51" class="blob-code blob-code-inner js-file-line">  }</td>
 </tr>
 </tbody></table>
 </div>
@@ -2516,15 +2516,15 @@ exports[`view - finished application 1`] = `
             <li>Should your team-mate have written this function in the first place?</li>
           </ul>
           </div>
-      <div class=\"markdownTextArea\">
+      <div class="markdownTextArea">
         
-        <div class=\"previewContainer\"><div class=\"preview\"><div><p>it\'s perfect m8.</p>
+        <div class="previewContainer"><div class="preview"><div><p>it's perfect m8.</p>
 </div></div></div>
       </div>
       </div>
 
-        <div class=\"question\">
-      <h3 class=\"\">What would your perfect role look like?</h3>
+        <div class="question">
+      <h3 class="">What would your perfect role look like?</h3>
       <div>
           <p>We want to find the perfect role for you this summer. We will attempt to match you with companies based on the technologies you have mentioned, as well as the answers you have given in the rest of the questionnaire. This is an opportunity for us to give us some more information on what you would really want to do, for example:</p>
           <ul>
@@ -2533,32 +2533,32 @@ exports[`view - finished application 1`] = `
             <li>Is there anything you definitely do not want to do?</li>
             <li>Did a specific company really catch your eye?</li>
           </ul>
-          <p>Of course, if you\'re not fussy, you don\'t have to answer this question.</p>
+          <p>Of course, if you're not fussy, you don't have to answer this question.</p>
           </div>
-      <div class=\"markdownTextArea\">
+      <div class="markdownTextArea">
         
-        <div class=\"previewContainer\"><div class=\"preview\"><div><p>anything goes.</p>
+        <div class="previewContainer"><div class="preview"><div><p>anything goes.</p>
 </div></div></div>
       </div>
       </div>
       </div></div>
       </div>
-        <div class=\"step4\">
+        <div class="step4">
         <h2>Step 4: Finish your application</h2>
-        <div><div class=\"finishApplication\">
-          <p>That\'s it! Thanks a lot for taking the time to complete the application.</p>
+        <div><div class="finishApplication">
+          <p>That's it! Thanks a lot for taking the time to complete the application.</p>
           <p>We have received your application.</p>
           <p>We will be in touch with you by the end of January latest, letting you know how your application went.</p>
         </div></div>
       </div>
-        <div class=\"statusBar status\"></div>
-        <div class=\"completedBar\">
-      <div class=\"personalDetails\">
-            <div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div>
-          </div><div class=\"techPreferences\">
-            <div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div>
-          </div><div class=\"questions\">
-            <div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div><div class=\"complete\"></div>
+        <div class="statusBar status"></div>
+        <div class="completedBar">
+      <div class="personalDetails">
+            <div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div>
+          </div><div class="techPreferences">
+            <div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div>
+          </div><div class="questions">
+            <div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div><div class="complete"></div>
           </div>
     </div>
       </div>"
@@ -2599,46 +2599,6 @@ exports[`view - initial 1`] = `
             <div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div>
           </div><div class=\"questions\">
             <div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div><div class=\"incomplete\"></div>
-          </div>
-    </div>
-      </div>"
-`;
-
-exports[`view 1`] = `
-"<div class="apply">
-        <h1>Apply to HackCampus</h1>
-        <p>Welcome! This is the application form for the <a href="http://hackcampus.io/">HackCampus internship programme</a>. If something doesn't work, we'd appreciate it if you <a href="https://github.com/hackcampus/apply/issues">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
-        <div class="step0">
-        <h2>Step 0: Authenticate</h2>
-        <div><div class="form">
-        <div><a href="javascript:void('hey there ✌︎')">Authenticate with GitHub</a> | <a href="javascript:void('hey there ✌︎')">Authenticate with email/password</a></div>
-        
-      </div></div>
-      </div>
-        <div class="step1">
-        <h2>Step 1: Personal details</h2>
-        <div></div>
-      </div>
-        <div class="step2">
-        <h2>Step 2: Tech preferences</h2>
-        <div></div>
-      </div>
-        <div class="step3">
-        <h2>Step 3: Personal &amp; technical questions</h2>
-        <div></div>
-      </div>
-        <div class="step4">
-        <h2>Step 4: Finish your application</h2>
-        <div></div>
-      </div>
-        <div class="statusBar status"></div>
-        <div class="completedBar">
-      <div class="personalDetails">
-            <div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div>
-          </div><div class="techPreferences">
-            <div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div>
-          </div><div class="questions">
-            <div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div><div class="incomplete"></div>
           </div>
     </div>
       </div>"

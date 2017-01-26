@@ -4,7 +4,7 @@ const u = require('updeep')
 
 const wireFormats = require('../../wireFormats')
 
-const Component = require('../component')
+const Component = require('../helpers/component')
 
 const codeReview = require('./codeReview')
 const markdownTextArea = require('./markdownTextArea')
