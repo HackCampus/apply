@@ -7,11 +7,6 @@ const path = require('path')
 const env = require('./env')
 const logger = require('./logger')
 
-const models = require('./database')
-const application = require('./routes/application')(models)
-const auth = require('./routes/auth')(models)
-const user = require('./routes/user')(models)
-
 const errorHandler = require('./middlewares/errors')
 const limitToMatchers = require('./middlewares/limitToMatchers')
 const requestLogger = require('./middlewares/requestLogger')
@@ -27,9 +22,15 @@ app.use('/static', express.static(path.join(__dirname, 'build')))
 app.disable('x-powered-by')
 
 // routes
-auth.routes(app)
-user.routes(app)
+const models = require('./database')
+const application = require('./routes/application')(models)
 application.routes(app)
+const auth = require('./routes/auth')(models)
+auth.routes(app)
+const user = require('./routes/user')(models)
+user.routes(app)
+const vetting = require('./routes/vetting')(models)
+vetting.routes(app)
 
 // client-side app routes
 const shell = require('./shell')
