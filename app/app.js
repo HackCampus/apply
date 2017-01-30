@@ -6,7 +6,6 @@ const path = require('path')
 
 const env = require('./env')
 const logger = require('./logger')
-const roles = require('./roles')
 
 const models = require('./database')
 const application = require('./routes/application')(models)
@@ -14,7 +13,7 @@ const auth = require('./routes/auth')(models)
 const user = require('./routes/user')(models)
 
 const errorHandler = require('./middlewares/errors')
-const limitToRole = require('./middlewares/limitToRole')
+const limitToMatchers = require('./middlewares/limitToMatchers')
 const requestLogger = require('./middlewares/requestLogger')
 const session = require('./middlewares/session')
 
@@ -36,14 +35,7 @@ application.routes(app)
 const shell = require('./shell')
 const clientApp = appName => (req, res) => res.send(shell(appName))
 app.get('/', clientApp('apply'))
-app.get('/vet', limitToRole(roles.matcher), clientApp('vet'), (error, req, res, next) => {
-  if (error.status && error.status === 'Unauthorized') {
-    return clientApp('login')(req, res)
-  } else {
-    return next(error)
-  }
-})
-app.get('/vet', clientApp('login')) // unauthorized users
+app.get('/vet', limitToMatchers(clientApp('login')), clientApp('vet'))
 
 // error handling & fallback route.
 app.use(errorHandler)
