@@ -16,6 +16,7 @@ module.exports = models => {
           res.json({
             id: user.id,
             email: user.get('email'),
+            role: user.get('role'),
             connectedAccounts,
           })
         })

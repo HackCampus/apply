@@ -41,7 +41,7 @@ module.exports = function Component (component) {
       return {model, effect: maybeEffects}
     },
     update (model, action) {
-      if (action.child && action.child in self.children && model.children) {
+      if (action && action.child && action.child in self.children && model.children) {
         const {child, action: childAction} = action
         const {model: childModel, effect: childEffect} = self.children[child].update(model.children[child], childAction)
         const newModel = u.updateIn(['children', child], childModel, model)

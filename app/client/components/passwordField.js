@@ -5,7 +5,7 @@ const extend = require('xtend')
 
 const validatedTextField = require('./validatedTextField')
 
-const defaultSchema = {type: 'string', minLength: 6}
+const defaultSchema = {type: 'string'}
 const defaultSize = 3
 
 module.exports = (schema = defaultSchema) => extend(validatedTextField(schema), {
