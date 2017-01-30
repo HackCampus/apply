@@ -13,6 +13,7 @@ module.exports = appName =>
 <meta property="og:image:width" content="1656" />
 <meta property="og:image:height" content="628" />
 <title>HackCampus</title>
+<link rel="stylesheet" href="/static/common.css" />
 <link rel="stylesheet" href="/static/${appName}.css" />
 <link href="https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto" rel="stylesheet">
 </head>

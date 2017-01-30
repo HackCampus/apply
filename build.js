@@ -69,8 +69,13 @@ function clientApp (entryPath, bundleName) {
 }
 
 gulp.task('apply', clientApp('apps/apply/index.js', 'apply.js'))
+gulp.task('login', clientApp('apps/login/index.js', 'login.js'))
 gulp.task('vet', clientApp('apps/vet/index.js', 'vet.js'))
-gulp.task('clientApps', ['apply', 'vet'])
+gulp.task('clientApps', [
+  'apply',
+  'login',
+  'vet',
+])
 
 gulp.task('styles', () =>
   gulp.src(path.join(client, 'styles', '*.css'))

@@ -1,0 +1,199 @@
+/* general styles */
+
+#container {
+  max-width: 768px;
+  margin: auto;
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.6;
+}
+
+h2 {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.5em;
+}
+h2::before {
+  color: #aaa;
+  font-weight: normal;
+  content: '# ';
+}
+
+h3 {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1em;
+}
+h3::before {
+  color: #aaa;
+  font-weight: normal;
+  content: '## ';
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+a {
+  color: black;
+  border-bottom: 1px solid rgb(255, 110, 45);
+  text-decoration: none;
+  font-weight: bold;
+  cursor: pointer; /* a lot of our links don't go anywhere... */
+}
+a:visited {
+  color: black;
+}
+a.disabled {
+  cursor: inherit;
+  border-bottom: 1px solid #aaa;
+}
+
+ul {
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+}
+li::before {
+  content: '- ';
+}
+
+/* form */
+
+.field {
+  font-family: 'Roboto Mono', monospace;
+}
+.field p {
+  margin: 0;
+}
+
+.comment {
+  font-style: italic;
+  color: #666;
+}
+
+.comment a {
+  font-weight: normal;
+  color: #666;
+}
+
+.error {
+  color: red;
+}
+
+.question {
+  margin: 4em 0;
+}
+
+.markdownTextArea {
+  display: flex;
+  min-height: 300px;
+}
+@media (max-width: 768px) {
+  .markdownTextArea {
+    flex-direction: column;
+  }
+}
+
+textarea {
+  border: solid rgb(255, 110, 45);
+  border-width: 2px 0;
+  height: 100%;
+  min-height: 200px;
+  width: 100%;
+  font-family: 'Roboto Mono', monospace;
+  line-height: 1.6;
+  font-size: 1em;
+  padding: 0;
+}
+
+.textareaContainer,
+.previewContainer {
+  flex: 1;
+}
+
+.preview {
+  border: solid black;
+  border-width: 2px 0;
+  font-family: 'Roboto', sans-serif;
+  height: 100%;
+  min-height: 200px;
+}
+
+.preview h1 {
+  font-size: 1.5em;
+}
+.preview h2 {
+  font-size: 1.3em;
+}
+.preview h3 {
+  font-size: 1.2em;
+}
+.preview h2::before, .preview h3::before {
+  content: '';
+}
+
+
+/* text field */
+
+.textfield {
+  border-bottom: 1px solid black;
+}
+.textfield:focus {
+  outline: 0; /* webkit glow */
+}
+.textfield.invalid {
+  color: red;
+}
+
+/* choice field */
+
+a.choice {
+  font-weight: normal;
+}
+a.chosen {
+  color: rgb(255, 110, 45);
+}
+
+/* form reset */
+
+input {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: normal;
+  background: none;
+  line-height: 1;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1em;
+  overflow: visible;
+}
+
+textarea {
+	-webkit-box-sizing:content-box;
+	-moz-box-sizing:content-box;
+	box-sizing:content-box;
+}
+
+textarea {
+	/* Move the label to the top */
+	vertical-align:top;
+
+	/* Turn off scroll bars in IE unless needed */
+	overflow:auto;
+}
+
+/* webkit glow */
+input:focus, textarea:focus {
+	outline: 0;
+}
+
+/* hacks */
+
+/* ew :( */
+.margin {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}

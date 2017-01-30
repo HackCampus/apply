@@ -25,6 +25,7 @@ const field = (label, content) =>
 const listField = (label, content /* array */) =>
   html`<div class="field"><p>${label}:</p>${content.map(content => html`<p>\xA0\xA0 - ${content}</p>`)}</div>`
 
+// TODO unify with login.js
 module.exports = Component({
   children: {
     email: validatedTextField({format: 'email'}, {autocomplete: 'email'}),

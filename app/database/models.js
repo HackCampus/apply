@@ -26,8 +26,9 @@ module.exports = function (knexInstance) {
     if (transaction == null) {
       return bookshelf.transaction(transaction =>
         next(transaction)
-          .then(transaction.commit)
-          .catch(transaction.rollback))
+          .tap(transaction.commit)
+          .catch(transaction.rollback)
+      )
     } else {
       return next(transaction)
     }
@@ -142,8 +143,8 @@ module.exports = function (knexInstance) {
     },
   })
 
-  User.createWithAuthentication = function (email, authentication) {
-    return bookshelf.transaction(transaction =>
+  User.createWithAuthentication = function (email, authentication, transaction) {
+    return definitelyTransact(transaction)(transaction =>
       new User({email})
         .save(null, {transacting: transaction})
         .catch(error => {
@@ -155,18 +156,16 @@ module.exports = function (knexInstance) {
           }
         })
         .tap(user => user.createAuthentication(authentication, transaction))
-        .then(transaction.commit)
-        .catch(transaction.rollback)
     )
   }
 
-  User.createWithPassword = function (email, password) {
+  User.createWithPassword = function (email, password, transaction) {
     const authentication = {
       type: 'password',
       identifier: email,
       token: password,
     }
-    return User.createWithAuthentication(email, authentication)
+    return User.createWithAuthentication(email, authentication, transaction)
   }
 
   // throws errors.DuplicateKey
