@@ -1,6 +1,7 @@
 const {pull, html} = require('inu')
 const keyMirror = require('keymirror')
 const mapValues = require('lodash.mapvalues')
+const moment = require('moment')
 const u = require('updeep')
 
 const link = require('../../components/link')
@@ -17,6 +18,10 @@ const views = keyMirror({
 const direction = {
   ascending: true,
   descending: false,
+}
+
+function dateFromNow (date) {
+  return html`<span title=${date}>${moment(date).fromNow()}</span>`
 }
 
 const columns = {
@@ -36,13 +41,13 @@ const columns = {
     },
   },
   createdAt: {
-    title: 'Created at',
-    displayContent: application => application.createdAt,
+    title: 'Created',
+    displayContent: application => dateFromNow(application.createdAt),
     sortContent: application => application.createdAt,
   },
   finishedAt: {
-    title: 'Finished at',
-    displayContent: application => application.finishedAt || '<unfinished>',
+    title: 'Finished',
+    displayContent: application => application.finishedAt ? dateFromNow(application.finishedAt) : html`<em>unfinished</em>`,
     sortContent: application => application.finishedAt || '',
   },
   // status: {
@@ -69,7 +74,7 @@ module.exports = Component({
         },
 
         // detail view
-        detail: null,
+        detailRow: null,
       },
       effect: action('fetchApplications'),
     }
@@ -88,11 +93,11 @@ module.exports = Component({
         return {model: sortApplications(newModel, 'finishedAt'), effect: null}
       }
       case 'showDetail': {
-        const newModel = u({view: views.detail, detail: action.payload}, model)
+        const newModel = u({view: views.detail, detailRow: action.payload}, model)
         return {model: newModel, effect: null}
       }
       case 'showList': {
-        const newModel = u({view: views.list, detail: null}, model)
+        const newModel = u({view: views.list, detailRow: null}, model)
         return {model: newModel, effect: null}
       }
       case 'orderBy': {
@@ -160,9 +165,10 @@ module.exports = Component({
   detailView (model, dispatch, children) {
     const {
       applications,
-      detail,
+      detailRow,
+      ordering,
     } = model
-    const application = applications[detail]
+    const application = applications[ordering[detailRow]]
     return html`
       <div class="detailView">
         <table>
