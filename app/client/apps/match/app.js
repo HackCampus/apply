@@ -48,7 +48,7 @@ module.exports = Component({
       view,
     } = model
     return html`
-      <div class="vetting">
+      <div class="matching">
         ${this.headerView(model, dispatch, children)}
         ${(() => {
           switch (view) {

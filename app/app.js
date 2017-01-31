@@ -29,14 +29,14 @@ const auth = require('./routes/auth')(models)
 auth.routes(app)
 const user = require('./routes/user')(models)
 user.routes(app)
-const vetting = require('./routes/vetting')(models)
-vetting.routes(app)
+const match = require('./routes/match')(models)
+match.routes(app)
 
 // client-side app routes
 const shell = require('./shell')
 const clientApp = appName => (req, res) => res.send(shell(appName))
 app.get('/', clientApp('apply'))
-app.get('/vet', limitToMatchers(clientApp('login')), clientApp('vet'))
+app.get('/match', limitToMatchers(clientApp('login')), clientApp('match'))
 
 // error handling & fallback route.
 app.use(errorHandler)

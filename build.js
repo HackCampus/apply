@@ -70,11 +70,11 @@ function clientApp (entryPath, bundleName) {
 
 gulp.task('apply', clientApp('apps/apply/index.js', 'apply.js'))
 gulp.task('login', clientApp('apps/login/index.js', 'login.js'))
-gulp.task('vet', clientApp('apps/vet/index.js', 'vet.js'))
+gulp.task('match', clientApp('apps/match/index.js', 'match.js'))
 gulp.task('clientApps', [
   'apply',
   'login',
-  'vet',
+  'match',
 ])
 
 gulp.task('styles', () =>
