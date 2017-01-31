@@ -30,7 +30,7 @@ const columns = {
     title: 'Name',
     displayContent: application => {
       if (application.firstName == null && application.lastName == null) {
-        return ''
+        return html`<em>no name entered</em>`
       }
       return application.firstName + ' ' + application.lastName
     },
@@ -41,6 +41,16 @@ const columns = {
       return application.firstName + ' ' + application.lastName
     },
   },
+  university: {
+    title: 'University',
+    displayContent: application => (application.university === 'other (eg. international)' ? html`<em>${application.otherUniversity}</em>` : application.university) || html`<em>-</em>`,
+    sortContent: application => (application.university === 'other (eg. international)' ? application.otherUniversity : application.university) || '',
+  },
+  gender: {
+    title: 'Gender',
+    displayContent: application => (application.gender === 'other' ? application.otherGender : application.gender) || html`<em>-</em>`,
+    sortContent: application => (application.gender === 'other' ? application.otherGender : application.gender) || '',
+  },
   createdAt: {
     title: 'Created',
     displayContent: application => dateFromNow(application.createdAt),
@@ -48,7 +58,7 @@ const columns = {
   },
   finishedAt: {
     title: 'Finished',
-    displayContent: application => application.finishedAt ? dateFromNow(application.finishedAt) : html`<em>unfinished</em>`,
+    displayContent: application => application.finishedAt ? dateFromNow(application.finishedAt) : html`<em>-</em>`,
     sortContent: application => application.finishedAt || '',
   },
   // status: {
@@ -172,15 +182,7 @@ module.exports = Component({
     const application = applications[ordering[detailRow]]
     return html`
       <div class="detailView">
-        <table>
-          <tr>
-            <th>Application</th>
-            <th>Actions</th>
-          </tr>
-          <tr>
-            <td>${applicationView(application)}</td>
-            <td>TODO</td>
-          </tr>
+        ${applicationView(application)}
       </div>
     `
   },

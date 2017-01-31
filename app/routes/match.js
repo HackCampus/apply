@@ -19,7 +19,7 @@ module.exports = models => {
   }
 
   function getApplications () {
-    return Application.fetchAll()
+    return Application.where('programmeYear', '=', '2017').fetchAll()
   }
 
   return {

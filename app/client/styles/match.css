@@ -12,8 +12,7 @@ table {
   }
 }
 
-.application {
-  /*table td:last-child {
-    width: 100%;
-  }*/
+.detailView {
+  margin: auto;
+  max-width: 768px;
 }
