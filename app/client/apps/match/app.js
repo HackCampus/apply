@@ -4,6 +4,7 @@ const mapValues = require('lodash.mapvalues')
 const moment = require('moment')
 const u = require('updeep')
 
+const applicationView = require('../../components/applicationView')
 const link = require('../../components/link')
 
 const action = require('../../lib/action')
@@ -177,7 +178,7 @@ module.exports = Component({
             <th>Actions</th>
           </tr>
           <tr>
-            <td>${application.lastName}</td>
+            <td>${applicationView(application)}</td>
             <td>TODO</td>
           </tr>
       </div>

@@ -11,3 +11,9 @@ table {
     cursor: pointer;
   }
 }
+
+.application {
+  /*table td:last-child {
+    width: 100%;
+  }*/
+}
