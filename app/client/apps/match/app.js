@@ -1,5 +1,6 @@
 const {pull, html} = require('inu')
 const keyMirror = require('keymirror')
+const mapValues = require('lodash.mapvalues')
 const u = require('updeep')
 
 const link = require('../../components/link')
@@ -13,13 +14,61 @@ const views = keyMirror({
   detail: null,
 })
 
+const direction = {
+  ascending: true,
+  descending: false,
+}
+
+const columns = {
+  name: {
+    title: 'Name',
+    displayContent: application => {
+      if (application.firstName == null && application.lastName == null) {
+        return ''
+      }
+      return application.firstName + ' ' + application.lastName
+    },
+    sortContent: application => {
+      if (application.firstName == null && application.lastName == null) {
+        return ''
+      }
+      return application.firstName + ' ' + application.lastName
+    },
+  },
+  createdAt: {
+    title: 'Created at',
+    displayContent: application => application.createdAt,
+    sortContent: application => application.createdAt,
+  },
+  finishedAt: {
+    title: 'Finished at',
+    displayContent: application => application.finishedAt || '<unfinished>',
+    sortContent: application => application.finishedAt || '',
+  },
+  // status: {
+  //   title: 'Status',
+  // },
+  // lastUpdatedAt: {
+  //   title: 'Last updated at',
+  // },
+}
+
 module.exports = Component({
   children: {},
   init () {
     return {
       model: {
-        applications: [],
         view: views.list,
+
+        // list view
+        applications: [],
+        ordering: [],
+        orderBy: {
+          column: 'createdAt',
+          direction: direction.ascending,
+        },
+
+        // detail view
         detail: null,
       },
       effect: action('fetchApplications'),
@@ -28,8 +77,15 @@ module.exports = Component({
   update (model, action) {
     switch (action.type) {
       case 'fetchApplicationsSuccess': {
-        const newModel = u({applications: action.payload}, model)
-        return {model: newModel, effect: null}
+        const applicationsList = action.payload
+        let applications = {}
+        let ordering = []
+        for (let application of applicationsList) {
+          applications[application.id] = application
+          ordering.push(application.id)
+        }
+        const newModel = u({applications, ordering}, model)
+        return {model: sortApplications(newModel, 'finishedAt'), effect: null}
       }
       case 'showDetail': {
         const newModel = u({view: views.detail, detail: action.payload}, model)
@@ -38,6 +94,9 @@ module.exports = Component({
       case 'showList': {
         const newModel = u({view: views.list, detail: null}, model)
         return {model: newModel, effect: null}
+      }
+      case 'orderBy': {
+        return {model: sortApplications(model, action.payload), effect: null}
       }
       default:
         return {model, effect: null}
@@ -72,24 +131,26 @@ module.exports = Component({
   listView (model, dispatch, children) {
     const {
       applications,
+      orderBy,
+      ordering,
     } = model
+    const orderIndicator = column => {
+      if (orderBy.column === column) {
+        return orderBy.direction === direction.ascending
+          ? html` 🔼`
+          : html` 🔽`
+      }
+    }
+    const mapColumns = fn => Object.values(mapValues(columns, fn))
     return html`
       <div class="listView">
         <table>
           <tr>
-            <th>Name</th>
-            <th>Created at</th>
-            <th>Finished at</th>
-            <th>Status</th>
-            <th>Last updated at</th>
+            ${mapColumns(({title}, column) => html`<th onclick=${() => dispatch(action('orderBy', column))}>${title}${orderIndicator(column)}</th>`)}
           </tr>
-          ${applications.map((application, i) => html`
+          ${ordering.map((id, i) => html`
             <tr onclick=${() => dispatch(action('showDetail', i))}>
-              <td>${application.firstName + ' ' + application.lastName}</td>
-              <td>${application.createdAt}</td>
-              <td>${application.finishedAt}</td>
-              <td>TODO</td>
-              <td>TODO</td>
+              ${mapColumns(({displayContent}) => html`<td>${displayContent(applications[id])}</td>`)}
             </tr>
           `)}
         </table>
@@ -134,3 +195,32 @@ module.exports = Component({
     }
   }
 })
+
+function sortApplications (model, column) {
+  const {
+    applications,
+    orderBy,
+    ordering,
+  } = model
+  let newOrderBy
+  if (orderBy.column === column) {
+    newOrderBy = {column, direction: !orderBy.direction}
+  } else {
+    newOrderBy = {column, direction: direction.descending}
+  }
+  const newOrdering = ordering.slice()
+  newOrdering.sort((a, b) => {
+    const applicationA = applications[a]
+    const applicationB = applications[b]
+    const column = columns[newOrderBy.column].sortContent
+    const top = column(applicationA)
+    const bottom = column(applicationB)
+    if (top === bottom) {
+      return 0
+    }
+    return newOrderBy.direction === direction.ascending
+      ? top < bottom ? -1 : 1
+      : top > bottom ? -1 : 1
+  })
+  return u({orderBy: newOrderBy, ordering: newOrdering}, model)
+}
