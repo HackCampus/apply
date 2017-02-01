@@ -23,12 +23,17 @@ app.disable('x-powered-by')
 
 // routes
 const models = require('./database')
-const application = require('./routes/application')(models)
-application.routes(app)
+
+// Needs to come before all other routes, as authorized middleware depends on these.
 const auth = require('./routes/auth')(models)
 auth.routes(app)
+
+const application = require('./routes/application')(models)
+application.routes(app)
+
 const user = require('./routes/user')(models)
 user.routes(app)
+
 const match = require('./routes/match')(models)
 match.routes(app)
 
