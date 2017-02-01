@@ -3,6 +3,7 @@ const keyMirror = require('keymirror')
 const mapValues = require('lodash.mapvalues')
 const moment = require('moment')
 const u = require('updeep')
+const values = require('object.values')
 
 const constants = require('../../../constants')
 
@@ -168,7 +169,7 @@ module.exports = Component({
           : html` 🔽`
       }
     }
-    const mapColumns = fn => Object.values(mapValues(columns, fn))
+    const mapColumns = fn => values(mapValues(columns, fn))
     return html`
       <div class="listView">
         <table>

@@ -59,6 +59,7 @@
     "moment": "^2.17.1",
     "node-django-hashers": "^1.0.8",
     "nodemon": "^1.10.2",
+    "object.values": "^1.0.4",
     "passport": "^0.3.2",
     "passport-github2": "^0.1.10",
     "passport-linkedin-oauth2": "^1.4.1",
