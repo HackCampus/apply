@@ -4,6 +4,8 @@ const mapValues = require('lodash.mapvalues')
 const moment = require('moment')
 const u = require('updeep')
 
+const constants = require('../../../constants')
+
 const applicationView = require('../../components/applicationView')
 const link = require('../../components/link')
 
@@ -137,10 +139,19 @@ module.exports = Component({
   headerView (model, dispatch, children) {
     const {
       view,
+      applications,
     } = model
+    let totalCount = 0
+    let finishedCount = 0
+    for (let a in applications) {
+      const application = applications[a]
+      totalCount += 1
+      if (application.finishedAt !== null) finishedCount += 1
+    }
     return html`
       <div class="header">
-        <p>${view !== views.list ? link('< Back to list view', () => dispatch(action('showList'))) : ''}
+        <h2>HackCampus matching - ${constants.programmeYear}</h2>
+        <p>${view === views.list ? `${finishedCount} finished / ${totalCount} total` : link('< Back to list view', () => dispatch(action('showList')))}
       </div>
     `
   },
