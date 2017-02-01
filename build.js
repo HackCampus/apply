@@ -1,7 +1,6 @@
 const autoprefixer = require('autoprefixer')
 const babelify = require('babelify')
 const browserify = require('browserify')
-const browserifyIncremental = require('browserify-incremental')
 const {exec} = require('child_process')
 const cssnano = require('cssnano')
 const exorcist = require('exorcist')
@@ -26,6 +25,7 @@ const babelifyConfig = {
 }
 
 if (development) {
+  const browserifyIncremental = require('browserify-incremental')
   function bundle (entryPath) {
     return browserifyIncremental({
       entries: [entryPath],
