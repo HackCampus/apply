@@ -9,7 +9,6 @@ const gulp = require('gulp')
 const postcss = require('gulp-postcss')
 const sourcemaps = require('gulp-sourcemaps')
 const mkdirp = require('mkdirp')
-const notifier = require('node-notifier')
 const path = require('path')
 const precss = require('precss')
 const uglifyify = require('uglifyify')
@@ -19,6 +18,8 @@ const build = path.join(__dirname, 'app', 'build')
 const client = path.join(__dirname, 'app', 'client')
 
 const development = process.env.NODE_ENV !== 'production'
+
+const notifier = development ? require('node-notifier') : function () {}
 
 const babelifyConfig = {
   presets: ['es2015'],
