@@ -93,9 +93,9 @@ function main () {
 document.addEventListener('DOMContentLoaded', main)
 EOF
 
-cat > $AppName.css <<EOF
+cat > styles.css <<EOF
 .$AppName {
-  // TODO add styles
+  /* TODO add styles */
 }
 EOF
 

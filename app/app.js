@@ -41,6 +41,7 @@ match.routes(app)
 const shell = require('./shell')
 const clientApp = appName => (req, res) => res.send(shell(appName))
 app.get('/', clientApp('apply'))
+app.get('/manage', limitToMatchers(clientApp('login')), clientApp('manage'))
 app.get('/match', limitToMatchers(clientApp('login')), clientApp('match'))
 
 // error handling & fallback route.
