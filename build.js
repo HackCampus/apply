@@ -69,22 +69,34 @@ function clientApp (entryPath, bundleName) {
   }
 }
 
-gulp.task('apply', clientApp('apps/apply/index.js', 'apply.js'))
-gulp.task('login', clientApp('apps/login/index.js', 'login.js'))
-gulp.task('match', clientApp('apps/match/index.js', 'match.js'))
+gulp.task('apply', clientApp('apps/apply/index.js', 'apply/index.js'))
+gulp.task('login', clientApp('apps/login/index.js', 'login/index.js'))
+gulp.task('match', clientApp('apps/match/index.js', 'match/index.js'))
 gulp.task('clientApps', [
   'apply',
   'login',
   'match',
 ])
 
-gulp.task('styles', () =>
-  gulp.src(path.join(client, 'styles', '*.css'))
+const styles = (srcDirectory) =>
+  gulp.src(srcDirectory)
   .pipe(sourcemaps.init())
   .pipe(postcss([autoprefixer, precss, cssnano()]))
   .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest(build))
+
+gulp.task('app styles', () =>
+  styles(path.join(client, 'apps', '*', 'styles.css'))
 )
+
+gulp.task('common styles', () =>
+  styles(path.join(client, 'styles', '*.css'))
+)
+
+gulp.task('styles', [
+  'app styles',
+  'common styles',
+])
 
 gulp.task('default', ['clientApps', 'styles'], () => {
   development && notifier.notify({

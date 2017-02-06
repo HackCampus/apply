@@ -14,12 +14,12 @@ module.exports = appName =>
 <meta property="og:image:height" content="628" />
 <title>HackCampus</title>
 <link rel="stylesheet" href="/static/common.css" />
-<link rel="stylesheet" href="/static/${appName}.css" />
+<link rel="stylesheet" href="/static/${appName}/styles.css" />
 <link href="https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto" rel="stylesheet">
 </head>
 <body>
 <div id="container"></div>
-<script src="/static/${appName}.js"></script>
+<script src="/static/${appName}/index.js"></script>
 <script>
 (function(s,p,y,w,a,r,e){s['GoogleAnalyticsObject']=a;s[a]=s[a]||function(){
 (s[a].q=s[a].q||[]).push(arguments)},s[a].l=1*new Date();r=p.createElement(y),
