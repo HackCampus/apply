@@ -1,0 +1,56 @@
+exports[`init 1`] = `
+Object {
+  "effect": Array [
+    Object {
+      "payload": undefined,
+      "type": "redirectMatchers",
+    },
+    Object {
+      "child": "login",
+      "effect": Array [
+        Object {
+          "payload": undefined,
+          "type": "loadUser",
+        },
+      ],
+    },
+  ],
+  "model": Object {
+    "children": Object {
+      "login": Object {
+        "children": Object {
+          "email": Object {
+            "errors": Array [],
+            "started": false,
+            "value": "",
+          },
+          "password": Object {
+            "errors": Array [],
+            "started": false,
+            "value": "",
+          },
+        },
+        "error": null,
+        "password": false,
+      },
+    },
+  },
+}
+`;
+
+exports[`view - initial 1`] = `
+"<div class="login">
+        <div>
+        <div class="margin">
+          <div class="field"><p>email:</p>  <div style="display: inline-block;"><span contenteditable="true" class="textfield  invalid" style="display: inline-block; min-width: 35px" spellcheck="false" autocomplete="email"></span></div></div>
+          <div class="field"><p>password:</p>  <div style="display: inline-block;">
+        <input type="password" size="3" value="" class="textfield passwordfield invalid" />
+      </div></div>
+          <div>
+            
+          </div>
+        </div>
+        <div class="field"><a href="javascript:void('hey there ✌︎')" class="disabled">Log in with email/password</a></div>
+      </div>
+      </div>"
+`;

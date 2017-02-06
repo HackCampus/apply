@@ -8,7 +8,7 @@ Object {
 `;
 
 exports[`view - initial 1`] = `
-"<div class=\"manage\">
+"<div class="manage">
         hello from manage :)
       </div>"
 `;

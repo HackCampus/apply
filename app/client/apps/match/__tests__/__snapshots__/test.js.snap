@@ -1,0 +1,39 @@
+exports[`init 1`] = `
+Object {
+  "effect": Array [
+    Object {
+      "payload": undefined,
+      "type": "fetchApplications",
+    },
+  ],
+  "model": Object {
+    "applications": Array [],
+    "children": Object {},
+    "detailRow": null,
+    "orderBy": Object {
+      "column": "createdAt",
+      "direction": true,
+    },
+    "ordering": Array [],
+    "view": "list",
+  },
+}
+`;
+
+exports[`view - initial 1`] = `
+"<div class="matching">
+        <div class="header">
+        <h2>HackCampus matching - 2017</h2>
+        <p>0 finished / 0 total
+      </p>
+    </div>
+        <div class="listView">
+        <table>
+          <tr>
+            <th>Name</th><th>University</th><th>Gender</th><th>Created 🔼</th><th>Finished</th>
+          </tr>
+          
+        </table>
+      </div>
+      </div>"
+`;
