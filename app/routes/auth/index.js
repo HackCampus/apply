@@ -17,7 +17,7 @@ module.exports = models => {
 
     passport.deserializeUser((id, done) => {
       User.where('id', id).fetch()
-        .then(user => { done(null, user) })
+        .then(user => { done(null, new User(user)) }) // TODO de-bs
         .catch(err => { done(err) })
     })
 

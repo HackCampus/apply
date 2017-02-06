@@ -31,6 +31,6 @@ module.exports = provider =>
       }
       const email = emails[0].value
       User.createWithToken(provider, email, id, accessToken)
-        .then(user => done(null, user))
+        .then(user => done(null, new User(user))) // TODO de-bs
     }
   }

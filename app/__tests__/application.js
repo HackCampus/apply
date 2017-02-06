@@ -28,7 +28,7 @@ test('getApplication works', t => {
   const {Application, User} = models
   const {getApplication} = methods
   const handleError = spy()
-  return new User({email: 'foo@bar.baz'}).save()
+  return User.create({email: 'foo@bar.baz'})
     .then(user => new Application({userId: user.id, firstName: 'foozle', programmeYear: 2017}).save())
     .then(({id}) => getApplication(id, handleError))
     .then(applicationModel => {
@@ -42,7 +42,7 @@ test('getApplication creates a new application for old ones', t => {
   const {Application, User} = models
   const {getApplication} = methods
   const handleError = spy()
-  return new User({email: 'old-foo@bar.baz'}).save()
+  return User.create({email: 'old-foo@bar.baz'})
     .then(user => new Application({userId: user.id, firstName: 'foozle', programmeYear: 2015}).save())
     .then(({id}) => getApplication(id, handleError))
     .then(applicationModel => {
@@ -66,7 +66,7 @@ test('createApplicationFromPreviousYear copies an application from a previous ye
   const {Application, User} = models
   const {getApplication, createApplicationFromPreviousYear} = methods
   const handleError = spy()
-  return new User({email: 'come-again@bar.baz'}).save()
+  return User.create({email: 'come-again@bar.baz'})
     .then(user =>
       new Application({userId: user.id, firstName: 'foozle', programmeYear: 2015}).save()
         .then(_ => createApplicationFromPreviousYear(user.id, handleError))
@@ -89,7 +89,7 @@ test('createApplicationFromPreviousYear copies an application from a previous ye
 test('finishApplication sets finishedAt field', t => {
   const {Application, User} = models
   const {finishApplication} = methods
-  return new User({email: 'finisher@bar.baz'}).save()
+  return User.create({email: 'finisher@bar.baz'})
     .then(user => new Application({userId: user.id, firstName: 'foozle', programmeYear: 2017}).save())
     .then(application => finishApplication(application))
     .then(applicationModel => {
