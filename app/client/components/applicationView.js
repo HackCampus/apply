@@ -12,6 +12,10 @@ function markdownTextArea (text) {
 }
 
 module.exports = function (application) {
+  if (application == null) {
+    return html``
+  }
+
   function header (title) {
     return html`<tr><td colspan=2><h3>${title}</h3></td></tr>`
   }
