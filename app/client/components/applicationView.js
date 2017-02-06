@@ -2,6 +2,9 @@ const {html} = require('inu')
 const moment = require('moment')
 
 function markdownTextArea (text) {
+  if (text == null) {
+    return html`<div><em>no answer given</em></div>`
+  }
   const markdown = require('markdown-it')({
     linkify: true,
   })
