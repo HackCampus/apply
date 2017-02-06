@@ -9,11 +9,12 @@
   "scripts": {
     "clean": "rm -rf app/build/",
     "build-client": "npm run clean && NODE_ENV=production node build.js",
-    "start": "npm run build-client && node app/index.js",
+    "start": "node app/index.js",
     "develop-server": "nodemon --ignore build/ --ignore client/ app/index.js | bunyan",
     "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
+    "postinstall": "npm run build-client",
     "test": "ava --timeout=30s --serial",
     "coverage": "nyc --reporter=html npm test"
   },
