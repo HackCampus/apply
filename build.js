@@ -71,13 +71,13 @@ function clientApp (entryPath, bundleName) {
 
 gulp.task('apply', clientApp('apps/apply/index.js', 'apply/index.js'))
 gulp.task('login', clientApp('apps/login/index.js', 'login/index.js'))
-gulp.task('manage', clientApp('apps/manage/index.js', 'manage/index.js'))
 gulp.task('match', clientApp('apps/match/index.js', 'match/index.js'))
+gulp.task('matchDetail', clientApp('apps/matchDetail/index.js', 'matchDetail/index.js'))
 gulp.task('clientApps', [
   'apply',
   'login',
-  'manage',
   'match',
+  'matchDetail',
 ])
 
 const styles = (srcDirectory) =>

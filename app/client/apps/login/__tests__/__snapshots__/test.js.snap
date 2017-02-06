@@ -1,45 +1,6 @@
-exports[`init 1`] = `
-Object {
-  "effect": Array [
-    Object {
-      "payload": undefined,
-      "type": "redirectMatchers",
-    },
-    Object {
-      "child": "login",
-      "effect": Array [
-        Object {
-          "payload": undefined,
-          "type": "loadUser",
-        },
-      ],
-    },
-  ],
-  "model": Object {
-    "children": Object {
-      "login": Object {
-        "children": Object {
-          "email": Object {
-            "errors": Array [],
-            "started": false,
-            "value": "",
-          },
-          "password": Object {
-            "errors": Array [],
-            "started": false,
-            "value": "",
-          },
-        },
-        "error": null,
-        "password": false,
-      },
-    },
-  },
-}
-`;
+exports[`init 1`] = `"{\"model\":{\"children\":{\"login\":{\"password\":false,\"error\":null,\"children\":{\"email\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"password\":{\"errors\":[],\"started\":false,\"value\":\"\"}}}}},\"effect\":[{\"type\":\"redirectMatchers\"},{\"child\":\"login\",\"effect\":[{\"type\":\"loadUser\"}]}]}"`;
 
-exports[`view - initial 1`] = `
-"<div class="login">
+exports[`view - initial 1`] = `""<div class="login">
         <div>
         <div class="margin">
           <div class="field"><p>email:</p>  <div style="display: inline-block;"><span contenteditable="true" class="textfield  invalid" style="display: inline-block; min-width: 35px" spellcheck="false" autocomplete="email"></span></div></div>
@@ -52,5 +13,4 @@ exports[`view - initial 1`] = `
         </div>
         <div class="field"><a href="javascript:void('hey there ✌︎')" class="disabled">Log in with email/password</a></div>
       </div>
-      </div>"
-`;
+      </div>""`;

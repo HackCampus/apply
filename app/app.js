@@ -41,8 +41,8 @@ match.routes(app)
 const shell = require('./shell')
 const clientApp = appName => (req, res) => res.send(shell(appName))
 app.get('/', clientApp('apply'))
-app.get('/manage', limitToMatchers(clientApp('login')), clientApp('manage'))
-app.get('/match', limitToMatchers(clientApp('login')), clientApp('match'))
+app.get('/match', limitToMatchers(clientApp('login')), clientApp('match')) // TODO rename to matchList
+app.get('/match/application/:id', limitToMatchers(clientApp('login')), clientApp('matchDetail'))
 
 // error handling & fallback route.
 app.use(errorHandler)

@@ -28,8 +28,8 @@ module.exports = Component({
   },
   view (model, dispatch, children) {
     return html`
-      <div class="manage">
-        hello from manage :)
+      <div class="matchDetail">
+        hello from matchDetail :)
       </div>
     `
   },
