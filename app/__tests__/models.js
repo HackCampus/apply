@@ -30,12 +30,16 @@ test('User constructors exist', t => {
   t.true('createWithAuthentication' in User)
 })
 
-test('User.create creates a user', async t => {
+test('User.create creates an applicant by default', async t => {
   const {User} = models
   const email = 'can-save-user-test@bar.baz'
   const user = await User.create({email})
   t.true(user instanceof User)
   const userJson = user.toJSON()
+  t.truthy(userJson.id)
+  t.truthy(userJson.createdAt)
+  t.falsy(userJson.updatedAt)
+  t.is(userJson.role, 'applicant')
   t.is(userJson.email, email)
 })
 
@@ -98,6 +102,10 @@ test('User.createWithToken updates the email if a user with the same external id
   const firstUser = firstUserModel.toJSON()
   const secondUserModel = await User.createWithToken(authentication.type, secondEmail, authentication.identifier, authentication.token)
   const secondUser = secondUserModel.toJSON()
+  const auths = await secondUserModel.fetchAuthentications()
+  console.log(firstUser)
+  console.log(secondUser)
+  console.log(auths)
   t.true(firstUser.updatedAt !== secondUser.updatedAt)
   t.is(firstUser.id, secondUser.id)
   t.is(secondUser.email, secondEmail)

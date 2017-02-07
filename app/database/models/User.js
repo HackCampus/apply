@@ -24,7 +24,9 @@ module.exports = bsModels => {
     }
 
     toJSON () {
-      return this.bs.toJSON()
+      return this.bs.toJSON({
+        shallow: true, // do not include relations - explicitly fetch them instead.
+      })
     }
 
     get id () {
@@ -81,19 +83,21 @@ module.exports = bsModels => {
     //
 
     static async create (fields, transaction) {
-      return definitelyTransact(transaction, async transaction => {
-        try {
-          const bs = await new bsModels.User(fields).save(null, {transacting: transaction})
-          return new User(bs)
-        } catch (error) {
-          switch (error.constraint) {
-            case 'users_email_unique':
-              throw new errors.DuplicateEmail()
-            default:
-              throw error
-          }
+      try {
+        const bsUser = new bsModels.User(fields)
+        const bs = await bsUser.save(null, {
+          transacting: transaction,
+        })
+        await bs.fetch() // this is so stupid.
+        return new User(bs)
+      } catch (error) {
+        switch (error.constraint) {
+          case 'users_email_unique':
+            throw new errors.DuplicateEmail()
+          default:
+            throw error
         }
-      })
+      }
     }
 
     static async createWithAuthentication (email, authentication, transaction) {
@@ -159,17 +163,19 @@ module.exports = bsModels => {
         if (!userBs) {
           throw new errors.UserNotFound()
         }
-        console.log(userBs.toJSON())
-        await userBs.save({
-          id: userBs.id,
-          updatedAt: new Date(),
-          email: newEmail,
-        }, {
-          method: 'update',
-          patch: true,
-          transacting: transaction
-        })
-        return new User(userBs)
+        const user = new User(userBs)
+        try {
+          await user.update({email: newEmail})
+        } catch (error) {
+          switch (error.constructor) {
+            case errors.DuplicateEmail:
+              console.warn(`tried to update user ${user.id} email to ${newEmail}, but it exists already`)
+              return user
+            default:
+              throw error
+          }
+        }
+        return user
       })
     }
 
@@ -230,6 +236,21 @@ module.exports = bsModels => {
     //
     // UPDATE
     //
+
+    async update (fields, transaction) {
+      const updatedFields = Object.assign({}, fields, {updatedAt: new Date()})
+      try {
+        await this.bs.save(updatedFields, {patch: true, transacting: transaction})
+        return this
+      } catch (error) {
+        switch (error.constraint) {
+          case 'users_email_unique':
+            throw new errors.DuplicateEmail()
+          default:
+            throw error
+        }
+      }
+    }
 
     // Returns JSON representation of authentication model.
     async updateAuthentication (authentication, transaction) {
