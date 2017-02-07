@@ -120,7 +120,7 @@ test('User.createWithToken on an existing user updates instead', async t => {
   t.is(authentication.token, 'newtoken')
 })
 
-test('User.createWithToken updates the email if a user with the same external id authenticates', async t => {
+test("User.createWithToken won't create a new user with the same external id", async t => {
   const {errors, User} = models
   const authentication = {
     type: 'github',
@@ -129,16 +129,7 @@ test('User.createWithToken updates the email if a user with the same external id
   }
   const secondEmail = 'seconduser-DIFFERENT@bar.baz'
   const firstUserModel = await User.createWithToken(authentication.type, 'firstuser@bar.baz', authentication.identifier, authentication.token)
-  const firstUser = firstUserModel.toJSON()
-  const secondUserModel = await User.createWithToken(authentication.type, secondEmail, authentication.identifier, authentication.token)
-  const secondUser = secondUserModel.toJSON()
-  const auths = await secondUserModel.fetchAuthentications()
-  console.log(firstUser)
-  console.log(secondUser)
-  console.log(auths)
-  t.true(firstUser.updatedAt !== secondUser.updatedAt)
-  t.is(firstUser.id, secondUser.id)
-  t.is(secondUser.email, secondEmail)
+  t.throws(User.createWithToken(authentication.type, secondEmail, authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
 })
 
 test('User.createWithToken throws if a user signs up with a different email but there is an email/password auth for that user', async t => {
