@@ -62,20 +62,37 @@ test.cb('login - wrong login gives you unauthorized response', t => {
   .end(t.end)
 })
 
-test('login/register - happy case', t => {
+test('login/register - happy case', async t => {
   const random = (Math.random() + '').slice(2, 10)
   const deets = {email: `foo${random}@example.com`, password: 'foobar'}
-  return register()
+  await register()
   .send(deets)
   .expectStatus(201)
   .end()
-  .then(() =>
-    login()
-    .send(deets)
-    .expectStatus(200)
-    .expectHeader('set-cookie', /.*/)
-    .end()
-  )
+
+  let cookie
+  await login()
+  .send(deets)
+  .expectStatus(200)
+  .expectHeader('set-cookie', /.*/)
+  .expect((res, body, next) => {
+    cookie = res.headers['set-cookie'][0]
+    next()
+  })
+  .end()
+
+  return await api()
+  .header('cookie', cookie)
+  .get('/me')
+  .expectStatus(200)
+  .expect((res, body, next) => {
+    t.is(body.email, deets.email)
+    t.is(body.role, 'applicant')
+    t.true(typeof body.connectedAccounts === 'object')
+    t.true(body.connectedAccounts.password)
+    next()
+  })
+  .end()
 })
 
 // === change password ===
