@@ -252,7 +252,7 @@ module.exports = bsModels => {
     }
 
     async updatePassword (password, transaction) {
-      const email = this.bs.get('email')
+      const email = this.email
       return definitelyTransact(transaction, async transaction => {
         const hash = await hashPassword(password)
         const authentication = {

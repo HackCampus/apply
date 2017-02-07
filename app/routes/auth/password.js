@@ -85,19 +85,17 @@ module.exports = (passport, app) => {
   })
 
   // Change password
-  app.put('/me/password', authorized, (req, res, handleError) => {
+  app.put('/me/password', authorized, async (req, res, handleError) => {
     const {user, body} = req
     const {password} = body
     if (typeof password !== 'string') {
       return handleError({status: 'Bad Request'})
     }
-    const email = user.get('email')
-    req.user.updatePassword(password)
-      .then(() => {
-        res.end()
-      })
-      .catch(error => {
-        return handleError({status: 'Unknown', error})
-      })
+    try {
+      await user.updatePassword(password)
+      return res.end()
+    } catch (error) {
+      return handleError({status: 'Unknown', error})
+    }
   })
 }

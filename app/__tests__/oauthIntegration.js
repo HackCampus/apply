@@ -18,8 +18,7 @@ yes:
         yes: (C)
           the user should get an error saying they should log in with email & password
         no: (D)
-          the user's email should be updated
-          what happens when we get different emails from different services? we need to log if that happens.
+          user should be authenticated
     no:
       does a user with that email address exist already?
       yes:
@@ -170,7 +169,7 @@ test('(B) updates access token for an existing user with matching email', t => {
     })
 })
 
-test('(C) can not update email with existing password auth', t => {
+test('(C) can not authenticate with oauth if there is an existing password auth', t => {
   const email = randomId() + 'asdf@asd.df'
   t.fail('TODO')
   // return axios.post(`${host}/users`, {email, password: 'watever'})
@@ -181,23 +180,24 @@ test('(C) can not update email with existing password auth', t => {
 })
 
 test("(D) update an existing user's email address", t => {
-  const updateAuthentication = sinon.spy(User.prototype, 'updateAuthentication')
-
-  const firstId = randomId()
-  const firstAccessToken = 'firstAccessToken' + firstId
-  const firstEmail = firstId + 'fake@foo.bar'
-
-  const secondId = randomId()
-  const secondAccessToken = 'secondAccessToken' + secondId
-  const secondEmail = secondId + 'fake@foo.bar'
-
-  return mockGithubCallback(firstAccessToken, firstId, [firstEmail])
-    .then(res => {
-      return mockGithubCallback(secondAccessToken, firstId, [secondEmail])
-    }).then(res => {
-      t.is(res.status, 200)
-      return new User({email: secondEmail}).fetch()
-    }).then(user => {
-      t.truthy(user)
-    })
+  t.fail('TODO')
+  // const updateAuthentication = sinon.spy(User.prototype, 'updateAuthentication')
+  //
+  // const firstId = randomId()
+  // const firstAccessToken = 'firstAccessToken' + firstId
+  // const firstEmail = firstId + 'fake@foo.bar'
+  //
+  // const secondId = randomId()
+  // const secondAccessToken = 'secondAccessToken' + secondId
+  // const secondEmail = secondId + 'fake@foo.bar'
+  //
+  // return mockGithubCallback(firstAccessToken, firstId, [firstEmail])
+  //   .then(res => {
+  //     return mockGithubCallback(secondAccessToken, firstId, [secondEmail])
+  //   }).then(res => {
+  //     t.is(res.status, 200)
+  //     return new User({email: secondEmail}).fetch()
+  //   }).then(user => {
+  //     t.truthy(user)
+  //   })
 })
