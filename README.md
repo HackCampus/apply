@@ -54,3 +54,9 @@ npm run develop-server
 ```
 npm run develop-client
 ```
+
+## 6. Import db dump (if you have one)
+
+```
+pg_restore --verbose --clean --no-acl --no-owner -h localhost -U hackcampus -d hackcampus NAME_OF_THE_DUMP_FILE.dump
+```

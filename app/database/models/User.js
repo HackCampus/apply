@@ -10,13 +10,9 @@ module.exports = bsModels => {
   // expose the bookshelf internals.
   // This method wraps the `next` callback in a transaction if it is not passed
   // as an argument.
-  const definitelyTransact = transaction => next => {
+  async function definitelyTransact (transaction, next) {
     if (transaction == null) {
-      return bsModels.bookshelf.transaction(transaction =>
-        next(transaction)
-          .tap(transaction.commit)
-          .catch(transaction.rollback)
-      )
+      return bsModels.bookshelf.transaction(async transaction => next(transaction))
     } else {
       return next(transaction)
     }
@@ -35,7 +31,9 @@ module.exports = bsModels => {
       return this.bs.id
     }
 
-    // interface violations
+    //
+    // BS INTERFACE VIOLATIONS
+    //
 
     static where () {
       console.warn('using bs method! where')
@@ -47,117 +45,137 @@ module.exports = bsModels => {
       return this.bs.get(...arguments)
     }
 
-    tap () {
-      console.warn('using bs method! tap')
-      return this.bs.tap(...arguments)
+    //
+    // FETCH
+    //
+
+    static async fetchById (id) {
+      const bs = await bsModels.User.where('id', '=', id).fetch()
+      return new User(bs)
     }
 
-    // end interface violations
+    static async fetchSingle (...query) {
+      const bs = await bsModels.User.where(...query).fetchAll()
+      if (bs.length === 0) {
+        throw new errors.UserNotFound()
+      } else if (bs.length > 1) {
+        console.trace(`ambiguous query in User.fetchSingle, returned ${bs.length} objects, not 1:`, ...query)
+      }
+      const b = bs.at(0)
+      return new User(b)
+    }
 
-    static create (fields, transaction) {
-      const bs = new bsModels.User(fields)
-        .save(null, {transacting: transaction})
-        .catch(error => {
+    //
+    // RELATIONS
+    //
+
+    // Returns JSON representation
+    async fetchAuthentications () {
+      const bs = await this.bs.load('authentication')
+      const bsJson = bs.toJSON()
+      return bsJson['authentication']
+    }
+
+    //
+    // CREATE
+    //
+
+    static async create (fields, transaction) {
+      return definitelyTransact(transaction, async transaction => {
+        try {
+          const bs = await new bsModels.User(fields).save(null, {transacting: transaction})
+          return new User(bs)
+        } catch (error) {
           switch (error.constraint) {
             case 'users_email_unique':
               throw new errors.DuplicateEmail()
             default:
               throw error
           }
-        })
-      return new User(bs)
-    }
-
-    static createWithAuthentication (email, authentication, transaction) {
-      return definitelyTransact(transaction)(transaction => {
-        const bs = new bsModels.User({email})
-          .save(null, {transacting: transaction})
-          .catch(error => {
-            switch (error.constraint) {
-              case 'users_email_unique':
-                throw new errors.DuplicateEmail()
-              default:
-                throw error
-            }
-          })
-          .tap(bs => new User(bs).createAuthentication(authentication, transaction))
-        return new User(bs)
+        }
       })
     }
 
-    static createWithPassword (email, password, transaction) {
+    static async createWithAuthentication (email, authentication, transaction) {
+      return definitelyTransact(transaction, async transaction => {
+        const user = await User.create({email})
+        await user.createAuthentication(authentication, transaction)
+        return user
+      })
+    }
+
+    static async createWithPassword (email, password, transaction) {
       const authentication = {
         type: 'password',
         identifier: email,
         token: password,
       }
-      return User.createWithAuthentication(email, authentication, transaction)
+      return await User.createWithAuthentication(email, authentication, transaction)
     }
 
-    static createWithToken (provider, email, providerId, accessToken) {
+    static async createWithToken (provider, email, providerId, accessToken) {
       const authentication = {
         type: provider,
         identifier: providerId,
         token: accessToken,
       }
-      return User.createWithAuthentication(email, authentication)
-        .catch(error => {
-          switch (error.constructor) {
-            case errors.DuplicateEmail:
-              return User.updateAuthenticationFromEmail(email, authentication)
-            case errors.DuplicateKey:
-              return User.updateEmailFromAuthentication(email, authentication)
-          }
-          throw error
-        })
+      try {
+        return await User.createWithAuthentication(email, authentication)
+      } catch (error) {
+        switch (error.constructor) {
+          case errors.DuplicateEmail:
+            return await User._updateAuthenticationFromEmail(email, authentication)
+          case errors.DuplicateKey:
+            return await User._updateEmailFromAuthentication(email, authentication)
+        }
+        throw error
+      }
     }
 
     // We can update a user's OAuth key based on their email - this
     // relies on the fact that emails are unique on all supported platforms.
-    static updateAuthenticationFromEmail (email, authentication) {
-      const bs = new bsModels.User({email})
-        .fetch()
-        .tap(bs => {
-          if (!bs) {
-            throw new errors.UserNotFound()
-          }
-          return new User(bs).updateAuthentication(authentication)
-        })
-      return new User(bs)
+    static async _updateAuthenticationFromEmail (email, authentication) {
+      const user = await User.fetchSingle({email})
+      await user.updateAuthentication(authentication)
+      return user
     }
 
     // If a user has already registered using OAuth, but their emails have changed
     // since they did so, we can update their email from their id on that platform.
     // This relies on the fact that id's are unique on all supported platforms.
-    static updateEmailFromAuthentication (newEmail, authentication) {
+    static async _updateEmailFromAuthentication (newEmail, authentication) {
       const {type, identifier, token} = authentication
-      return bsModels.bookshelf.transaction(transaction => {
-        return new bsModels.Authentication({type, identifier})
+      return bsModels.bookshelf.transaction(async transaction => {
+        const authentication = await new bsModels.Authentication({type, identifier})
           .fetch({
             withRelated: 'user',
             transacting: transaction,
           })
-          .then(authentication => {
-            if (!authentication) {
-              throw new errors.AuthenticationNotFound('can not update a user if the authentication with which it is supposed to be updated does not exist')
-            }
-            const user = authentication.related('user')
-            if (!user) {
-              throw new errors.UserNotFound()
-            }
-            return user.save({
-              updatedAt: new Date(),
-              email: newEmail
-            }, {
-              patch: true,
-              transacting: transaction
-            })
-          })
+
+        if (!authentication) {
+          throw new errors.AuthenticationNotFound('can not update a user if the authentication with which it is supposed to be updated does not exist')
+        }
+        const userBs = authentication.related('user')
+        if (!userBs) {
+          throw new errors.UserNotFound()
+        }
+        console.log(userBs.toJSON())
+        await userBs.save({
+          id: userBs.id,
+          updatedAt: new Date(),
+          email: newEmail,
+        }, {
+          method: 'update',
+          patch: true,
+          transacting: transaction
+        })
+        return new User(userBs)
       })
     }
 
-    createAuthentication (authentication, transaction) {
-      return definitelyTransact(transaction)(transaction => {
+    // Returns JSON representation of new authentication object
+    async createAuthentication (authentication, transaction) {
+      return definitelyTransact(transaction, async transaction => {
         const authenticationMethods = {
           password: this.createPasswordAuthentication,
           github: this.createTokenAuthentication,
@@ -182,73 +200,72 @@ module.exports = bsModels => {
             throw new errors.AuthenticationNotImplemented(`authentication type ${type} not implemented`)
         }
 
-        return createdAuthentication
-          .then(auth => {
-            logger.info({userId: this.id, authenticationId: auth.id}, 'successfully created authentication')
-            return auth
-          })
+        const auth = await createdAuthentication
+        logger.info({userId: this.id, authenticationId: auth.id}, 'successfully created authentication')
+        return auth.toJSON()
       })
     }
-    createPasswordAuthentication (authentication, transaction) {
+    async createPasswordAuthentication (authentication, transaction) {
       const {type, identifier, token} = authentication
-      return hashPassword(token)
-        .then(hash =>
-          new bsModels.Authentication({
-            type, identifier, token: hash, userId: this.id,
-          }).save(null, {transacting: transaction})
-        )
-    }
-    createTokenAuthentication (authentication, transaction) {
-      const {type, identifier, token} = authentication
-      return new bsModels.Authentication({
-        type, identifier, token, userId: this.id,
+      const hash = await hashPassword(token)
+      const authenticationBs = await new bsModels.Authentication({
+        type, identifier, token: hash, userId: this.id,
       }).save(null, {transacting: transaction})
-        .catch(error => {
-          if (error.constraint === 'authentication_type_identifier_unique') {
-            throw new errors.DuplicateKey()
-          }
-          throw error
-        })
+      return authenticationBs // TODO return proper authentication object
+    }
+    async createTokenAuthentication (authentication, transaction) {
+      const {type, identifier, token} = authentication
+      try {
+        return await new bsModels.Authentication({
+          type, identifier, token, userId: this.id,
+        }).save(null, {transacting: transaction})
+      } catch (error) {
+        if (error.constraint === 'authentication_type_identifier_unique') {
+          throw new errors.DuplicateKey()
+        }
+        throw error
+      }
     }
 
-    updateAuthentication (authentication, transaction) {
-      return definitelyTransact(transaction)(transaction => {
-        return new bsModels.Authentication({userId: this.id, type: authentication.type})
+    //
+    // UPDATE
+    //
+
+    // Returns JSON representation of authentication model.
+    async updateAuthentication (authentication, transaction) {
+      return definitelyTransact(transaction, async transaction => {
+        const existingAuthentication = await new bsModels.Authentication({userId: this.id, type: authentication.type})
           .fetch({transacting: transaction})
-          .then(existingAuthentication => {
-            if (existingAuthentication) {
-              authentication.updatedAt = new Date()
-              return existingAuthentication
-                .save(authentication, {patch: true, transacting: transaction})
-                .catch(error => {
-                  if (error.constraint === 'authentication_type_identifier_unique') {
-                    throw new errors.DuplicateKey()
-                  } else {
-                    throw error
-                  }
-                })
+        if (existingAuthentication) {
+          authentication.updatedAt = new Date()
+          try {
+            const authenticationModel = await existingAuthentication
+              .save(authentication, {patch: true, transacting: transaction})
+            return authenticationModel.toJSON()
+          } catch (error) {
+            if (error.constraint === 'authentication_type_identifier_unique') {
+              throw new errors.DuplicateKey()
             } else {
-              return this.createAuthentication(authentication, transaction)
+              throw error
             }
-          }).catch(error => {
-            throw error // TODO what errors could happen here?
-          })
+          }
+        } else {
+          return await this.createAuthentication(authentication, transaction)
+        }
       })
     }
 
-    updatePassword (password, transaction) {
+    async updatePassword (password, transaction) {
       const email = this.bs.get('email')
-      return definitelyTransact(transaction)(transaction =>
-        hashPassword(password)
-        .then(hash => {
-          const authentication = {
-            type: 'password',
-            identifier: email,
-            token: hash,
-          }
-          return this.updateAuthentication(authentication, transaction)
-        })
-      )
+      return definitelyTransact(transaction, async transaction => {
+        const hash = await hashPassword(password)
+        const authentication = {
+          type: 'password',
+          identifier: email,
+          token: hash,
+        }
+        return await this.updateAuthentication(authentication, transaction)
+      })
     }
   }
 }

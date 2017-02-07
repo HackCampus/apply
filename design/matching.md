@@ -86,16 +86,16 @@ so that they can respond to the latest events easily (eg. new application).
 
 1. unfinished by student (implicit)
 
-### stage 2: vetting
+#### stage 2: vetting
 
 1. finished by student
 2. rejected with reason by matcher  (-> out)
-3. shortlisted by matcher (-> stage 2)
+3. shortlisted by matcher (-> stage 3)
 
 #### stage 3: company preferences
 
 1. company preferences made by student (ready to match)
-2. company suggestions made by matcher (-> stage 3)
+2. company suggestions made by matcher (-> stage 4)
 
 #### stage 4: matching
 
