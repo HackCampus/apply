@@ -29,8 +29,20 @@ module.exports = bsModels => {
       })
     }
 
+    //
+    // BASIC FIELD GETTERS
+    //
+
     get id () {
       return this.bs.id
+    }
+
+    get email () {
+      return this.bs.get('email')
+    }
+
+    get role () {
+      return this.bs.get('role')
     }
 
     //
@@ -38,12 +50,12 @@ module.exports = bsModels => {
     //
 
     static where () {
-      console.warn('using bs method! where')
+      console.trace('using bs method! where')
       return bsModels.User.where(...arguments)
     }
 
     get () {
-      console.warn('using bs method! get')
+      console.trace('using bs method! get')
       return this.bs.get(...arguments)
     }
 

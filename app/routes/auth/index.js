@@ -15,10 +15,13 @@ module.exports = models => {
       done(null, user.id)
     })
 
-    passport.deserializeUser((id, done) => {
-      User.where('id', id).fetch()
-        .then(user => { done(null, new User(user)) }) // TODO de-bs
-        .catch(err => { done(err) })
+    passport.deserializeUser(async (id, done) => {
+      try {
+        const user = await User.fetchById(id)
+        done(null, user)
+      } catch (error) {
+        done(error)
+      }
     })
 
     app.get('/auth/error', (req, res) => {

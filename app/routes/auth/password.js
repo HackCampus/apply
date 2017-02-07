@@ -6,63 +6,78 @@ const status = require('statuses')
 const errors = require('../../errors')
 const authorized = require('../../middlewares/authorized')
 const validateRequest = require('../../middlewares/validate')
-const {errors: {DuplicateEmail}, User} = require('../../database')
+const {errors: {DuplicateEmail, UserNotFound}, User} = require('../../database')
 const wireFormats = require('../../wireFormats')
 
 const djangoHasher = djangoHashers.getHasher('pbkdf2_sha256')
+
+function verifyPassword (requestPassword, hashedPassword) {
+  return new Promise((resolve, reject) => {
+    if (hashedPassword.startsWith('pbkdf2_sha256')) {
+      // old users
+      const passwordsMatch = djangoHasher.verify(requestPassword, hashedPassword)
+      return resolve(passwordsMatch)
+    } else {
+      // new users
+      bcrypt.compare(requestPassword, hashedPassword, (err, passwordsMatch) => {
+        if (err) return reject(err)
+        return resolve(passwordsMatch)
+      })
+    }
+  })
+}
 
 module.exports = (passport, app) => {
   // Registration
   // errors:
   // 0. junk in
   // 1. email already exists
-  app.post('/users', validateRequest(wireFormats.register) /*0*/, (req, res, handleError) => {
+  app.post('/users', validateRequest(wireFormats.register) /*0*/, async (req, res, handleError) => {
     const {email, password} = req.body
-    User.createWithPassword(email, password)
-    .then(user => { res.status(status('Created')).json(user.toJSON()) })
-    .catch(error => {
+    try {
+      const user = await User.createWithPassword(email, password)
+      res.status(status('Created'))
+      return res.json(user.toJSON())
+    } catch (error) {
       if (error instanceof DuplicateEmail) { /*1*/
         return handleError({status: 'Conflict', error: errors.emailTaken})
       }
       return handleError({status: 'Unknown', error})
-    })
+    }
   })
 
   // Log-in
   passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
-  }, function (email, password, done) {
-    User.where('email', email)
-    .fetch({withRelated: ['authentication']})
-    .then(user => new Promise((resolve, reject) => {
-      if (user == null) {
-        return reject({status: 'Unauthorized', error: errors.loginIncorrect})
+  }, async function handleLogin (email, password, next) {
+    const nextError = error => next(error)
+    const nextSuccess = user => next(null, user)
+    try {
+      const user = await User.fetchSingle({email})
+      const authentications = await user.fetchAuthentications()
+      const passwordAuths = authentications.filter(a => a.type === 'password')
+      if (passwordAuths.length < 1) {
+        return nextError({status: 'Unauthorized', error: errors.noPassword})
       }
-      const auth = user.related('authentication')
-      const passwordAuth = auth.findWhere({type: 'password'})
-      if (!passwordAuth) {
-        return reject({status: 'Unauthorized', error: errors.noPassword})
+      const {token} = passwordAuths[0]
+      try {
+        const passwordsMatch = await verifyPassword(password, token)
+        if (passwordsMatch) {
+          return nextSuccess(user)
+        } else {
+          return nextError({status: 'Unauthorized', error: errors.loginIncorrect})
+        }
+      } catch (error) {
+        return nextError({status: 'Unknown', error: error.message})
       }
 
-      const done = (err, passwordsMatch) => {
-        if (err) return reject({status: 'Unknown', error: err})
-        if (!passwordsMatch) return reject({status: 'Unauthorized', error: errors.loginIncorrect})
-        return resolve(user)
+    } catch (error) {
+      if (error instanceof UserNotFound) {
+        return nextError({status: 'Unauthorized', error: errors.loginIncorrect})
       }
-
-      const hashedPassword = passwordAuth.get('token')
-      if (hashedPassword.startsWith('pbkdf2_sha256')) {
-        // old users
-        const passwordsMatch = djangoHasher.verify(password, hashedPassword)
-        done(null, passwordsMatch)
-      } else {
-        // new users
-        bcrypt.compare(password, hashedPassword, done)
-      }
-    }))
-    .then(user => done(null, user))
-    .catch(err => done(err))
+      return nextError({status: 'Unknown', error: error.message})
+    }
   }))
 
   app.post('/auth/password', passport.authenticate('local'), (req, res) => {
