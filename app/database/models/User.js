@@ -84,11 +84,11 @@ module.exports = bsModels => {
 
     static async create (fields, transaction) {
       try {
-        const bsUser = new bsModels.User(fields)
-        const bs = await bsUser.save(null, {
+        const bs = await new bsModels.User(fields).save(null, {
+          method: 'insert',
           transacting: transaction,
         })
-        await bs.fetch() // this is so stupid.
+        await bs.fetch() // this is so stupid. need to do this, otherwise "toJSON" calls won't have all fields set.
         return new User(bs)
       } catch (error) {
         switch (error.constraint) {
@@ -102,7 +102,7 @@ module.exports = bsModels => {
 
     static async createWithAuthentication (email, authentication, transaction) {
       return definitelyTransact(transaction, async transaction => {
-        const user = await User.create({email})
+        const user = await User.create({email}, transaction)
         await user.createAuthentication(authentication, transaction)
         return user
       })
@@ -129,8 +129,6 @@ module.exports = bsModels => {
         switch (error.constructor) {
           case errors.DuplicateEmail:
             return await User._updateAuthenticationFromEmail(email, authentication)
-          case errors.DuplicateKey:
-            return await User._updateEmailFromAuthentication(email, authentication)
         }
         throw error
       }
@@ -142,41 +140,6 @@ module.exports = bsModels => {
       const user = await User.fetchSingle({email})
       await user.updateAuthentication(authentication)
       return user
-    }
-
-    // If a user has already registered using OAuth, but their emails have changed
-    // since they did so, we can update their email from their id on that platform.
-    // This relies on the fact that id's are unique on all supported platforms.
-    static async _updateEmailFromAuthentication (newEmail, authentication) {
-      const {type, identifier, token} = authentication
-      return bsModels.bookshelf.transaction(async transaction => {
-        const authentication = await new bsModels.Authentication({type, identifier})
-          .fetch({
-            withRelated: 'user',
-            transacting: transaction,
-          })
-
-        if (!authentication) {
-          throw new errors.AuthenticationNotFound('can not update a user if the authentication with which it is supposed to be updated does not exist')
-        }
-        const userBs = authentication.related('user')
-        if (!userBs) {
-          throw new errors.UserNotFound()
-        }
-        const user = new User(userBs)
-        try {
-          await user.update({email: newEmail})
-        } catch (error) {
-          switch (error.constructor) {
-            case errors.DuplicateEmail:
-              console.warn(`tried to update user ${user.id} email to ${newEmail}, but it exists already`)
-              return user
-            default:
-              throw error
-          }
-        }
-        return user
-      })
     }
 
     // Returns JSON representation of new authentication object

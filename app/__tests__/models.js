@@ -43,6 +43,36 @@ test('User.create creates an applicant by default', async t => {
   t.is(userJson.email, email)
 })
 
+test('User.update updates fields', async t => {
+  const {User} = models
+  const email = 'update1234@foo.bar'
+  const email2 = 'IMUPDATED@foo.bar'
+  const user = await User.create({email})
+  const newUser = await user.update({email, role: 'matcher'})
+  t.true(user === newUser)
+  const userJson = newUser.toJSON()
+  t.is(user.id, newUser.id) // id hasn't changed
+  t.is(user.id, userJson.id) // id hasn't changed
+  t.is(userJson.role, 'matcher')
+  t.truthy(userJson.createdAt)
+  t.truthy(userJson.updatedAt)
+})
+
+test('User.fetchSingle', async t => {
+  const {User, errors} = models
+  t.throws(User.fetchSingle({email: 'DOESNOTEXISTAARRGGGH'}), error => error instanceof errors.UserNotFound)
+  const email = 'fetchmebaby@bar.baz'
+  await User.create({email})
+  const fetched = await User.fetchSingle({email})
+  t.true(fetched instanceof User)
+  const userJson = fetched.toJSON()
+  t.truthy(userJson.id)
+  t.truthy(userJson.createdAt)
+  t.falsy(userJson.updatedAt)
+  t.is(userJson.role, 'applicant')
+  t.is(userJson.email, email)
+})
+
 test('User.createWithAuthentication throws with junk input', t => {
   const {User, errors} = models
   t.throws(User.createWithAuthentication('foo@bar.baz', {junk: true}), error => error instanceof errors.AuthenticationTypeError)
@@ -123,7 +153,7 @@ test('User.createWithToken throws if a user signs up with a different email but 
   await User.createWithPassword(firstEmail, 'somepassword')
   const user = await User.createWithToken(authentication.type, firstEmail, authentication.identifier, authentication.token)
   const firstUser = user.toJSON()
-  t.throws(User.createWithToken(authentication.type, secondEmail_DIFFERENT, authentication.identifier, authentication.token), error => error instanceof errors.CanNotChangeEmailWithPassword)
+  t.throws(User.createWithToken(authentication.type, secondEmail_DIFFERENT, authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
 })
 
 test('User.updateAuthentication with no existing authentication', async t => {
