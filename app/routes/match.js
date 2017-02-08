@@ -20,6 +20,9 @@ module.exports = models => {
       limitToMatchers(),
       validate(wireFormats.applicationEvent),
       handlePostApplicationEvents)
+    app.delete('/applications/:applicationId/events/:eventId',
+      limitToMatchers(),
+      handleDeleteApplicationEvent)
   }
 
 
@@ -50,8 +53,7 @@ module.exports = models => {
     try {
       // only needed to verify that the url is a real application
       const application = await Application.fetchById(applicationId)
-      const applicationEvents = await ApplicationEvent.fetchByApplicationId(application.id)
-      const response = {events: applicationEvents.map(e => e.toJSON())}
+      const response = await getApplicationEventsResponse(application.id)
       return res.json(response)
     } catch (error) {
       if (error instanceof errors.NotFound) {
@@ -70,8 +72,7 @@ module.exports = models => {
       const application = await Application.fetchById(applicationId)
       const event = Object.assign({actorId, applicationId: application.id}, body)
       await ApplicationEvent.create(event)
-      const applicationEvents = await ApplicationEvent.fetchByApplicationId(application.id)
-      const response = {events: applicationEvents.map(e => e.toJSON())}
+      const response = await getApplicationEventsResponse(application.id)
       return res.json(response)
     } catch (error) {
       if (error instanceof errors.NotFound) {
@@ -79,6 +80,34 @@ module.exports = models => {
       }
       return handleError({status: 'Unknown'})
     }
+  }
+
+  async function handleDeleteApplicationEvent (req, res, handleError) {
+    const userId = req.user.id
+    const {applicationId, eventId} = req.params
+    try {
+      const event = await ApplicationEvent.fetchById(eventId)
+      if (event.applicationId != applicationId) {
+        return handleError({status: 'Bad Request', message: 'The given event does not correspond to the given application'})
+      }
+      const actor = await event.fetchActor()
+      if (actor.id != userId) {
+        return handleError({status: 'Unauthorized'})
+      }
+      await event.delete()
+      const response = await getApplicationEventsResponse(applicationId)
+      return res.json(response)
+    } catch (error) {
+      if (error instanceof errors.NotFound) {
+        return handleError({status: 'Not Found'})
+      }
+    }
+  }
+
+  async function getApplicationEventsResponse (applicationId) {
+    const applicationEvents = await ApplicationEvent.fetchByApplicationId(applicationId)
+    const response = {events: applicationEvents.map(e => e.toJSON())}
+    return response
   }
 
   return {

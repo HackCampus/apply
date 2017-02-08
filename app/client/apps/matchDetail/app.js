@@ -8,6 +8,7 @@ const action = require('../../lib/action')
 const api = require('../../lib/api')
 const Component = require('../../lib/component')
 
+const link = require('../../components/link')
 const selectField = require('../../components/selectField')
 const textArea = require('../../components/textArea')
 const applicationView = require('../../components/applicationView')
@@ -16,35 +17,6 @@ const possibleActions = wireFormats.applicationEvent.properties.type.enum
 
 // TODO hacky
 const applicationId = window.location.pathname.match(/application\/([^/]+)/)[1]
-
-function dateFromNow (date) {
-  return html`<span title=${date}>${moment(date).fromNow()}</span>`
-}
-
-function eventView (event) {
-  const {
-    ts,
-    actor,
-    type,
-    payload,
-  } = event
-  return html`<div class="event">
-    <p><span class="type">${type}</span> by <span class="actor">${actor.email}</span></p>
-    ${(() => {
-      const fields = []
-      for (let key in payload) {
-        const value = payload[key]
-        if (key === 'comment') {
-          fields.push(html`<p><span class="eventcomment">${value}</span></p>`)
-        } else {
-          fields.push(html`<p><span class="eventmetakey">${key}</span>: <span class="eventmetavalue">${value}</span></p>`)
-        }
-      }
-      return fields
-    })()}
-    <p><span class="ts">${dateFromNow(ts)}</span></p>
-  </div>`
-}
 
 module.exports = Component({
   children: {
@@ -56,19 +28,30 @@ module.exports = Component({
       model: {
         application: null,
         events: null,
+        user: null,
       },
-      effect: [action('fetchApplication'), action('fetchApplicationEvents')],
+      effect: [action('fetchApplication'), action('fetchApplicationEvents'), action('fetchUser')],
     }
   },
   update (model, a) {
     switch (a.type) {
+      case 'deleteApplicationEvent': {
+        return {model, effect: a}
+      }
+
       case 'fetchApplicationSuccess': {
         const newModel = u({application: a.payload}, model)
         return {model: newModel, effect: null}
       }
-      case 'fetchApplicationEventsSuccess': {
+      case 'fetchApplicationEventsSuccess':
+      case 'deleteApplicationEventSuccess': {
         const events = a.payload.events.reverse()
         const newModel = u({events}, model)
+        return {model: newModel, effect: null}
+      }
+      case 'fetchUserSuccess': {
+        const user = a.payload
+        const newModel = u({user}, model)
         return {model: newModel, effect: null}
       }
 
@@ -89,6 +72,8 @@ module.exports = Component({
 
       case 'fetchApplicationFailure':
       case 'fetchApplicationEventsFailure':
+      case 'deleteApplicationEventFailure':
+      case 'fetchUserFailure':
       case 'submitFailure':
         // TODO
         console.error(a)
@@ -117,18 +102,19 @@ module.exports = Component({
     const {
       application,
       events,
+      user,
     } = model
 
     return html`
       <div class="actions">
-        <h2>Events</h2>
+        <h2>Matching history</h2>
         <p>action: ${children.actionType()}</p>
         ${children.comment()}
-        <a onclick=${() => dispatch(action('submit'))}>Submit</a>
+        ${link('Submit', () => dispatch(action('submit')))}
         <div class="events">
-          ${events
-            ? events.map(event => eventView(event))
-            : ''}
+          ${events && events.length > 0
+            ? events.map(event => eventView(event, user, () => dispatch(action('deleteApplicationEvent', event.id))))
+            : html`<div class="event"><em>No events yet!</em></div>`}
         </div>
       </div>
     `
@@ -138,6 +124,8 @@ module.exports = Component({
       pull(api.get(url), pull.map(handler))
     const post = (url, body, handler) =>
       pull(api.post(url, body), pull.map(handler))
+    const doDelete = (url, handler) =>
+      pull(api.delete(url), pull.map(handler))
     switch (effect.type) {
       case 'fetchApplication': {
         return get(`/applications/${applicationId}`, ({statusText, data}) => {
@@ -157,6 +145,25 @@ module.exports = Component({
         })
       }
 
+      case 'deleteApplicationEvent': {
+        const eventId = effect.payload
+        return doDelete(`/applications/${applicationId}/events/${eventId}`, ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('deleteApplicationEventSuccess', data)
+            default: return action('deleteApplicationEventFailure', data)
+          }
+        })
+      }
+
+      case 'fetchUser': {
+        return get(`/me`, ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('fetchUserSuccess', data)
+            default: return action('fetchUserFailure', data)
+          }
+        })
+      }
+
       case 'submit': {
         const event = effect.payload
         return post(`/applications/${applicationId}/events`, event, ({statusText, data}) => {
@@ -169,3 +176,34 @@ module.exports = Component({
     }
   }
 })
+
+function dateFromNow (date) {
+  return html`<span title=${date}>${moment(date).fromNow()}</span>`
+}
+
+function eventView (event, user, onDelete) {
+  const {
+    id,
+    ts,
+    actor,
+    type,
+    payload,
+  } = event
+  const isMine = user && user.id == actor.id
+  return html`<div class="event">
+    <p><span class="type">${type}</span> by <span class="actor">${actor.email}</span></p>
+    ${(() => {
+      const fields = []
+      for (let key in payload) {
+        const value = payload[key]
+        if (key === 'comment') {
+          fields.push(html`<p><span class="eventcomment">${value}</span></p>`)
+        } else {
+          fields.push(html`<p><span class="eventmetakey">${key}</span>: <span class="eventmetavalue">${value}</span></p>`)
+        }
+      }
+      return fields
+    })()}
+    <p><span class="ts">${dateFromNow(ts)}</span> ${isMine ? link('delete', onDelete, {class: 'eventdelete'}) : ''}</p>
+  </div>`
+}

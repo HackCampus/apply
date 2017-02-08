@@ -2,9 +2,12 @@ const constants = require('../../constants')
 
 const errors = require('../errors')
 
+const UserModel = require('./User')
+
 module.exports = bsModels => {
 
   const BsModel = bsModels.ApplicationEvent
+  const User = UserModel(bsModels)
 
   return class Application {
     constructor (bs) {
@@ -44,16 +47,24 @@ module.exports = bsModels => {
     }
 
     //
-    // BS INTERFACE VIOLATIONS
+    // RELATIONS
     //
+
+    async fetchActor () {
+      return User.fetchById(this.actorId)
+    }
 
     //
     // FETCH
     //
 
     static async fetchById (id) {
-      const bs = await BsModel.where('id', '=', id).fetch({withRelated: 'actor'})
-      return new this(bs)
+      try {
+        const bs = await BsModel.where('id', '=', id).fetch({withRelated: 'actor'})
+        return new this(bs)
+      } catch (error) {
+        throw new errors.NotFound()
+      }
     }
 
     static async fetchAll (where) {
@@ -82,6 +93,17 @@ module.exports = bsModels => {
       })
       await bs.refresh({withRelated: 'actor'})
       return new this(bs)
+    }
+
+    //
+    // DELETE
+    //
+
+    async delete (transaction) {
+      await this.bs.destroy({
+        transacting: transaction,
+      })
+      return null
     }
   }
 }
