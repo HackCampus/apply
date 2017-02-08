@@ -23,16 +23,21 @@ function techPreferences (techs) {
     }
     buckets[preference].push(tech)
   }
+  function preferenceList (i) {
+    const bucket = buckets[i]
+    if (bucket == null) return '-'
+    return bucket.join(', ')
+  }
   return html`
     <div class="techpreferences">
       <h3>3 - proficient</h3>
-      <p>${buckets[3].join(', ')}</p>
+      <p>${preferenceList(3)}</p>
       <h3>2 - familiar</h3>
-      <p>${buckets[2].join(', ')}</p>
+      <p>${preferenceList(2)}</p>
       <h3>1 - meh</h3>
-      <p>${buckets[1].join(', ')}</p>
+      <p>${preferenceList(1)}</p>
       <h3>0 - never used</h3>
-      <p>${buckets[0].join(', ')}</p>
+      <p>${preferenceList(0)}</p>
     </div>
   `
 }
