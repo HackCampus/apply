@@ -203,7 +203,7 @@ function eventView (event, user, onDelete) {
       for (let key in payload) {
         const value = payload[key]
         if (key === 'comment') {
-          fields.push(html`<p><span class="eventcomment">${value}</span></p>`)
+          fields.push(html`<pre class="eventcomment">${value}</pre>`)
         } else {
           fields.push(html`<p><span class="eventmetakey">${key}</span>: <span class="eventmetavalue">${value}</span></p>`)
         }
