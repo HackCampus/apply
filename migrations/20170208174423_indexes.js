@@ -20,6 +20,7 @@ exports.up = function(knex, Promise) {
       t.index(['technology'])
     }),
     knex.schema.table('applicationevents', function (t) {
+      t.index(['ts'])
       t.index(['type'])
       t.index(['actorId'])
       t.index(['applicationId'])
@@ -38,7 +39,7 @@ exports.down = function(knex, Promise) {
       // t.dropIndex(['email'])
       t.dropIndex(['role'])
     }),
-    knex.schema.table('authentications', function (t) {
+    knex.schema.table('authentication', function (t) {
       t.dropIndex(['id'])
       t.dropIndex(['userId'])
       t.dropIndex(['type'])
@@ -48,6 +49,7 @@ exports.down = function(knex, Promise) {
       t.dropIndex(['technology'])
     }),
     knex.schema.table('applicationevents', function (t) {
+      t.dropIndex(['ts'])
       t.dropIndex(['type'])
       t.dropIndex(['actorId'])
       t.dropIndex(['applicationId'])

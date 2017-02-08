@@ -18,17 +18,18 @@ module.exports = function Component (component) {
         ? component.init
         : () => ({model: null, effect: null})
 
-      const componentInit = init()
+      const topLevelInit = init()
       if (self.children === none) {
-        return componentInit
+        return topLevelInit
       }
 
       const childInits = mapValues(self.children, child => child.init())
 
       const childModels = mapValues(childInits, child => child.model)
-      const model = Object.assign({}, componentInit.model, {children: childModels})
+      const model = Object.assign({}, topLevelInit.model, {children: childModels})
 
-      let effects = [componentInit.effect]
+      const topLevelEffect = topLevelInit.effect
+      let effects = Array.isArray(topLevelEffect) ? topLevelEffect : [topLevelEffect]
       for (let child in childInits) {
         const childEffect = childInits[child].effect
         if (childEffect) {

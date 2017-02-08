@@ -25,23 +25,14 @@ function techPreferences (techs) {
   }
   return html`
     <div class="techpreferences">
-      <table>
-        <tr>
-          <td>3 - proficient</td>
-          <td><strong>${buckets[3].join(', ')}</strong></td>
-        </tr>
-        <tr>
-          <td>2 - familiar</td>
-          <td><strong>${buckets[2].join(', ')}</strong></td>
-        </tr>
-        <tr>
-          <td>1 - meh</td>
-          <td><strong>${buckets[1].join(', ')}</strong></td>
-        </tr>
-        <tr>
-          <td>0 - never used</td>
-          <td><strong>${buckets[0].join(', ')}</strong></td>
-        </tr>
+      <h3>3 - proficient</h3>
+      <p>${buckets[3].join(', ')}</p>
+      <h3>2 - familiar</h3>
+      <p>${buckets[2].join(', ')}</p>
+      <h3>1 - meh</h3>
+      <p>${buckets[1].join(', ')}</p>
+      <h3>0 - never used</h3>
+      <p>${buckets[0].join(', ')}</p>
     </div>
   `
 }
@@ -73,8 +64,9 @@ module.exports = function (application) {
   }
   return html`
     <div class="application">
-      <h2>Personal details</h2>
       <table>
+      ${field('created at', 'createdAt', date => moment(date).format('DD.MM.YYYY'))}
+      ${field('finished at', 'finishedAt', date => date ? moment(date).format('DD.MM.YYYY') : html`<em>unfinished</em>`)}
       ${header('Contact details')}
       ${field('first name', 'firstName')}
       ${field('last name', 'lastName')}

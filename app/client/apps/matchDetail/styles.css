@@ -1,17 +1,42 @@
 .matchDetail {
-  .applicationview {
-    lost-column: 1/2;
-    .application {
-      margin: 20px;
-    }
+
+}
+
+.applicationview {
+  lost-column: 1/2;
+  .application {
+    margin: 20px;
   }
-  .actions {
-    lost-column: 1/2;
-    textarea {
-      min-height: 50px;
-    }
-    table {
-      width: 100%;
-    }
+}
+
+.actions {
+  lost-column: 1/2;
+  textarea {
+    min-height: 50px;
   }
+}
+
+.event {
+  margin: 1em 0;
+  p {
+    margin: 0;
+  }
+}
+
+.type {
+  font-weight: bold;
+}
+
+.ts {
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.eventcomment {
+  border-left: 2px solid #ff9600;
+  padding-left: 6px;
+}
+
+.eventmetakey {
+  font-weight: bold;
 }
