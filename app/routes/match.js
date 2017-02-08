@@ -22,7 +22,6 @@ module.exports = models => {
     const application = await Application.fetchById(id)
     const response = application.toJSON()
     const techPreferences = await application.fetchTechPreferences()
-    console.log(techPreferences)
     response.techPreferences = techPreferences
     return res.json(response)
   }
