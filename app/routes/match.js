@@ -1,5 +1,7 @@
 const limitToMatchers = require('../middlewares/limitToMatchers')
+const validate = require('../middlewares/validate')
 
+const wireFormats = require('../wireFormats')
 const constants = require('../constants')
 
 module.exports = models => {
@@ -8,6 +10,11 @@ module.exports = models => {
   function routes (app) {
     app.get('/applications', limitToMatchers(), handleGetApplications)
     app.get('/applications/:id', limitToMatchers(), handleGetSingleApplication)
+
+    app.post('/applications/:id/events',
+      limitToMatchers(),
+      validate(wireFormats.applicationEvent),
+      handlePostApplicationEvents)
   }
 
 
@@ -24,6 +31,11 @@ module.exports = models => {
     const techPreferences = await application.fetchTechPreferences()
     response.techPreferences = techPreferences
     return res.json(response)
+  }
+
+  function handlePostApplicationEvents (req, res) {
+    console.log(req.body)
+    res.json(req.body)
   }
 
   return {

@@ -8,6 +8,7 @@ const fs = require('fs')
 const gulp = require('gulp')
 const postcss = require('gulp-postcss')
 const sourcemaps = require('gulp-sourcemaps')
+const lostcss = require('lost')
 const mkdirp = require('mkdirp')
 const path = require('path')
 const precss = require('precss')
@@ -83,7 +84,7 @@ gulp.task('clientApps', [
 const styles = (srcDirectory) =>
   gulp.src(srcDirectory)
   .pipe(sourcemaps.init())
-  .pipe(postcss([autoprefixer, precss, cssnano()]))
+  .pipe(postcss([lostcss, autoprefixer, precss, cssnano()]))
   .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest(build))
 

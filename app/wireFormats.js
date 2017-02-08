@@ -87,6 +87,23 @@ const techPreferences = {
   additionalProperties: false,
 }
 
+const applicationEvent = {
+  type: 'object',
+  properties: {
+    type: {
+      enum: [
+        'commented',
+        'shortlisted',
+        'rejected',
+      ]
+    },
+    payload: {
+      type: 'object',
+    }
+  },
+  required: ['type']
+}
+
 module.exports = {
   authentication,
   password,
@@ -96,4 +113,5 @@ module.exports = {
   questions,
   techPreferences,
   application,
+  applicationEvent,
 }
