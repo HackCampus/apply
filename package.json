@@ -4,7 +4,7 @@
   "description": "Internship applications for HackCampus",
   "engines": {
     "node": "7.5.0",
-    "npm": "3.10.8"
+    "npm": "4.1.2"
   },
   "scripts": {
     "clean": "rm -rf app/build/",
