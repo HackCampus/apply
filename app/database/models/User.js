@@ -18,9 +18,11 @@ module.exports = bsModels => {
     }
   }
 
+  const BsModel = bsModels.User
+
   return class User {
     constructor (bs) {
-      this.bs = bs == null ? new bsModels.User() : bs
+      this.bs = bs == null ? new BsModel() : bs
     }
 
     toJSON () {
@@ -51,7 +53,7 @@ module.exports = bsModels => {
 
     static where () {
       console.trace('using bs method! where')
-      return bsModels.User.where(...arguments)
+      return BsModel.where(...arguments)
     }
 
     get () {
@@ -64,14 +66,14 @@ module.exports = bsModels => {
     //
 
     static async fetchById (id) {
-      const bs = await bsModels.User.where('id', '=', id).fetch()
+      const bs = await BsModel.where('id', '=', id).fetch()
       return new User(bs)
     }
 
     static async fetchSingle (...query) {
-      const bs = await bsModels.User.where(...query).fetchAll()
+      const bs = await BsModel.where(...query).fetchAll()
       if (bs.length === 0) {
-        throw new errors.UserNotFound()
+        throw new errors.NotFound()
       } else if (bs.length > 1) {
         console.trace(`ambiguous query in User.fetchSingle, returned ${bs.length} objects, not 1:`, ...query)
       }
@@ -96,7 +98,7 @@ module.exports = bsModels => {
 
     static async create (fields, transaction) {
       try {
-        const bs = await new bsModels.User(fields).save(null, {
+        const bs = await new BsModel(fields).save(null, {
           method: 'insert',
           transacting: transaction,
         })
