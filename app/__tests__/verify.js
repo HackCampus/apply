@@ -19,7 +19,7 @@ test.serial.cb('can log in with github access token', t => {
   })
 })
 
-test.cb('"different user has already connected" message gets passed to error handler', async t => {
+test.cb('"different user has already connected" message gets passed to error handler', t => {
   const verify = oauthVerifyCallback('github')
   const profile = {
     id: '1337',

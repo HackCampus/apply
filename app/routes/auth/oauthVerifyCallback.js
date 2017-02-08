@@ -6,7 +6,7 @@ module.exports = provider =>
   async function oauthVerifyCallback (req, accessToken, refreshToken, profile, done) {
     const user = req.user
     if (user) {
-      const email = user.get('email')
+      const email = user.email
       const {id} = profile
       const authentication = {
         type: provider,
@@ -31,7 +31,7 @@ module.exports = provider =>
         return done(null, false, {message: 'Did you grant the necessary permissions?'})
       }
       const email = emails[0].value
-      User.createWithToken(provider, email, id, accessToken)
-        .then(user => done(null, new User(user))) // TODO de-bs
+      const user = await User.createWithToken(provider, email, id, accessToken)
+      return done(null, user)
     }
   }
