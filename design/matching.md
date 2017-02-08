@@ -82,24 +82,45 @@ so that they can respond to the latest events easily (eg. new application).
 
 ### application stages
 
-1. unfinished
-2. finished
-3. rejected (reason)
-4. shortlisted
-5. sent to company
-6. interview arranged with company
-7. rejected by company
-8. offer made by company
-9. offer accepted by student
-10. contract sent by company
-11. contract signed by student
+#### stage 1: application
+
+1. unfinished by student (implicit)
+
+#### stage 2: vetting
+
+1. finished by student
+2. rejected with reason by matcher  (-> out)
+3. shortlisted by matcher (-> stage 3)
+
+#### stage 3: company preferences
+
+1. company preferences made by student (ready to match)
+2. company suggestions made by matcher (-> stage 4)
+
+#### stage 4: matching
+
+1. sent to company by matcher
+2. interview arranged with company by matcher
+3. rejected from company by matcher
+4. offer made by company by matcher
+5. offer accepted by student by matcher
+6. contract sent by company by matcher
+7. contract signed by student by matcher
+
+#### stage 5: done
+
+1. in - will be an intern
+2. out - intern took another opportunity with reason
+
+(+ out, rejected by us (2.2))
 
 ### event schema
 
 ```
 timestamp : time
+actor : user id
+application : application id
 type : string
-application : id
 payload : json
 ```
 

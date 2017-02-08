@@ -14,11 +14,6 @@ const action = require('../../lib/action')
 const api = require('../../lib/api')
 const Component = require('../../lib/component')
 
-const views = keyMirror({
-  list: null,
-  detail: null,
-})
-
 const direction = {
   ascending: true,
   descending: false,
@@ -77,18 +72,12 @@ module.exports = Component({
   init () {
     return {
       model: {
-        view: views.list,
-
-        // list view
         applications: [],
         ordering: [],
         orderBy: {
           column: 'createdAt',
           direction: direction.ascending,
         },
-
-        // detail view
-        detailRow: null,
       },
       effect: action('fetchApplications'),
     }
@@ -96,7 +85,7 @@ module.exports = Component({
   update (model, action) {
     switch (action.type) {
       case 'fetchApplicationsSuccess': {
-        const applicationsList = action.payload
+        const applicationsList = action.payload.applications // TODO error checking
         let applications = {}
         let ordering = []
         for (let application of applicationsList) {
@@ -105,14 +94,6 @@ module.exports = Component({
         }
         const newModel = u({applications, ordering}, model)
         return {model: sortApplications(newModel, 'finishedAt'), effect: null}
-      }
-      case 'showDetail': {
-        const newModel = u({view: views.detail, detailRow: action.payload}, model)
-        return {model: newModel, effect: null}
-      }
-      case 'showList': {
-        const newModel = u({view: views.list, detailRow: null}, model)
-        return {model: newModel, effect: null}
       }
       case 'orderBy': {
         return {model: sortApplications(model, action.payload), effect: null}
@@ -128,12 +109,7 @@ module.exports = Component({
     return html`
       <div class="matching">
         ${this.headerView(model, dispatch, children)}
-        ${(() => {
-          switch (view) {
-            case views.list: return this.listView(model, dispatch, children)
-            case views.detail: return this.detailView(model, dispatch, children)
-          }
-        })()}
+        ${this.listView(model, dispatch, children)}
       </div>
     `
   },
@@ -152,7 +128,7 @@ module.exports = Component({
     return html`
       <div class="header">
         <h2>HackCampus matching - ${constants.programmeYear}</h2>
-        <p>${view === views.list ? `${finishedCount} finished / ${totalCount} total` : link('< Back to list view', () => dispatch(action('showList')))}
+        <p>${finishedCount} finished / ${totalCount} total</p>
       </div>
     `
   },
@@ -177,24 +153,11 @@ module.exports = Component({
             ${mapColumns(({title}, column) => html`<th onclick=${() => dispatch(action('orderBy', column))}>${title}${orderIndicator(column)}</th>`)}
           </tr>
           ${ordering.map((id, i) => html`
-            <tr onclick=${() => dispatch(action('showDetail', i))}>
+            <tr onclick=${() => window.open(`/match/application/${id}`, '_blank') /* ew... can't create <a> tags in tables */}>
               ${mapColumns(({displayContent}) => html`<td>${displayContent(applications[id])}</td>`)}
             </tr>
           `)}
         </table>
-      </div>
-    `
-  },
-  detailView (model, dispatch, children) {
-    const {
-      applications,
-      detailRow,
-      ordering,
-    } = model
-    const application = applications[ordering[detailRow]]
-    return html`
-      <div class="detailView">
-        ${applicationView(application)}
       </div>
     `
   },

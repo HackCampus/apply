@@ -22,6 +22,7 @@ const {pull, html} = require('inu')
 const u = require('updeep')
 
 const action = require('../../lib/action')
+// const api = require('../../lib/api')
 const Component = require('../../lib/component')
 
 // const someComponent = require('../../components/someComponent')
@@ -39,7 +40,7 @@ module.exports = Component({
   update (model, action) {
     switch (action.type) {
       // case 'changeMe': {
-      //   const newModel = ({changeMe: 'please'}, model)
+      //   const newModel = u({changeMe: 'please'}, model)
       //   return {model: newModel, effect: null}
       // }
       default:
@@ -54,6 +55,8 @@ module.exports = Component({
     \`
   },
   // run (effect, sources, action) {
+  //   const get = (url, handler) =>
+  //     pull(api.get(url), pull.map(handler))
   //   switch (effect.type) {
   //     case 'foo': {
   //     }
@@ -93,9 +96,9 @@ function main () {
 document.addEventListener('DOMContentLoaded', main)
 EOF
 
-cat > $AppName.css <<EOF
+cat > styles.css <<EOF
 .$AppName {
-  // TODO add styles
+  /* TODO add styles */
 }
 EOF
 
