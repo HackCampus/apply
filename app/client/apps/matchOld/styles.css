@@ -1,0 +1,18 @@
+.matching {
+  margin: auto;
+}
+
+table {
+  min-width: 100%;
+}
+
+.listView {
+  tr {
+    cursor: pointer;
+  }
+}
+
+.detailView {
+  margin: auto;
+  max-width: 768px;
+}
