@@ -18,6 +18,21 @@ module.exports = function (bookshelf) {
     techPreferences: function () {
       return this.hasMany(TechPreference, 'applicationId')
     },
+    events: function () {
+      return this.hasMany(ApplicationEvent, 'application')
+    }
+  })
+
+  const ApplicationEvent = bookshelf.Model.extend({
+    tableName: 'applicationevents',
+    hasTimeStamps: ['ts'],
+
+    actor: function () {
+      return this.belongsTo(User, 'actorId')
+    },
+    application: function () {
+      return this.belongsTo(Application, 'applicationId')
+    }
   })
 
   const TechPreference = bookshelf.Model.extend({
@@ -40,11 +55,15 @@ module.exports = function (bookshelf) {
     application () {
       return this.hasMany(Application, 'userId')
     },
+    applicationEvents () {
+      return this.hasMany(ApplicationEvent, 'actorId')
+    },
   })
 
   return {
     bookshelf, // needed for stuff like `transaction`
     Application,
+    ApplicationEvent,
     Authentication,
     TechPreference,
     User,

@@ -3,6 +3,7 @@ const Bookshelf = require('bookshelf')
 const logger = require('../logger')
 
 const Application = require('./models/Application')
+const ApplicationEvent = require('./models/ApplicationEvent')
 const TechPreference = require('./models/TechPreference')
 const User = require('./models/User')
 
@@ -21,6 +22,7 @@ module.exports = function (knexInstance) {
     User: User(bsModels),
     TechPreference: bsModels.TechPreference,
     Application: bsModels.Application,
+    ApplicationEvent: ApplicationEvent(bsModels),
     ApplicationSane: Application(bsModels),
   }
 }

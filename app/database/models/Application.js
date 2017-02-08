@@ -94,7 +94,9 @@ module.exports = bsModels => {
     //
 
     static async create (fields, transaction) {
-      const bs = await new BsModel(fields).save(null, {
+      const required = {programmeYear: constants.programmeYear}
+      const actualFields = Object.assign({}, required, fields)
+      const bs = await new BsModel(actualFields).save(null, {
         method: 'insert',
         transacting: transaction,
       })
