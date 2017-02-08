@@ -90,11 +90,17 @@ module.exports = Component({
     }
     return html`
       <div class="matchDetail">
-        <div class="applicationview">
-          <h2>Application</h2>
-          ${applicationView(application)}
+        <div class="header">
+          <h1>HackCampus matching</h1>
+          <a href="/match">← Back to overview</a>
         </div>
-        ${this.actionsView(model, dispatch, children)}
+        <div class="body">
+          <div class="applicationview">
+            <h2>Application</h2>
+            ${applicationView(application)}
+          </div>
+          ${this.actionsView(model, dispatch, children)}
+        </div>
       </div>
     `
   },

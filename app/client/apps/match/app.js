@@ -127,7 +127,7 @@ module.exports = Component({
     }
     return html`
       <div class="header">
-        <h2>HackCampus matching - ${constants.programmeYear}</h2>
+        <h1>HackCampus matching</h1>
         <p>${finishedCount} finished / ${totalCount} total</p>
       </div>
     `
@@ -153,7 +153,7 @@ module.exports = Component({
             ${mapColumns(({title}, column) => html`<th onclick=${() => dispatch(action('orderBy', column))}>${title}${orderIndicator(column)}</th>`)}
           </tr>
           ${ordering.map((id, i) => html`
-            <tr onclick=${() => window.open(`/match/application/${id}`, '_blank') /* ew... can't create <a> tags in tables */}>
+            <tr onclick=${() => window.open(`/match/application/${id}`) /* ew... can't create <a> tags in tables */}>
               ${mapColumns(({displayContent}) => html`<td>${displayContent(applications[id])}</td>`)}
             </tr>
           `)}
