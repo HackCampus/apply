@@ -31,7 +31,13 @@ module.exports = provider =>
         return done(null, false, {message: 'Did you grant the necessary permissions?'})
       }
       const email = emails[0].value
-      const user = await User.createWithToken(provider, email, id, accessToken)
-      return done(null, user)
+      try {
+        const newUser = await User.createWithToken(provider, email, id, accessToken)
+        return done(null, newUser)
+      } catch (error) {
+        if (error instanceof errors.DuplicateEmail) {
+          return done(null, false, {message: 'A different user has already connected this account - is it yours?'})
+        }
+      }
     }
   }
