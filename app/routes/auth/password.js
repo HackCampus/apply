@@ -6,7 +6,7 @@ const status = require('statuses')
 const errors = require('../../errors')
 const authorized = require('../../middlewares/authorized')
 const validateRequest = require('../../middlewares/validate')
-const {errors: {DuplicateEmail, UserNotFound}, User} = require('../../database')
+const {errors: {DuplicateEmail, NotFound}, User} = require('../../database')
 const wireFormats = require('../../wireFormats')
 
 const djangoHasher = djangoHashers.getHasher('pbkdf2_sha256')
@@ -73,7 +73,7 @@ module.exports = (passport, app) => {
       }
 
     } catch (error) {
-      if (error instanceof UserNotFound) {
+      if (error instanceof NotFound) {
         return nextError({status: 'Unauthorized', error: errors.loginIncorrect})
       }
       return nextError({status: 'Unknown', error: error.message})

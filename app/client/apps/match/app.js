@@ -85,7 +85,7 @@ module.exports = Component({
   update (model, action) {
     switch (action.type) {
       case 'fetchApplicationsSuccess': {
-        const applicationsList = action.payload
+        const applicationsList = action.payload.applications // TODO error checking
         let applications = {}
         let ordering = []
         for (let application of applicationsList) {

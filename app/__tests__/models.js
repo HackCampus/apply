@@ -60,7 +60,7 @@ test('User.update updates fields', async t => {
 
 test('User.fetchSingle', async t => {
   const {User, errors} = models
-  t.throws(User.fetchSingle({email: 'DOESNOTEXISTAARRGGGH'}), error => error instanceof errors.UserNotFound)
+  t.throws(User.fetchSingle({email: 'DOESNOTEXISTAARRGGGH'}), error => error instanceof errors.NotFound)
   const email = 'fetchmebaby@bar.baz'
   await User.create({email})
   const fetched = await User.fetchSingle({email})

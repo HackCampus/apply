@@ -10,7 +10,7 @@
     "clean": "rm -rf app/build/",
     "build-client": "npm run clean && NODE_ENV=production node build.js",
     "start": "node --harmony_async_await app/index.js",
-    "develop-server": "nodemon --exec \"node --harmony_async_await\" --ignore build/ --ignore client/ app/index.js | bunyan",
+    "develop-server": "nodemon --exec \"node --harmony_async_await --trace-warnings\" --ignore build/ --ignore client/ app/index.js | bunyan",
     "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
@@ -80,7 +80,7 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "ava": "https://github.com/avajs/ava.git",
+    "ava": "^0.18.1",
     "browserify-incremental": "^3.1.1",
     "hippie": "^0.5.0",
     "jsdom": "^9.9.1",

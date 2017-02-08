@@ -4,5 +4,5 @@ module.exports = {
   AuthenticationNotFound: class AuthenticationNotFound extends Error {},
   DuplicateKey: class DuplicateKey extends Error {},
   DuplicateEmail: class DuplicateEmail extends Error {},
-  UserNotFound: class UserNotFound extends Error {},
+  NotFound: class NotFound extends Error {},
 }

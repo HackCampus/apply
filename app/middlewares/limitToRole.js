@@ -12,7 +12,7 @@ module.exports = (role, unauthorizedRedirect) => {
       return unauthorizedRedirect(req, res, next)
     }
     const user = req.user
-    const userRole = user.get('role')
+    const userRole = user.role
     if (userRole === role) {
       return next()
     } else {

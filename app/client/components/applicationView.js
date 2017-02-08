@@ -11,6 +11,38 @@ function markdownTextArea (text) {
   return textArea
 }
 
+function techPreferences (techs) {
+  const buckets = {}
+  for (let tech in techs) {
+    const preference = techs[tech]
+    if (buckets[preference] == null) {
+      buckets[preference] = []
+    }
+    buckets[preference].push(tech)
+  }
+  return html`
+    <div class="techpreferences">
+      <table>
+        <tr>
+          <td>3 - proficient</td>
+          <td><strong>${buckets[3].join(', ')}</strong></td>
+        </tr>
+        <tr>
+          <td>2 - familiar</td>
+          <td><strong>${buckets[2].join(', ')}</strong></td>
+        </tr>
+        <tr>
+          <td>1 - meh</td>
+          <td><strong>${buckets[1].join(', ')}</strong></td>
+        </tr>
+        <tr>
+          <td>0 - never used</td>
+          <td><strong>${buckets[0].join(', ')}</strong></td>
+        </tr>
+    </div>
+  `
+}
+
 module.exports = function (application) {
   if (application == null) {
     return html``
@@ -59,7 +91,8 @@ module.exports = function (application) {
       ${field('referer', 'referer')}
       ${field('detail', 'refererDetail')}
       </table>
-      <h2>Tech preferences - TODO</h2>
+      <h2>Tech preferences</h2>
+      ${techPreferences(application.techPreferences)}
       <h2>Questions</h2>
       ${question('Coolest thing you have built', 'bestProject')}
       ${question('Most exciting technology', 'mostExcitingTechnology')}
