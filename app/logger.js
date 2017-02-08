@@ -1,14 +1,20 @@
 const bunyan = require('bunyan')
 
-// const logger = bunyan.createLogger({
-//   name: 'hackcampus-apply',
-//   serializers: bunyan.stdSerializers,
-// })
+const production = process.env.NODE_ENV === 'production'
 
-const logger = {
-  error: console.error,
-  fatal: console.error,
-  info: console.log,
+if (production) {
+  const logger = bunyan.createLogger({
+    name: 'hackcampus-apply',
+    serializers: bunyan.stdSerializers,
+  })
+
+  module.exports = logger
+} else {
+  const logger = {
+    error: console.error,
+    fatal: console.error,
+    info: console.log,
+  }
+
+  module.exports = logger
 }
-
-module.exports = logger
