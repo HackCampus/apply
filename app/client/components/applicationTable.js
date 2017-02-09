@@ -68,12 +68,14 @@ module.exports = (applicationsArray, options) => {
     },
     status: {
       title: 'Status',
-      displayContent: application => html`<em>-</em>`,
-      sortContent: application => '-',
+      displayContent: application => application.status ? application.status.type : '-',
+      sortContent: application => application.status ? application.status.type : '-',
     },
-    // lastUpdatedAt: {
-    //   title: 'Last updated at',
-    // },
+    lastUpdatedAt: {
+      title: 'Last updated',
+      displayContent: application => application.status ? dateFromNow(application.status.ts) : '',
+      sortContent: application => application.status ? application.status.ts : '',
+    },
   }
 
   function sortApplications (model, column) {

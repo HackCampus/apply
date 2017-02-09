@@ -39,7 +39,7 @@ const applicationTabs = {
     title: 'unfinished',
     viewTitle: 'Unfinished applications',
     description: () => 'Applications that are still in progress by the applicant',
-    excludeColumns: ['finishedAt', 'status'],
+    excludeColumns: ['finishedAt', 'status', 'lastUpdatedAt'],
     orderBy: 'createdAt',
   }),
   finished: applicationTab({
@@ -47,7 +47,7 @@ const applicationTabs = {
     title: 'finished - ready to vet',
     viewTitle: 'Finished applications',
     description: () => html`<span><em>Finished</em> applications are applications that have not been vetted or matched.</span>`,
-    excludeColumns: ['status'],
+    excludeColumns: ['status', 'lastUpdatedAt'],
     orderBy: 'finishedAt',
   }),
   vetted: applicationTab({
@@ -56,7 +56,7 @@ const applicationTabs = {
     viewTitle: 'Vetted applications',
     description: () => html`<span>Applications that have either been <em>shortlisted</em> or <em>rejected</em> after the first stage of the application. We are still waiting for confirmation of company preferences from the applicant at this stage.</span>`,
     excludeColumns: [],
-    orderBy: 'finishedAt',
+    orderBy: 'lastUpdatedAt',
   }),
   readyToMatch: applicationTab({
     type: 'readyToMatch',
@@ -64,7 +64,7 @@ const applicationTabs = {
     viewTitle: 'Ready to match',
     description: () => html`<span>The applicant has been shortlisted, and has responded with company preferences. Matching suggestions can be added here.</span>`,
     excludeColumns: [],
-    orderBy: 'finishedAt',
+    orderBy: 'lastUpdatedAt',
   }),
   matching: applicationTab({
     type: 'matching',
@@ -72,7 +72,7 @@ const applicationTabs = {
     viewTitle: 'Matching in progress',
     description: () => html`<span>The applicant's profile has been sent to a company. Company responses can be tracked here. If a company has rejected a candidate, they will show up here again.</span>`,
     excludeColumns: [],
-    orderBy: 'finishedAt',
+    orderBy: 'lastUpdatedAt',
   }),
   offer: applicationTab({
     type: 'offer',
@@ -80,7 +80,7 @@ const applicationTabs = {
     viewTitle: 'Offer stage',
     description: () => html`<span>The applicant has been made an offer by a company, but still has to accept/reject it.</span>`,
     excludeColumns: [],
-    orderBy: 'finishedAt',
+    orderBy: 'lastUpdatedAt',
   }),
   in: applicationTab({
     type: 'in',
@@ -88,7 +88,7 @@ const applicationTabs = {
     viewTitle: 'In the programme',
     description: () => html`<span>The applicant has signed the contract & has an internship for this year.</span>`,
     excludeColumns: [],
-    orderBy: 'finishedAt',
+    orderBy: 'lastUpdatedAt',
   }),
   out: applicationTab({
     type: 'out',
@@ -96,7 +96,7 @@ const applicationTabs = {
     viewTitle: 'Out of the programme',
     description: () => html`<span>The applicant has chosen not to take part in the programme.</span>`,
     excludeColumns: [],
-    orderBy: 'finishedAt',
+    orderBy: 'lastUpdatedAt',
   }),
 }
 
