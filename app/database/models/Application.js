@@ -92,7 +92,6 @@ module.exports = bsModels => {
         const application = new this(bsApplication)
         const status = await application.fetchStatus()
         if (statuses.indexOf(status == null ? status : status.type) !== -1) {
-          console.log(status, 'matched', statuses)
           applications.push(application)
         }
       }
