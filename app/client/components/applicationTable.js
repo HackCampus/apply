@@ -61,9 +61,11 @@ module.exports = (applicationsArray, excludeColumns = []) => {
       displayContent: application => application.finishedAt ? dateFromNow(application.finishedAt) : html`<em>-</em>`,
       sortContent: application => application.finishedAt || '',
     },
-    // status: {
-    //   title: 'Status',
-    // },
+    status: {
+      title: 'Status',
+      displayContent: application => html`<em>-</em>`,
+      sortContent: application => '-',
+    },
     // lastUpdatedAt: {
     //   title: 'Last updated at',
     // },

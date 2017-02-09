@@ -2,9 +2,12 @@ const constants = require('../../constants')
 
 const errors = require('../errors')
 
+const ApplicationEventModel = require('./ApplicationEvent')
+
 module.exports = bsModels => {
 
   const BsModel = bsModels.Application
+  const ApplicationEvent = ApplicationEventModel(bsModels)
 
   return class Application {
     constructor (bs) {
@@ -72,6 +75,23 @@ module.exports = bsModels => {
 
     static async fetchAllUnfinished () {
       return Application.fetchAll({programmeYear: constants.programmeYear, finishedAt: null})
+    }
+
+    // 'Finished' applications are those that have not yet been vetted/matched/etc.
+    static async fetchAllFinished () {
+      const bs = await BsModel.query(qb => {
+        qb.where('programmeYear', '=', constants.programmeYear)
+        qb.whereNotNull('finishedAt')
+      }).fetchAll()
+      const applications = bs.toArray()
+      const finishedApplications = []
+      for (let application of applications) {
+        const status = await ApplicationEvent.fetchLatestByApplicationId(application.id)
+        if (status === null) {
+          finishedApplications.push(new this(application))
+        }
+      }
+      return finishedApplications
     }
 
     //

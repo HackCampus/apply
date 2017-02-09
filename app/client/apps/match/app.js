@@ -29,7 +29,9 @@ const tabs = [
     view: function (model, dispatch, children) {
       return html`<div class="unfinished">
         <h2>Unfinished applications</h2>
-        ${children.unfinishedApplications()}
+        ${children.unfinishedApplications
+          ? children.unfinishedApplications()
+          : html`<em>Loading...</em>`}
       </div>`
     },
     effect: action('fetchUnfinishedApplications'),
@@ -37,31 +39,37 @@ const tabs = [
   {
     title: 'finished — ready to vet',
     view: function (model, dispatch, children) {
-      return html`<p>finished!!!</p>`
-    }
+      return html`<div class="finished">
+        <h2>Finished applications</h2>
+        ${children.finishedApplications
+          ? children.finishedApplications()
+          : html`<em>Loading...</em>`}
+      </div>`
+    },
+    effect: action('fetchFinishedApplications'),
   },
   {
-    title: 'vetted — waiting for response',
+    title: 'vetted',
     view: function (model, dispatch, children) {
-      return html`<p>vetted!!!</p>`
+      return html`<p>none vetted</p>`
     }
   },
   {
     title: 'ready to match',
     view: function (model, dispatch, children) {
-      return html`<p>ready!!!</p>`
+      return html`<p>none ready</p>`
     }
   },
   {
     title: 'matching',
     view: function (model, dispatch, children) {
-      return html`<p>matching!!!</p>`
+      return html`<p>none matching</p>`
     },
   },
   {
     title: 'done',
     view: function (model, dispatch, children) {
-      return html`<p>done!!!</p>`
+      return html`<p>none done</p>`
     },
   },
 ]
@@ -96,9 +104,7 @@ function eventView (event) {
 }
 
 module.exports = Component({
-  children: {
-    unfinishedApplications: applicationTable([], ['finishedAt'])
-  },
+  children: {}, // will be added dynamically
   init () {
     return {
       model: {
@@ -129,11 +135,21 @@ module.exports = Component({
         const newModel = u({unfinishedApplications}, model)
         return {model: newModel, effect: action('replaceChild', {
           key: 'unfinishedApplications',
-          newChild: () => applicationTable(unfinishedApplications, ['finishedAt'])
+          newChild: () => applicationTable(unfinishedApplications, ['finishedAt', 'status'])
+        })}
+      }
+      case 'fetchFinishedApplicationsSuccess': {
+        const finishedApplications = a.payload.applications
+        const newModel = u({finishedApplications}, model)
+        return {model: newModel, effect: action('replaceChild', {
+          key: 'finishedApplications',
+          newChild: () => applicationTable(finishedApplications, ['status'])
         })}
       }
 
       case 'fetchApplicationEventsFailure':
+      case 'fetchUnfinishedApplicationsFailure':
+      case 'fetchFinishedApplicationsFailure':
         // TODO
         console.error(a)
       default:
@@ -178,6 +194,14 @@ module.exports = Component({
           switch (statusText) {
             case 'OK': return action('fetchUnfinishedApplicationsSuccess', data)
             default: return action('fetchUnfinishedApplicationsFailure', data)
+          }
+        })
+      }
+      case 'fetchFinishedApplications': {
+        return get('/applications/finished', ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('fetchFinishedApplicationsSuccess', data)
+            default: return action('fetchFinishedApplicationsFailure', data)
           }
         })
       }

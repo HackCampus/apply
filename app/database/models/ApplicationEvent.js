@@ -68,9 +68,9 @@ module.exports = bsModels => {
     }
 
     static async fetchAll (where) {
-      const filters = Object.assign({}, where)
+      where = Object.assign({}, where)
       const bs = await BsModel
-        .where(filters)
+        .where(where)
         .orderBy('ts', 'DESC')
         .fetchAll({withRelated: 'actor'})
       const bsArray = bs.toArray()
@@ -80,6 +80,24 @@ module.exports = bsModels => {
 
     static async fetchByApplicationId (applicationId) {
       return this.fetchAll({applicationId})
+    }
+
+    static async fetchLatestByApplicationId (applicationId) {
+      const bs = await BsModel
+        .query(qb => {
+          qb.where('applicationId', '=', applicationId)
+          qb.orderBy('ts', 'DESC')
+          qb.limit(1)
+        })
+        .fetchAll({withRelated: 'actor'})
+      const bsArray = bs.toArray()
+      if (bsArray.length === 0) {
+        return null
+      } else if (bsArray.length > 1) {
+        console.trace('something is messed up with the query...')
+      }
+      const application = new this(bsArray[0])
+      return application
     }
 
     //

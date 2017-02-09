@@ -13,6 +13,7 @@ module.exports = models => {
     app.get('/applications', limitToMatchers(), handleGetAllApplications)
     app.get('/applications/events', limitToMatchers(), handleGetAllApplicationEvents)
     app.get('/applications/unfinished', limitToMatchers(), handleGetUnfinishedApplications)
+    app.get('/applications/finished', limitToMatchers(), handleGetFinishedApplications)
 
     app.get('/applications/:id', limitToMatchers(), handleGetSingleApplication)
     app.get('/applications/:id/events', limitToMatchers(), handleGetApplicationEvents)
@@ -32,8 +33,17 @@ module.exports = models => {
     return res.json({applications})
   }
 
+  async function handleGetFinishedApplications (req, res) {
+    const applicationModels = await Application.fetchAllFinished()
+    const applications = applicationModels.map(a => a.toJSON())
+    return res.json({applications})
+  }
+
   async function handleGetSingleApplication (req, res, handleError) {
     const id = req.params.id
+    if (Number.isNaN(Number.parseInt(id))) {
+      return handleError({status: 'Not Found'})
+    }
     try {
       const application = await Application.fetchById(id)
       const response = application.toJSON()

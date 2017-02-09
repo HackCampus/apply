@@ -19,7 +19,7 @@ module.exports = function (bookshelf) {
       return this.hasMany(TechPreference, 'applicationId')
     },
     events: function () {
-      return this.hasMany(ApplicationEvent, 'application')
+      return this.hasMany(ApplicationEvent, 'applicationId')
     }
   })
 
