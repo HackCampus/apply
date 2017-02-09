@@ -54,6 +54,7 @@
     "localenv": "^0.2.2",
     "lodash.isempty": "^4.4.0",
     "lodash.mapvalues": "^4.6.0",
+    "lost": "^8.0.0",
     "markdown-it": "^8.0.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",

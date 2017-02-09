@@ -12,11 +12,13 @@ module.exports = Component({
   init () {
     return {
       model: {},
-      effect: action('redirectMatchers'),
+      effect: action('waitForAuthorization'),
     }
   },
-  update (model, action) {
-    switch (action.type) {
+  update (model, a) {
+    switch (a.type) {
+      case 'authorized':
+        return {model, effect: action('redirect')}
       case 'unauthorized':
         console.error('not authorized')
         return {model, effect: null}
@@ -33,7 +35,7 @@ module.exports = Component({
   },
   run (effect, sources, action) {
     switch (effect.type) {
-      case 'redirectMatchers': {
+      case 'waitForAuthorization': {
         return pull(
           sources.models(),
           pull.map(model => model.children.login.user),
@@ -41,12 +43,15 @@ module.exports = Component({
           pull.take(1),
           pull.map(user => {
             if (user.role === 'matcher') {
-              window.location.reload()
+              return action('authorized')
             } else {
               return action('unauthorized')
             }
           })
         )
+      }
+      case 'redirect': {
+        window.location.reload()
       }
     }
   }

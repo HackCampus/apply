@@ -1,210 +1,246 @@
 const {pull, html} = require('inu')
-const keyMirror = require('keymirror')
-const mapValues = require('lodash.mapvalues')
-const moment = require('moment')
-const u = require('updeep')
 const values = require('object.values')
+const u = require('updeep')
 
-const constants = require('../../../constants')
-
-const applicationView = require('../../components/applicationView')
-const link = require('../../components/link')
+const wireFormats = require('../../../wireFormats')
 
 const action = require('../../lib/action')
 const api = require('../../lib/api')
+const dateFromNow = require('../../lib/dateFromNow')
 const Component = require('../../lib/component')
 
-const direction = {
-  ascending: true,
-  descending: false,
+const applicationTable = require('../../components/applicationTable')
+
+const applicationEventTypes = wireFormats.applicationEventTypes
+
+function applicationTab ({type, title, viewTitle, description, excludeColumns, orderBy}) {
+  return {
+    title,
+    view: function (model, dispatch, children) {
+      return html`<div class="${type}">
+        <h2>${viewTitle}</h2>
+        <p>${description ? description() : ''}</p>
+        ${children[type]
+          ? children[type]()
+          : html`<em>Loading...</em>`}
+      </div>`
+    },
+    child: applications => applicationTable(applications, {
+      excludeColumns,
+      orderBy,
+    }),
+    effect: action('fetchApplications', type),
+  }
 }
 
-function dateFromNow (date) {
-  return html`<span title=${date}>${moment(date).fromNow()}</span>`
+const applicationTabs = {
+  unfinished: applicationTab({
+    type: 'unfinished',
+    title: 'unfinished',
+    viewTitle: 'Unfinished applications',
+    description: () => 'Applications that are still in progress by the applicant',
+    excludeColumns: ['finishedAt', 'status', 'lastUpdatedAt'],
+    orderBy: 'createdAt',
+  }),
+  finished: applicationTab({
+    type: 'finished',
+    title: 'finished - ready to vet',
+    viewTitle: 'Finished applications',
+    description: () => html`<span><em>Finished</em> applications are applications that have not been vetted or matched.</span>`,
+    excludeColumns: ['status', 'lastUpdatedAt'],
+    orderBy: 'finishedAt',
+  }),
+  vetted: applicationTab({
+    type: 'vetted',
+    title: 'vetted',
+    viewTitle: 'Vetted applications',
+    description: () => html`<span>Applications that have either been <em>shortlisted</em> or <em>rejected</em> after the first stage of the application. We are still waiting for confirmation of company preferences from the applicant at this stage.</span>`,
+    excludeColumns: [],
+    orderBy: 'lastUpdatedAt',
+  }),
+  readyToMatch: applicationTab({
+    type: 'readyToMatch',
+    title: 'ready to match',
+    viewTitle: 'Ready to match',
+    description: () => html`<span>The applicant has been shortlisted, and has responded with company preferences. Matching suggestions can be added here.</span>`,
+    excludeColumns: [],
+    orderBy: 'lastUpdatedAt',
+  }),
+  matching: applicationTab({
+    type: 'matching',
+    title: 'matching in progress',
+    viewTitle: 'Matching in progress',
+    description: () => html`<span>The applicant's profile has been sent to a company. Company responses can be tracked here. If a company has rejected a candidate, they will show up here again.</span>`,
+    excludeColumns: [],
+    orderBy: 'lastUpdatedAt',
+  }),
+  offer: applicationTab({
+    type: 'offer',
+    title: 'offer stage',
+    viewTitle: 'Offer stage',
+    description: () => html`<span>The applicant has been made an offer by a company, but still has to accept/reject it.</span>`,
+    excludeColumns: [],
+    orderBy: 'lastUpdatedAt',
+  }),
+  in: applicationTab({
+    type: 'in',
+    title: 'in',
+    viewTitle: 'In the programme',
+    description: () => html`<span>The applicant has signed the contract & has an internship for this year.</span>`,
+    excludeColumns: [],
+    orderBy: 'lastUpdatedAt',
+  }),
+  out: applicationTab({
+    type: 'out',
+    title: 'out',
+    viewTitle: 'Out of the programme',
+    description: () => html`<span>The applicant has chosen not to take part in the programme.</span>`,
+    excludeColumns: [],
+    orderBy: 'lastUpdatedAt',
+  }),
 }
 
-const columns = {
-  name: {
-    title: 'Name',
-    displayContent: application => {
-      if (application.firstName == null && application.lastName == null) {
-        return html`<em>no name entered</em>`
-      }
-      return application.firstName + ' ' + application.lastName
+const tabs = [
+  {
+    title: 'news',
+    view: function (model, dispatch, children) {
+      const {
+        events,
+      } = model
+      return html`<div class="dashboard">
+        <h2>Latest matching events</h2>
+        ${events
+          ? events.map(event => eventView(event))
+          : html`<em>Loading events...</em>`}
+      </div>`
     },
-    sortContent: application => {
-      if (application.firstName == null && application.lastName == null) {
-        return ''
-      }
-      return application.firstName + ' ' + application.lastName
-    },
+    effect: action('fetchApplicationEvents'),
   },
-  university: {
-    title: 'University',
-    displayContent: application => (application.university === 'other (eg. international)' ? html`<em>${application.otherUniversity}</em>` : application.university) || html`<em>-</em>`,
-    sortContent: application => (application.university === 'other (eg. international)' ? application.otherUniversity : application.university) || '',
-  },
-  gender: {
-    title: 'Gender',
-    displayContent: application => (application.gender === 'other' ? application.otherGender : application.gender) || html`<em>-</em>`,
-    sortContent: application => (application.gender === 'other' ? application.otherGender : application.gender) || '',
-  },
-  createdAt: {
-    title: 'Created',
-    displayContent: application => dateFromNow(application.createdAt),
-    sortContent: application => application.createdAt,
-  },
-  finishedAt: {
-    title: 'Finished',
-    displayContent: application => application.finishedAt ? dateFromNow(application.finishedAt) : html`<em>-</em>`,
-    sortContent: application => application.finishedAt || '',
-  },
-  // status: {
-  //   title: 'Status',
-  // },
-  // lastUpdatedAt: {
-  //   title: 'Last updated at',
-  // },
+].concat(values(applicationTabs))
+
+function eventView (event) {
+  const {
+    id,
+    ts,
+    actor,
+    applicationId,
+    type,
+    payload,
+  } = event
+  return html`<a class="reset" href="/match/application/${applicationId}" target="_blank">
+    <div class="event">
+      <p><span class="application">application <em>${applicationId /* TODO get actual info */}</em></span> <span class="type">${applicationEventTypes[type] || 'commented'}</span> by <span class="actor">${actor.email}</span></p>
+      ${(() => {
+        const fields = []
+        for (let key in payload) {
+          const value = payload[key]
+          if (key === 'comment') {
+            fields.push(html`<pre class="eventcomment">${value}</pre>`)
+          } else {
+            fields.push(html`<p><span class="eventmetakey">${key}</span>: <span class="eventmetavalue">${value}</span></p>`)
+          }
+        }
+        return fields
+      })()}
+      <p><span class="ts">${dateFromNow(ts)}</span></p>
+    </div>
+  </a>`
 }
 
 module.exports = Component({
-  children: {},
+  children: {}, // will be added dynamically
   init () {
     return {
       model: {
-        applications: [],
-        ordering: [],
-        orderBy: {
-          column: 'createdAt',
-          direction: direction.ascending,
-        },
+        tab: 0,
+        events: null,
       },
-      effect: action('fetchApplications'),
+      effect: action('fetchApplicationEvents'),
     }
   },
-  update (model, action) {
-    switch (action.type) {
+  update (model, a) {
+    switch (a.type) {
+      case 'changeTab': {
+        const tab = a.payload
+        const effect = tabs[tab].effect
+        const newModel = u({tab}, model)
+        return {model: newModel, effect}
+      }
+
+      case 'fetchApplicationEventsSuccess': {
+        const events = a.payload.events
+        const newModel = u({events}, model)
+        return {model: newModel, effect: null}
+      }
+
       case 'fetchApplicationsSuccess': {
-        const applicationsList = action.payload.applications // TODO error checking
-        let applications = {}
-        let ordering = []
-        for (let application of applicationsList) {
-          applications[application.id] = application
-          ordering.push(application.id)
-        }
-        const newModel = u({applications, ordering}, model)
-        return {model: sortApplications(newModel, 'finishedAt'), effect: null}
+        const {applications, type} = a.payload
+        return {model, effect: action('replaceChild', {
+          key: type,
+          newChild: applicationTabs[type].child(applications)
+        })}
       }
-      case 'orderBy': {
-        return {model: sortApplications(model, action.payload), effect: null}
-      }
+
+      case 'fetchApplicationEventsFailure':
+      case 'fetchApplicationsFailure':
+        // TODO
+        console.error(a)
       default:
         return {model, effect: null}
     }
   },
   view (model, dispatch, children) {
-    const {
-      view,
-    } = model
+    const {tab} = model
+    const currentTab = tabs[tab]
     return html`
-      <div class="matching">
-        ${this.headerView(model, dispatch, children)}
-        ${this.listView(model, dispatch, children)}
-      </div>
-    `
-  },
-  headerView (model, dispatch, children) {
-    const {
-      view,
-      applications,
-    } = model
-    let totalCount = 0
-    let finishedCount = 0
-    for (let a in applications) {
-      const application = applications[a]
-      totalCount += 1
-      if (application.finishedAt !== null) finishedCount += 1
-    }
-    return html`
-      <div class="header">
-        <h2>HackCampus matching - ${constants.programmeYear}</h2>
-        <p>${finishedCount} finished / ${totalCount} total</p>
-      </div>
-    `
-  },
-  listView (model, dispatch, children) {
-    const {
-      applications,
-      orderBy,
-      ordering,
-    } = model
-    const orderIndicator = column => {
-      if (orderBy.column === column) {
-        return orderBy.direction === direction.ascending
-          ? html` 🔼`
-          : html` 🔽`
-      }
-    }
-    const mapColumns = fn => values(mapValues(columns, fn))
-    return html`
-      <div class="listView">
-        <table>
-          <tr>
-            ${mapColumns(({title}, column) => html`<th onclick=${() => dispatch(action('orderBy', column))}>${title}${orderIndicator(column)}</th>`)}
-          </tr>
-          ${ordering.map((id, i) => html`
-            <tr onclick=${() => window.open(`/match/application/${id}`, '_blank') /* ew... can't create <a> tags in tables */}>
-              ${mapColumns(({displayContent}) => html`<td>${displayContent(applications[id])}</td>`)}
-            </tr>
-          `)}
-        </table>
+      <div class="match">
+        <div class="header">
+          <h1>HackCampus matching</h1>
+        </div>
+        <div class="body">
+          <div class="sidebar">
+            ${tabs.map(({title}, i) => {
+              return html`<div class="menuitem ${i === tab ? 'selected' : 'unselected'}" onclick=${() => dispatch(action('changeTab', i))}>${title}</div>`
+            })}
+          </div>
+          <div class="main">
+            ${currentTab.view(model, dispatch, children)}
+          </div>
+        </div>
       </div>
     `
   },
   run (effect, sources, action) {
     const get = (url, handler) =>
       pull(api.get(url), pull.map(handler))
-    const put = (url, body, handler) =>
-      pull(api.put(url, body), pull.map(handler))
     switch (effect.type) {
-      case 'fetchApplications':
-        return get('/applications', ({statusText, data}) => {
+      case 'fetchApplicationEvents': {
+        return get('/applications/events', ({statusText, data}) => {
           switch (statusText) {
-            case 'OK': return action('fetchApplicationsSuccess', data)
-            default: return action('fetchApplicationsError', data)
+            case 'OK': return action('fetchApplicationEventsSuccess', data)
+            default: return action('fetchApplicationEventsFailure', data)
           }
         })
-      default:
-        return null
+      }
+
+      case 'fetchApplications': {
+        const type = effect.payload
+        return get(`/applications/${type}`, ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK':
+              data.type = type
+              return action('fetchApplicationsSuccess', data)
+            default:
+              return action('fetchApplicationsFailure', data)
+          }
+        })
+      }
+
+      case 'replaceChild': {
+        const {key, newChild} = effect.payload
+        this.replaceChild(key, newChild)
+        return pull.once(action('doNothing'))
+      }
     }
   }
 })
-
-function sortApplications (model, column) {
-  const {
-    applications,
-    orderBy,
-    ordering,
-  } = model
-  let newOrderBy
-  if (orderBy.column === column) {
-    newOrderBy = {column, direction: !orderBy.direction}
-  } else {
-    newOrderBy = {column, direction: direction.descending}
-  }
-  const newOrdering = ordering.slice()
-  newOrdering.sort((a, b) => {
-    const applicationA = applications[a]
-    const applicationB = applications[b]
-    const column = columns[newOrderBy.column].sortContent
-    const top = column(applicationA)
-    const bottom = column(applicationB)
-    if (top === bottom) {
-      return 0
-    }
-    return newOrderBy.direction === direction.ascending
-      ? top < bottom ? -1 : 1
-      : top > bottom ? -1 : 1
-  })
-  return u({orderBy: newOrderBy, ordering: newOrdering}, model)
-}
