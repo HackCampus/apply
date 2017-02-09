@@ -1,11 +1,11 @@
 const {pull, html} = require('inu')
-const moment = require('moment')
 const u = require('updeep')
 
 const wireFormats = require('../../../wireFormats')
 
 const action = require('../../lib/action')
 const api = require('../../lib/api')
+const dateFromNow = require('../../lib/dateFromNow')
 const Component = require('../../lib/component')
 
 const link = require('../../components/link')
@@ -45,7 +45,7 @@ module.exports = Component({
       }
       case 'fetchApplicationEventsSuccess':
       case 'deleteApplicationEventSuccess': {
-        const events = a.payload.events.reverse()
+        const events = a.payload.events
         const newModel = u({events}, model)
         return {model: newModel, effect: null}
       }
@@ -65,7 +65,7 @@ module.exports = Component({
         return {model, effect: action('submit', event)}
       }
       case 'submitSuccess': {
-        const events = a.payload.events.reverse()
+        const events = a.payload.events
         const newModel = u({events}, model)
         return {model: newModel, effect: null}
       }
@@ -182,10 +182,6 @@ module.exports = Component({
     }
   }
 })
-
-function dateFromNow (date) {
-  return html`<span title=${date}>${moment(date).fromNow()}</span>`
-}
 
 function eventView (event, user, onDelete) {
   const {

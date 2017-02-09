@@ -71,7 +71,7 @@ module.exports = bsModels => {
       const filters = Object.assign({}, where)
       const bs = await BsModel
         .where(filters)
-        .orderBy('ts', 'ASC')
+        .orderBy('ts', 'DESC')
         .fetchAll({withRelated: 'actor'})
       const bsArray = bs.toArray()
       const applications = bsArray.map(bs => new this(bs))

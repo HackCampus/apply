@@ -1,3 +1,67 @@
 .match {
   /* TODO add styles */
 }
+
+.sidebar {
+  lost-column: 3/12;
+  .menuitem {
+    cursor: pointer;
+    padding-left: 6px;
+    border-left: 2px solid black;
+  }
+  .menuitem.selected {
+    font-weight: bold;
+    border-left: 2px solid #ff9600;
+  }
+}
+
+.main {
+  lost-column: 9/12;
+}
+
+.event {
+  margin: 1em 0;
+  p {
+    margin: 0;
+  }
+  pre {
+    font-family: inherit;
+    margin: 0;
+  }
+}
+
+.type {
+  font-weight: bold;
+}
+
+.ts {
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.eventcomment {
+  border-left: 2px solid #ff9600;
+  padding-left: 6px;
+}
+
+.eventmetakey {
+  font-weight: bold;
+}
+
+.eventdelete {
+  font-size: 0.8em;
+}
+
+a.reset {
+  font-weight: inherit;
+  border: none;
+}
+
+.listView {
+  table {
+    width: 100%;
+  }
+  tr {
+    cursor: pointer;
+  }
+}

@@ -11,8 +11,15 @@ const extend = require('xtend')
 // run multiple effects at once
 module.exports = function Component (component) {
   const none = {}
+
+  component.replaceChild = function (childName, newChild) {
+    component.newChildren = component.newChildren || []
+    component.newChildren.push({name: childName, component: newChild})
+  }
+
   const self = {
     children: component.children || none,
+
     init () {
       const init = typeof component.init === 'function'
         ? component.init
@@ -41,7 +48,22 @@ module.exports = function Component (component) {
 
       return {model, effect: maybeEffects}
     },
+
     update (model, action) {
+      if (component.newChildren != null && component.newChildren.length > 0) {
+        const oldChildren = model.children
+        const newChildren = {}
+        for (let child in oldChildren) {
+          newChildren[child] = oldChildren[child]
+        }
+        component.newChildren.forEach(({name, component: childComponent}) => {
+          self.children[name] = childComponent
+          const {model: childModel} = childComponent.init()
+          newChildren[name] = childModel
+        })
+        model = Object.assign({}, model, {children: newChildren})
+        component.newChildren = null
+      }
       if (action && action.child && action.child in self.children && model.children) {
         const {child, action: childAction} = action
         const {model: childModel, effect: childEffect} = self.children[child].update(model.children[child], childAction)
@@ -51,6 +73,7 @@ module.exports = function Component (component) {
       }
       return component.update(model, action)
     },
+
     view (model, dispatch) {
       if (self.children === none) {
         return component.view(model, dispatch)
@@ -68,9 +91,11 @@ module.exports = function Component (component) {
       }))
       return component.view(model, dispatch, children)
     },
+
     // If the child does not have a run function, we pass the whole effect object, keyed by child, to the parent component's run function.
     // Allows us to handle effects at a higher level, (hopefully) making child components more reusable.
     handlesEffects: typeof component.run === 'function',
+
     run (effect, sources, action = (type, payload) => ({type, payload})) {
       if (Array.isArray(effect)) {
         const runEffects = effect.map(singleEffect => self._runOne(singleEffect, sources, action))

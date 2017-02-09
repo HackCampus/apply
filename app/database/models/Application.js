@@ -49,7 +49,7 @@ module.exports = bsModels => {
     }
 
     static async fetchSingle (...query) {
-      const bs = await bsModels.Application.where(...query).fetchAll()
+      const bs = await BsModel.where(...query).fetchAll()
       if (bs.length === 0) {
         throw new errors.NotFound()
       } else if (bs.length > 1) {
@@ -59,9 +59,8 @@ module.exports = bsModels => {
       return new this(b)
     }
 
-    static async fetchAll (where) {
-      const filters = Object.assign({}, where)
-      const bs = await BsModel.where(filters).fetchAll()
+    static async fetchAll (...query) {
+      const bs = await BsModel.where(...query).fetchAll()
       const bsArray = bs.toArray()
       const applications = bsArray.map(bs => new this(bs))
       return applications
@@ -69,6 +68,10 @@ module.exports = bsModels => {
 
     static async fetchAllCurrent () {
       return Application.fetchAll({programmeYear: constants.programmeYear})
+    }
+
+    static async fetchAllUnfinished () {
+      return Application.fetchAll({programmeYear: constants.programmeYear, finishedAt: null})
     }
 
     //

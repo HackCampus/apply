@@ -10,29 +10,29 @@ module.exports = models => {
   const {ApplicationSane: Application, ApplicationEvent} = models
 
   function routes (app) {
-    app.get('/applications', limitToMatchers(), handleGetApplications)
-    app.get('/applications/:id', limitToMatchers(), handleGetSingleApplication)
+    app.get('/applications', limitToMatchers(), handleGetAllApplications)
+    app.get('/applications/events', limitToMatchers(), handleGetAllApplicationEvents)
+    app.get('/applications/unfinished', limitToMatchers(), handleGetUnfinishedApplications)
 
-    app.get('/applications/:id/events',
-      limitToMatchers(),
-      handleGetApplicationEvents)
-    app.post('/applications/:id/events',
-      limitToMatchers(),
-      validate(wireFormats.applicationEvent),
-      handlePostApplicationEvents)
-    app.delete('/applications/:applicationId/events/:eventId',
-      limitToMatchers(),
-      handleDeleteApplicationEvent)
+    app.get('/applications/:id', limitToMatchers(), handleGetSingleApplication)
+    app.get('/applications/:id/events', limitToMatchers(), handleGetApplicationEvents)
+    app.post('/applications/:id/events', limitToMatchers(), validate(wireFormats.applicationEvent), handlePostApplicationEvents)
+    app.delete('/applications/:applicationId/events/:eventId', limitToMatchers(), handleDeleteApplicationEvent)
   }
 
-
-  async function handleGetApplications (req, res) {
+  async function handleGetAllApplications (req, res) {
     const applicationModels = await Application.fetchAllCurrent()
     const applications = applicationModels.map(a => a.toJSON())
     return res.json({applications})
   }
 
-  async function handleGetSingleApplication (req, res) {
+  async function handleGetUnfinishedApplications (req, res) {
+    const applicationModels = await Application.fetchAllUnfinished()
+    const applications = applicationModels.map(a => a.toJSON())
+    return res.json({applications})
+  }
+
+  async function handleGetSingleApplication (req, res, handleError) {
     const id = req.params.id
     try {
       const application = await Application.fetchById(id)
@@ -46,6 +46,12 @@ module.exports = models => {
       }
       return handleError({status: 'Unknown'})
     }
+  }
+
+  async function handleGetAllApplicationEvents (req, res, handleError) {
+    const applicationEvents = await ApplicationEvent.fetchAll() // TODO paginate
+    const events = applicationEvents.map(e => e.toJSON())
+    return res.json({events})
   }
 
   async function handleGetApplicationEvents (req, res, handleError) {
