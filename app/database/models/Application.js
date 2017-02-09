@@ -3,6 +3,7 @@ const constants = require('../../constants')
 const errors = require('../errors')
 
 const ApplicationEventModel = require('./ApplicationEvent')
+// const applicationEventTypes = require('./applicationEventTypes')
 
 module.exports = bsModels => {
 
@@ -15,9 +16,11 @@ module.exports = bsModels => {
     }
 
     toJSON () {
-      return this.bs.toJSON({
+      const bsJson = this.bs.toJSON({
         shallow: true, // do not include relations - explicitly fetch them instead.
       })
+      const status = this.status ? this.status.toJSON() : null
+      return Object.assign({}, bsJson, {status})
     }
 
     //
@@ -77,21 +80,71 @@ module.exports = bsModels => {
       return Application.fetchAll({programmeYear: constants.programmeYear, finishedAt: null})
     }
 
-    // 'Finished' applications are those that have not yet been vetted/matched/etc.
-    static async fetchAllFinished () {
+    static async fetchAllByStatus (statuses) {
+      statuses = Array.isArray(statuses) ? statuses : [statuses]
       const bs = await BsModel.query(qb => {
         qb.where('programmeYear', '=', constants.programmeYear)
         qb.whereNotNull('finishedAt')
       }).fetchAll()
-      const applications = bs.toArray()
-      const finishedApplications = []
-      for (let application of applications) {
-        const status = await ApplicationEvent.fetchLatestByApplicationId(application.id)
-        if (status === null) {
-          finishedApplications.push(new this(application))
+      const bsApplications = bs.toArray()
+      const applications = []
+      for (let bsApplication of bsApplications) {
+        const application = new this(bsApplication)
+        const status = await application.fetchStatus()
+        if (statuses.indexOf(status == null ? status : status.type) !== -1) {
+          console.log(status, 'matched', statuses)
+          applications.push(application)
         }
       }
-      return finishedApplications
+      return applications
+    }
+
+    // 'Finished' applications are those that have not yet been vetted/matched/etc.
+    static async fetchAllFinished () {
+      return Application.fetchAllByStatus([null])
+    }
+
+    static async fetchAllVetted () {
+      return Application.fetchAllByStatus([
+        'rejected',
+        'shortlisted',
+      ])
+    }
+
+    static async fetchAllReadyToMatch () {
+      return Application.fetchAllByStatus([
+        'gaveCompanyPreferences',
+        'madeMatchSuggestion',
+      ])
+    }
+
+    static async fetchAllMatching () {
+      return Application.fetchAllByStatus([
+        'sentToCompany',
+        'arrangedInterviewWithCompany',
+        'companyRejected',
+      ])
+    }
+
+    static async fetchAllOffer () {
+      return Application.fetchAllByStatus([
+        'companyMadeOffer',
+        'acceptedOffer',
+        'sentContract',
+      ])
+    }
+
+    static fetchAllIn () {
+      return Application.fetchAllByStatus([
+        'signedContract',
+        'finalised',
+      ])
+    }
+
+    static async fetchAllOut () {
+      return Application.fetchAllByStatus([
+        'applicantRejected',
+      ])
     }
 
     //
@@ -110,6 +163,12 @@ module.exports = bsModels => {
         techPreferences[technology] = preference
       })
       return techPreferences
+    }
+
+    async fetchStatus () {
+      const status = await ApplicationEvent.fetchStatusByApplicationId(this.id)
+      this.status = status
+      return status
     }
 
     //

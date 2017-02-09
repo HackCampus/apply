@@ -82,10 +82,11 @@ module.exports = bsModels => {
       return this.fetchAll({applicationId})
     }
 
-    static async fetchLatestByApplicationId (applicationId) {
+    static async fetchStatusByApplicationId (applicationId) {
       const bs = await BsModel
         .query(qb => {
           qb.where('applicationId', '=', applicationId)
+          // qb.where('type', '!=', 'commented') // comments don't affect status.
           qb.orderBy('ts', 'DESC')
           qb.limit(1)
         })

@@ -1,4 +1,5 @@
 const {pull, html} = require('inu')
+const values = require('object.values')
 const u = require('updeep')
 
 const wireFormats = require('../../../wireFormats')
@@ -13,14 +14,17 @@ const selectField = require('../../components/selectField')
 const textArea = require('../../components/textArea')
 const applicationView = require('../../components/applicationView')
 
-const possibleActions = wireFormats.applicationEvent.properties.type.enum
+const applicationEventTypes = wireFormats.applicationEventTypes
+const applicationEventTypeValues = values(applicationEventTypes)
+const applicationEventTypeKeys = Object.keys(applicationEventTypes)
+const applicationEventCommented = wireFormats.applicationEventCommented
 
 // TODO hacky
 const applicationId = window.location.pathname.match(/application\/([^/]+)/)[1]
 
 module.exports = Component({
   children: {
-    actionType: selectField(possibleActions),
+    actionType: selectField(applicationEventTypeValues),
     comment: textArea('add a comment...'),
   },
   init () {
@@ -56,8 +60,9 @@ module.exports = Component({
       }
 
       case 'submit': {
+        const selected = model.children.actionType.selected
         const event = {
-          type: model.children.actionType.value || 'commented',
+          type: selected === -1 ? applicationEventCommented : applicationEventTypeKeys[selected],
           payload: {
             comment: model.children.comment.value,
           }
@@ -193,7 +198,7 @@ function eventView (event, user, onDelete) {
   } = event
   const isMine = user && user.id == actor.id
   return html`<div class="event">
-    <p><span class="type">${type}</span> by <span class="actor">${actor.email}</span></p>
+    <p><span class="type">${applicationEventTypes[type] || 'comment'}</span> by <span class="actor">${actor.email}</span></p>
     ${(() => {
       const fields = []
       for (let key in payload) {

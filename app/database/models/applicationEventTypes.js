@@ -1,26 +1,28 @@
 const keyMirror = require('keymirror')
 
 module.exports = {
-  finished: 'finished',
-
   // vetting
   rejected: 'rejected',
   shortlisted: 'shortlisted',
 
-  // matching prep
+  // ready to match
   gaveCompanyPreferences: 'gave company preferences',
   madeMatchSuggestion: 'made match suggestion',
 
-  // matching in progress
+  // matching
   sentToCompany: 'sent to company',
   arrangedInterviewWithCompany: 'arranged an interview with company',
-  companyRejected: 'was rejected by company',
+
+  // offer stage
   companyMadeOffer: 'given an offer by company',
   acceptedOffer: 'accepted offer',
   sentContract: 'got sent contract',
-  signedContract: 'signed contract',
 
-  // done
-  applicantAccepted: 'is in the programme',
+  // in
+  signedContract: 'signed contract',
+  finalised: 'is in the programme',
+
+  // out
+  companyRejected: 'was rejected by company',
   applicantRejected: 'found another opportunity',
 }

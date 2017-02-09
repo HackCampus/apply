@@ -1,5 +1,8 @@
 const {pull, html} = require('inu')
+const values = require('object.values')
 const u = require('updeep')
+
+const wireFormats = require('../../../wireFormats')
 
 const action = require('../../lib/action')
 const api = require('../../lib/api')
@@ -8,9 +11,98 @@ const Component = require('../../lib/component')
 
 const applicationTable = require('../../components/applicationTable')
 
+const applicationEventTypes = wireFormats.applicationEventTypes
+
+function applicationTab ({type, title, viewTitle, description, excludeColumns, orderBy}) {
+  return {
+    title,
+    view: function (model, dispatch, children) {
+      return html`<div class="${type}">
+        <h2>${viewTitle}</h2>
+        <p>${description ? description() : ''}</p>
+        ${children[type]
+          ? children[type]()
+          : html`<em>Loading...</em>`}
+      </div>`
+    },
+    child: applications => applicationTable(applications, {
+      excludeColumns,
+      orderBy,
+    }),
+    effect: action('fetchApplications', type),
+  }
+}
+
+const applicationTabs = {
+  unfinished: applicationTab({
+    type: 'unfinished',
+    title: 'unfinished',
+    viewTitle: 'Unfinished applications',
+    description: () => 'Applications that are still in progress by the applicant',
+    excludeColumns: ['finishedAt', 'status'],
+    orderBy: 'createdAt',
+  }),
+  finished: applicationTab({
+    type: 'finished',
+    title: 'finished - ready to vet',
+    viewTitle: 'Finished applications',
+    description: () => html`<span><em>Finished</em> applications are applications that have not been vetted or matched.</span>`,
+    excludeColumns: ['status'],
+    orderBy: 'finishedAt',
+  }),
+  vetted: applicationTab({
+    type: 'vetted',
+    title: 'vetted',
+    viewTitle: 'Vetted applications',
+    description: () => html`<span>Applications that have either been <em>shortlisted</em> or <em>rejected</em> after the first stage of the application. We are still waiting for confirmation of company preferences from the applicant at this stage.</span>`,
+    excludeColumns: [],
+    orderBy: 'finishedAt',
+  }),
+  readyToMatch: applicationTab({
+    type: 'readyToMatch',
+    title: 'ready to match',
+    viewTitle: 'Ready to match',
+    description: () => html`<span>The applicant has been shortlisted, and has responded with company preferences. Matching suggestions can be added here.</span>`,
+    excludeColumns: [],
+    orderBy: 'finishedAt',
+  }),
+  matching: applicationTab({
+    type: 'matching',
+    title: 'matching in progress',
+    viewTitle: 'Matching in progress',
+    description: () => html`<span>The applicant's profile has been sent to a company. Company responses can be tracked here. If a company has rejected a candidate, they will show up here again.</span>`,
+    excludeColumns: [],
+    orderBy: 'finishedAt',
+  }),
+  offer: applicationTab({
+    type: 'offer',
+    title: 'offer stage',
+    viewTitle: 'Offer stage',
+    description: () => html`<span>The applicant has been made an offer by a company, but still has to accept/reject it.</span>`,
+    excludeColumns: [],
+    orderBy: 'finishedAt',
+  }),
+  in: applicationTab({
+    type: 'in',
+    title: 'in',
+    viewTitle: 'In the programme',
+    description: () => html`<span>The applicant has signed the contract & has an internship for this year.</span>`,
+    excludeColumns: [],
+    orderBy: 'finishedAt',
+  }),
+  out: applicationTab({
+    type: 'out',
+    title: 'out',
+    viewTitle: 'Out of the programme',
+    description: () => html`<span>The applicant has chosen not to take part in the programme.</span>`,
+    excludeColumns: [],
+    orderBy: 'finishedAt',
+  }),
+}
+
 const tabs = [
   {
-    title: 'dashboard',
+    title: 'news',
     view: function (model, dispatch, children) {
       const {
         events,
@@ -24,55 +116,7 @@ const tabs = [
     },
     effect: action('fetchApplicationEvents'),
   },
-  {
-    title: 'unfinished',
-    view: function (model, dispatch, children) {
-      return html`<div class="unfinished">
-        <h2>Unfinished applications</h2>
-        ${children.unfinishedApplications
-          ? children.unfinishedApplications()
-          : html`<em>Loading...</em>`}
-      </div>`
-    },
-    effect: action('fetchUnfinishedApplications'),
-  },
-  {
-    title: 'finished — ready to vet',
-    view: function (model, dispatch, children) {
-      return html`<div class="finished">
-        <h2>Finished applications</h2>
-        ${children.finishedApplications
-          ? children.finishedApplications()
-          : html`<em>Loading...</em>`}
-      </div>`
-    },
-    effect: action('fetchFinishedApplications'),
-  },
-  {
-    title: 'vetted',
-    view: function (model, dispatch, children) {
-      return html`<p>none vetted</p>`
-    }
-  },
-  {
-    title: 'ready to match',
-    view: function (model, dispatch, children) {
-      return html`<p>none ready</p>`
-    }
-  },
-  {
-    title: 'matching',
-    view: function (model, dispatch, children) {
-      return html`<p>none matching</p>`
-    },
-  },
-  {
-    title: 'done',
-    view: function (model, dispatch, children) {
-      return html`<p>none done</p>`
-    },
-  },
-]
+].concat(values(applicationTabs))
 
 function eventView (event) {
   const {
@@ -85,7 +129,7 @@ function eventView (event) {
   } = event
   return html`<a class="reset" href="/match/application/${applicationId}" target="_blank">
     <div class="event">
-      <p><span class="type">${type}</span> <span class="application">application <em>${applicationId /* TODO get actual info */}</em></span> by <span class="actor">${actor.email}</span></p>
+      <p><span class="application">application <em>${applicationId /* TODO get actual info */}</em></span> <span class="type">${applicationEventTypes[type] || 'commented'}</span> by <span class="actor">${actor.email}</span></p>
       ${(() => {
         const fields = []
         for (let key in payload) {
@@ -110,7 +154,6 @@ module.exports = Component({
       model: {
         tab: 0,
         events: null,
-        unfinishedApplications: null,
       },
       effect: action('fetchApplicationEvents'),
     }
@@ -130,32 +173,16 @@ module.exports = Component({
         return {model: newModel, effect: null}
       }
 
-      case 'fetchUnfinishedApplicationsSuccess': {
-        const unfinishedApplications = a.payload.applications
-        const newModel = u({unfinishedApplications}, model)
-        return {model: newModel, effect: action('replaceChild', {
-          key: 'unfinishedApplications',
-          newChild: () => applicationTable(unfinishedApplications, {
-            excludeColumns: ['finishedAt', 'status'],
-            orderBy: 'createdAt',
-          })
-        })}
-      }
-      case 'fetchFinishedApplicationsSuccess': {
-        const finishedApplications = a.payload.applications
-        const newModel = u({finishedApplications}, model)
-        return {model: newModel, effect: action('replaceChild', {
-          key: 'finishedApplications',
-          newChild: () => applicationTable(finishedApplications, {
-            excludeColumns:  ['status'],
-            orderBy: 'finishedAt',
-          })
+      case 'fetchApplicationsSuccess': {
+        const {applications, type} = a.payload
+        return {model, effect: action('replaceChild', {
+          key: type,
+          newChild: applicationTabs[type].child(applications)
         })}
       }
 
       case 'fetchApplicationEventsFailure':
-      case 'fetchUnfinishedApplicationsFailure':
-      case 'fetchFinishedApplicationsFailure':
+      case 'fetchApplicationsFailure':
         // TODO
         console.error(a)
       default:
@@ -195,26 +222,23 @@ module.exports = Component({
           }
         })
       }
-      case 'fetchUnfinishedApplications': {
-        return get('/applications/unfinished', ({statusText, data}) => {
+
+      case 'fetchApplications': {
+        const type = effect.payload
+        return get(`/applications/${type}`, ({statusText, data}) => {
           switch (statusText) {
-            case 'OK': return action('fetchUnfinishedApplicationsSuccess', data)
-            default: return action('fetchUnfinishedApplicationsFailure', data)
-          }
-        })
-      }
-      case 'fetchFinishedApplications': {
-        return get('/applications/finished', ({statusText, data}) => {
-          switch (statusText) {
-            case 'OK': return action('fetchFinishedApplicationsSuccess', data)
-            default: return action('fetchFinishedApplicationsFailure', data)
+            case 'OK':
+              data.type = type
+              return action('fetchApplicationsSuccess', data)
+            default:
+              return action('fetchApplicationsFailure', data)
           }
         })
       }
 
       case 'replaceChild': {
         const {key, newChild} = effect.payload
-        this.replaceChild(key, newChild())
+        this.replaceChild(key, newChild)
         return pull.once(action('doNothing'))
       }
     }

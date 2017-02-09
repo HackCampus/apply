@@ -10,10 +10,16 @@ module.exports = models => {
   const {ApplicationSane: Application, ApplicationEvent} = models
 
   function routes (app) {
-    app.get('/applications', limitToMatchers(), handleGetAllApplications)
+    app.get('/applications', limitToMatchers(), handleGetApplications(Application.fetchAllCurrent))
     app.get('/applications/events', limitToMatchers(), handleGetAllApplicationEvents)
-    app.get('/applications/unfinished', limitToMatchers(), handleGetUnfinishedApplications)
-    app.get('/applications/finished', limitToMatchers(), handleGetFinishedApplications)
+    app.get('/applications/unfinished', limitToMatchers(), handleGetApplications(Application.fetchAllUnfinished))
+    app.get('/applications/finished', limitToMatchers(), handleGetApplications(Application.fetchAllFinished))
+    app.get('/applications/vetted', limitToMatchers(), handleGetApplications(Application.fetchAllVetted))
+    app.get('/applications/readytomatch', limitToMatchers(), handleGetApplications(Application.fetchAllReadyToMatch))
+    app.get('/applications/matching', limitToMatchers(), handleGetApplications(Application.fetchAllMatching))
+    app.get('/applications/offer', limitToMatchers(), handleGetApplications(Application.fetchAllOffer))
+    app.get('/applications/in', limitToMatchers(), handleGetApplications(Application.fetchAllIn))
+    app.get('/applications/out', limitToMatchers(), handleGetApplications(Application.fetchAllOut))
 
     app.get('/applications/:id', limitToMatchers(), handleGetSingleApplication)
     app.get('/applications/:id/events', limitToMatchers(), handleGetApplicationEvents)
@@ -21,22 +27,12 @@ module.exports = models => {
     app.delete('/applications/:applicationId/events/:eventId', limitToMatchers(), handleDeleteApplicationEvent)
   }
 
-  async function handleGetAllApplications (req, res) {
-    const applicationModels = await Application.fetchAllCurrent()
-    const applications = applicationModels.map(a => a.toJSON())
-    return res.json({applications})
-  }
-
-  async function handleGetUnfinishedApplications (req, res) {
-    const applicationModels = await Application.fetchAllUnfinished()
-    const applications = applicationModels.map(a => a.toJSON())
-    return res.json({applications})
-  }
-
-  async function handleGetFinishedApplications (req, res) {
-    const applicationModels = await Application.fetchAllFinished()
-    const applications = applicationModels.map(a => a.toJSON())
-    return res.json({applications})
+  function handleGetApplications (fetchFunction) {
+    return async (req, res) => {
+      const applicationModels = await fetchFunction()
+      const applications = applicationModels.map(a => a.toJSON())
+      return res.json({applications})
+    }
   }
 
   async function handleGetSingleApplication (req, res, handleError) {
