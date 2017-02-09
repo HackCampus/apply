@@ -135,7 +135,10 @@ module.exports = Component({
         const newModel = u({unfinishedApplications}, model)
         return {model: newModel, effect: action('replaceChild', {
           key: 'unfinishedApplications',
-          newChild: () => applicationTable(unfinishedApplications, ['finishedAt', 'status'])
+          newChild: () => applicationTable(unfinishedApplications, {
+            excludeColumns: ['finishedAt', 'status'],
+            orderBy: 'createdAt',
+          })
         })}
       }
       case 'fetchFinishedApplicationsSuccess': {
@@ -143,7 +146,10 @@ module.exports = Component({
         const newModel = u({finishedApplications}, model)
         return {model: newModel, effect: action('replaceChild', {
           key: 'finishedApplications',
-          newChild: () => applicationTable(finishedApplications, ['status'])
+          newChild: () => applicationTable(finishedApplications, {
+            excludeColumns:  ['status'],
+            orderBy: 'finishedAt',
+          })
         })}
       }
 

@@ -1,7 +1,8 @@
 const {pull, html} = require('inu')
 const mapValues = require('lodash.mapvalues')
-const u = require('updeep')
 const values = require('object.values')
+const u = require('updeep')
+const extend = require('xtend')
 
 // const link = require('../../components/link')
 
@@ -24,7 +25,11 @@ function extractOrdering (applicationsArray) {
   return {applications, ordering}
 }
 
-module.exports = (applicationsArray, excludeColumns = []) => {
+module.exports = (applicationsArray, options) => {
+  options = extend({
+    excludeColumns: [],
+    orderBy: 'createdAt',
+  }, options)
   const columns = {
     name: {
       title: 'Name',
@@ -102,7 +107,7 @@ module.exports = (applicationsArray, excludeColumns = []) => {
     return u({orderBy: newOrderBy, ordering: newOrdering}, model)
   }
 
-  excludeColumns.forEach(exclude => {
+  options.excludeColumns.forEach(exclude => {
     delete columns[exclude]
   })
 
@@ -114,7 +119,7 @@ module.exports = (applicationsArray, excludeColumns = []) => {
           applications,
           ordering,
           orderBy: {
-            column: 'createdAt',
+            column: options.orderBy,
             direction: direction.descending,
           },
         }),
@@ -146,6 +151,7 @@ module.exports = (applicationsArray, excludeColumns = []) => {
       const mapColumns = fn => values(mapValues(columns, fn))
       return html`
         <div class="listView">
+          total count: ${ordering.length}
           <table>
             <tr>
               ${mapColumns(({title}, column) => html`<th onclick=${() => dispatch(action('orderBy', column))}>${title}${orderIndicator(column)}</th>`)}
