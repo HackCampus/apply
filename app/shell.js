@@ -19,6 +19,7 @@ module.exports = appName =>
 </head>
 <body>
 <div id="container"></div>
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
 <script src="/static/${appName}/index.js"></script>
 <script>
 (function(s,p,y,w,a,r,e){s['GoogleAnalyticsObject']=a;s[a]=s[a]||function(){
