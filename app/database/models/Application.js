@@ -103,10 +103,10 @@ module.exports = bsModels => {
       return Application.fetchAllByStatus([null])
     }
 
-    static async fetchAllVetted () {
+    static async fetchAllShortlisted () {
       return Application.fetchAllByStatus([
-        'rejected',
         'shortlisted',
+        'shortlistedVeryStrong',
       ])
     }
 
@@ -142,6 +142,7 @@ module.exports = bsModels => {
 
     static async fetchAllOut () {
       return Application.fetchAllByStatus([
+        'rejected',
         'applicantRejected',
       ])
     }

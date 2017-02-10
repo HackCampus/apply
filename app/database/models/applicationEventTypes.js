@@ -4,6 +4,7 @@ module.exports = {
   // vetting
   rejected: 'rejected',
   shortlisted: 'shortlisted',
+  shortlistedVeryStrong: 'shortlisted (very strong)',
 
   // ready to match
   gaveCompanyPreferences: 'gave company preferences',

@@ -14,7 +14,7 @@ module.exports = models => {
     app.get('/applications/events', limitToMatchers(), handleGetAllApplicationEvents)
     app.get('/applications/unfinished', limitToMatchers(), handleGetApplications(Application.fetchAllUnfinished))
     app.get('/applications/finished', limitToMatchers(), handleGetApplications(Application.fetchAllFinished))
-    app.get('/applications/vetted', limitToMatchers(), handleGetApplications(Application.fetchAllVetted))
+    app.get('/applications/shortlisted', limitToMatchers(), handleGetApplications(Application.fetchAllShortlisted))
     app.get('/applications/readytomatch', limitToMatchers(), handleGetApplications(Application.fetchAllReadyToMatch))
     app.get('/applications/matching', limitToMatchers(), handleGetApplications(Application.fetchAllMatching))
     app.get('/applications/offer', limitToMatchers(), handleGetApplications(Application.fetchAllOffer))

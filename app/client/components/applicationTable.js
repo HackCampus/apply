@@ -6,9 +6,13 @@ const extend = require('xtend')
 
 // const link = require('../../components/link')
 
+const wireFormats = require('../../wireFormats')
+
 const action = require('../lib/action')
 const dateFromNow = require('../lib/dateFromNow')
 const Component = require('../lib/component')
+
+const applicationEventTypes = wireFormats.applicationEventTypes
 
 const direction = {
   ascending: true,
@@ -68,7 +72,7 @@ module.exports = (applicationsArray, options) => {
     },
     status: {
       title: 'Status',
-      displayContent: application => application.status ? application.status.type : '-',
+      displayContent: application => application.status ? applicationEventTypes[application.status.type] : '-',
       sortContent: application => application.status ? application.status.type : '-',
     },
     lastUpdatedAt: {
