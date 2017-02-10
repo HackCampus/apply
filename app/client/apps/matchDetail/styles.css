@@ -38,6 +38,7 @@
 }
 
 .eventcomment {
+  white-space: pre-wrap;
   border-left: 2px solid #ff9600;
   padding-left: 6px;
 }
