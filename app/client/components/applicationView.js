@@ -86,7 +86,7 @@ module.exports = function (application) {
       ${field('(expected) year of graduation', 'graduationYear', other('otherGraduationYear'))}
       ${header('Links')}
       ${field('link to CV', 'cvUrl', cvUrl => html`<a href="${cvUrl}">Link to CV</a>`)}
-      ${field('website', 'website', website => website ? html`<a href="${website}">${website}</a>` : html`<em>none</em>`)}
+      ${field('website', 'websiteUrl', website => website ? html`<a href="${website}">${website}</a>` : html`<em>none</em>`)}
       ${header('Referral')}
       ${field('referer', 'referer')}
       ${field('detail', 'refererDetail')}
