@@ -59,10 +59,7 @@ a.reset {
 }
 
 .listView {
-  table {
+  .table {
     width: 100%;
-  }
-  tr {
-    cursor: pointer;
   }
 }

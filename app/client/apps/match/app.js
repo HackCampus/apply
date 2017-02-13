@@ -127,7 +127,7 @@ function eventView (event) {
     type,
     payload,
   } = event
-  return html`<a class="reset" href="/match/application/${applicationId}" target="_blank">
+  return html`<a class="reset" href="/match/application/${applicationId}">
     <div class="event">
       <p><span class="application">application <em>${applicationId /* TODO get actual info */}</em></span> <span class="type">${applicationEventTypes[type] || 'commented'}</span> by <span class="actor">${actor.email}</span></p>
       ${(() => {
@@ -147,22 +147,26 @@ function eventView (event) {
   </a>`
 }
 
+const initialTab = Number.parseInt(window.location.hash.slice(1)) || 0
+
 module.exports = Component({
   children: {}, // will be added dynamically
   init () {
     return {
       model: {
-        tab: 0,
+        tab: initialTab,
         events: null,
       },
-      effect: action('fetchApplicationEvents'),
+      effect: tabs[initialTab].effect,
     }
   },
   update (model, a) {
     switch (a.type) {
       case 'changeTab': {
         const tab = a.payload
-        const effect = tabs[tab].effect
+        const customEffect = tabs[tab].effect
+        const changeTabEffect = a
+        const effect = customEffect ? [changeTabEffect].concat(customEffect) : changeTabEffect
         const newModel = u({tab}, model)
         return {model: newModel, effect}
       }
@@ -236,10 +240,15 @@ module.exports = Component({
         })
       }
 
+      case 'changeTab': {
+        const section = effect.payload
+        window.location.hash = `#${section}`
+        return null
+      }
+
       case 'replaceChild': {
         const {key, newChild} = effect.payload
-        this.replaceChild(key, newChild)
-        return pull.once(action('doNothing'))
+        return this.replaceChild(key, newChild)
       }
     }
   }

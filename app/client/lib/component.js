@@ -1,4 +1,5 @@
 // TODO: children as array (polymorphic map)
+const {pull} = require('inu')
 const mapValues = require('lodash.mapvalues')
 const pullMany = require('pull-many')
 const u = require('updeep')
@@ -12,9 +13,13 @@ const extend = require('xtend')
 module.exports = function Component (component) {
   const none = {}
 
+  // Should be used as return value from a `run` function.
+  // The actual replacing of children only happens in the `update` function,
+  // so we need to ensure that some action triggers this.
   component.replaceChild = function (childName, newChild) {
     component.newChildren = component.newChildren || []
     component.newChildren.push({name: childName, component: newChild})
+    return pull.once({type: '@@replaceChild', payload: childName})
   }
 
   const self = {

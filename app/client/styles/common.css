@@ -195,3 +195,17 @@ input:focus, textarea:focus {
   margin-top: 1em;
   margin-bottom: 1em;
 }
+
+.table {
+  display: table;
+}
+.table-row {
+  display: table-row;
+}
+.table-header {
+  font-weight: bold;
+  display: table-cell;
+}
+.table-cell {
+  display: table-cell;
+}
