@@ -1,4 +1,4 @@
-const companies = require('../../../companies') // TODO
+const companies = [] // require('../../../companies') // TODO
 
 const validate = require('../middlewares/validate')
 
