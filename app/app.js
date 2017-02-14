@@ -31,6 +31,9 @@ auth.routes(app)
 const application = require('./routes/application')(models)
 application.routes(app)
 
+const companies = require('./routes/companies')(models)
+companies.routes(app)
+
 const user = require('./routes/user')(models)
 user.routes(app)
 
@@ -41,7 +44,7 @@ match.routes(app)
 const shell = require('./shell')
 const clientApp = appName => (req, res) => res.send(shell(appName))
 app.get('/', clientApp('apply'))
-app.get('/companies', clientApp('companies'))
+app.get('/shortlisted', clientApp('companies'))
 app.get('/match', limitToMatchers(clientApp('login')), clientApp('match'))
 app.get('/match/application/:id', limitToMatchers(clientApp('login')), clientApp('matchDetail'))
 
