@@ -35,6 +35,11 @@ module.exports = function (bookshelf) {
     }
   })
 
+  const Company = bookshelf.Model.extend({
+    tableName: 'companies',
+    idAttribute: 'name',
+  })
+
   const TechPreference = bookshelf.Model.extend({
     tableName: 'techpreferences',
     hasTimeStamps: ['createdAt'],
@@ -64,6 +69,7 @@ module.exports = function (bookshelf) {
     bookshelf, // needed for stuff like `transaction`
     Application,
     ApplicationEvent,
+    Company,
     Authentication,
     TechPreference,
     User,

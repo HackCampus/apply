@@ -4,6 +4,7 @@ const logger = require('../logger')
 
 const Application = require('./models/Application')
 const ApplicationEvent = require('./models/ApplicationEvent')
+const Company = require('./models/Company')
 const Authentication = require('./models/Authentication')
 const TechPreference = require('./models/TechPreference')
 const User = require('./models/User')
@@ -23,6 +24,7 @@ module.exports = function (knexInstance) {
     ApplicationSane: Application(bsModels),
     ApplicationEvent: ApplicationEvent(bsModels),
     Authentication: Authentication(bsModels),
+    Company: Company(bsModels),
     Database: bookshelf,
     TechPreference: bsModels.TechPreference,
     User: User(bsModels),

@@ -14,7 +14,7 @@
     "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "postinstall": "npm run build-client",
+    "postinstall": "npm run migrate-latest && npm run build-client",
     "test": "node --harmony_async_await node_modules/.bin/ava --timeout=30s --serial",
     "coverage": "nyc --reporter=html npm test"
   },

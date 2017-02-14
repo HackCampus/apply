@@ -1,5 +1,3 @@
-const companies = [] // require('../../../companies') // TODO
-
 const validate = require('../middlewares/validate')
 
 const constants = require('../constants')
@@ -7,7 +5,7 @@ const roles = require('../roles')
 const wireFormats = require('../wireFormats')
 
 module.exports = models => {
-  const {ApplicationSane: Application, ApplicationEvent} = models
+  const {ApplicationSane: Application, ApplicationEvent, Company} = models
 
   function routes (app) {
     app.get('/companies', limitToSuccessfulApplicants, handleGetCompanies)
@@ -41,7 +39,9 @@ module.exports = models => {
     }
   }
 
-  function handleGetCompanies (req, res, handleError) {
+  async function handleGetCompanies (req, res, handleError) {
+    const companyModels = await Company.fetchAll()
+    const companies = companyModels.map(c => c.toJSON())
     res.json({
       companies,
     })

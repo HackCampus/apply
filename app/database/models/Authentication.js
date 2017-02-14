@@ -14,6 +14,7 @@ module.exports = bsModels => {
       const bsJson = this.bs.toJSON({
         shallow: true, // do not include relations - explicitly fetch them instead.
       })
+      return bsJson
     }
 
     //
