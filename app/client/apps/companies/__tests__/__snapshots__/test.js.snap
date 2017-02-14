@@ -1,3 +1,13 @@
 exports[`init 1`] = `"{\"model\":{\"user\":null,\"authorized\":null,\"companies\":[],\"preferences\":null,\"children\":{\"authenticate\":{\"password\":false,\"changePassword\":false,\"tab\":0,\"error\":null,\"user\":null,\"children\":{\"email\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"password\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"confirmPassword\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"changePassword\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"confirmChangePassword\":{\"errors\":[],\"started\":false,\"value\":\"\"}}},\"firstChoice\":{\"options\":[],\"selected\":-1,\"value\":null,\"started\":false},\"secondChoice\":{\"options\":[],\"selected\":-1,\"value\":null,\"started\":false},\"thirdChoice\":{\"options\":[],\"selected\":-1,\"value\":null,\"started\":false},\"comment\":{\"started\":false,\"value\":\"\"}}},\"effect\":[{\"type\":\"waitForUser\"},{\"child\":\"authenticate\",\"effect\":[{\"type\":\"loadUser\"}]}]}"`;
 
-exports[`view - initial 1`] = `""<div class=\"companies\">\n        <h1>Apply to HackCampus</h1>\n        <p>If you have been shortlisted for this year's internship programme, you will be able to see which companies we are working with this year. You will be able to choose your preferred companies here, and we will do our best to match you with the companies you have chosen. Note that it is up to the companies to decide which applicants they want to interview, so you may be matched with a company that you did not specifically choose as a preference here.</p>\n        <h2>Step 0: Authenticate</h2>\n        <div>\n        <div class=\"field\"><p>Authentication method:</p><p>   - <a href=\"javascript:void('hey there ✌︎')\">GitHub</a></p><p>   - <a href=\"javascript:void('hey there ✌︎')\">LinkedIn</a></p><p>   - <a href=\"javascript:void('hey there ✌︎')\">email/password</a></p></div>\n        \n      </div>\n        \n        \n      </div>""`;
+exports[`view - initial 1`] = `""<div class="companies">
+        <h1>Apply to HackCampus</h1>
+        <p>If you have been shortlisted for this year's internship programme, you will be able to see which companies we are working with this year. You will be able to choose your preferred companies here, and we will do our best to match you with the companies you have chosen. Note that it is up to the companies to decide which applicants they want to interview, so you may be matched with a company that you did not specifically choose as a preference here.</p>
+        <h2>Step 0: Authenticate</h2>
+        <div>
+        <div class="field"><p>Authentication method:</p><p>   - <a href="javascript:void('hey there ✌︎')">GitHub</a></p><p>   - <a href="javascript:void('hey there ✌︎')">LinkedIn</a></p><p>   - <a href="javascript:void('hey there ✌︎')">email/password</a></p></div>
+        
+      </div>
+        
+        
+      </div>""`;
