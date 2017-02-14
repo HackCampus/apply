@@ -103,6 +103,25 @@ const applicationEvent = {
   required: ['type']
 }
 
+const companyPreferences = {
+  type: 'object',
+  properties: {
+    firstChoice: {
+      type: 'string',
+    },
+    secondChoice: {
+      type: 'string',
+    },
+    thirdChoice: {
+      type: 'string',
+    },
+    comment: {
+      type: 'string',
+    },
+  },
+  required: ['firstChoice', 'secondChoice', 'thirdChoice', 'comment']
+}
+
 module.exports = {
   authentication,
   password,
@@ -115,4 +134,5 @@ module.exports = {
   applicationEvent,
   applicationEventCommented,
   applicationEventTypes,
+  companyPreferences,
 }

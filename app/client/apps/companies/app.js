@@ -22,8 +22,9 @@ module.exports = Component({
     return {
       model: {
         user: null,
-        unauthorized: false,
+        authorized: null,
         companies: [],
+        preferences: null,
       },
       effect: action('waitForUser'),
     }
@@ -32,16 +33,28 @@ module.exports = Component({
     switch (type) {
       case 'authenticated': {
         const newModel = u({user: payload}, model)
-        return {model: newModel, effect: action('fetchCompanies')}
+        return {model: newModel, effect: [action('fetchCompanies'), action('fetchCompanyPreferences')]}
       }
 
       case 'fetchCompaniesSuccess': {
         const companies = payload.companies
-        const newModel = u({companies}, model)
+        const newModel = u({companies, authorized: true}, model)
         return {model: newModel, effect: action('replaceCompaniesLists', companies)}
       }
-      case 'fetchCompaniesUnauthorized': {
-        const newModel = u({unauthorized: true}, model)
+      case 'fetchCompanyPreferencesSuccess': {
+        const preferences = payload
+        const newModel = u({preferences}, model)
+        return {model: newModel, effect: null}
+      }
+
+      case 'fetchCompanyPreferencesNotFound': {
+        // no problem - that's the point of this page
+        return {model, effect: null}
+      }
+
+      case 'fetchCompaniesUnauthorized':
+      case 'fetchCompanyPreferencesUnauthorized': {
+        const newModel = u({authorized: false}, model)
         return {model: newModel, effect: null}
       }
 
@@ -54,6 +67,11 @@ module.exports = Component({
         }
         return {model, effect: action('submitPreferences', preferences)}
       }
+      case 'submitPreferencesSuccess': {
+        const preferences = payload
+        const newModel = u({preferences}, model)
+        return {model: newModel, effect: null}
+      }
 
       case 'fetchCompaniesFailure':
         console.error({type, payload})
@@ -64,6 +82,8 @@ module.exports = Component({
   view (model, dispatch, children) {
     const {
       user,
+      authorized,
+      preferences,
     } = model
     return html`
       <div class="companies">
@@ -71,35 +91,46 @@ module.exports = Component({
         <p>If you have been shortlisted for this year's internship programme, you will be able to see which companies we are working with this year. You will be able to choose your preferred companies here, and we will do our best to match you with the companies you have chosen. Note that it is up to the companies to decide which applicants they want to interview, so you may be matched with a company that you did not specifically choose as a preference here.</p>
         <h2>Step 0: Authenticate</h2>
         ${children.authenticate()}
-        ${user ? this.step1View(model, dispatch, children) : ''}
-        ${user ? this.step2View(model, dispatch, children) : ''}
+        ${user && authorized === false ? html`<p class="error">We're sorry, at this stage of the application process you can not give us your company preferences. If you think that this is an error, please let us know by email.</p>` : ''}
+        ${user && authorized ? html`<div class="authorized">${this.step1View(model, dispatch, children)}${this.step2View(model, dispatch, children)}</div>` : ''}
       </div>
     `
   },
   step1View (model, dispatch, children) {
     const {
-      unauthorized,
       companies,
     } = model
     return html`<div class="step1">
       <h2>Step 1: Check out this year's companies</h2>
-      ${unauthorized
-        ? html`<p class="error">We're sorry, at this stage of the application process you can not give us your company preferences. If you think that this is an error, please let us know by email.</p>`
-        : html`<div class="companiesList">
-          ${companies.map(company => this.companyView(company))}
-        </div>`}
+      <div class="companiesList">
+        ${companies.map(company => this.companyView(company))}
+      </div>
     </div>`
   },
   step2View (model, dispatch, children) {
-    return html`<div class="step2">
-      <h2>Step 2: Tell us your preferences</h2>
-      <p>You can leave any of the choices blank if you don't have any strong preferences.</p>
-      <p><strong>First choice:</strong><br />${children.firstChoice()}</p>
-      <p><strong>Second choice:</strong><br />${children.secondChoice()}</p>
-      <p><strong>Third choice:</strong><br />${children.thirdChoice()}</p>
-      <p><strong>Any further comments?</strong><br />${children.comment()}</p>
-      <p>${link('Submit your preferences', () => dispatch(action('submitPreferences')))}</p>
-    </div>`
+    const {preferences} = model
+    if (preferences == null) {
+      return html`<div class="step2">
+        <h2>Step 2: Tell us your preferences</h2>
+        <p>You can leave any of the choices blank if you don't have any strong preferences.</p>
+        <p><strong>First choice:</strong><br />${children.firstChoice()}</p>
+        <p><strong>Second choice:</strong><br />${children.secondChoice()}</p>
+        <p><strong>Third choice:</strong><br />${children.thirdChoice()}</p>
+        <p><strong>Any further comments?</strong><br />${children.comment()}</p>
+        <p>${link('Submit your preferences', () => dispatch(action('submitPreferences')))}</p>
+      </div>`
+    } else {
+      const {firstChoice, secondChoice, thirdChoice, comment} = preferences
+      return html`<div class="step2">
+        <h2>Step 2: Tell us your preferences</h2>
+        <p>You can leave any of the choices blank if you don't have any strong preferences.</p>
+        <p><strong>First choice:</strong><br />${firstChoice}</p>
+        <p><strong>Second choice:</strong><br />${secondChoice}</p>
+        <p><strong>Third choice:</strong><br />${thirdChoice}</p>
+        <p><strong>Any further comments?</strong><br />${comment}</p>
+        <p>Thanks a lot for submitting your company preferences! We will be in touch soon to arrange interviews.</p>
+      </div>`
+    }
   },
   companyView (company) {
     const {
@@ -136,6 +167,16 @@ module.exports = Component({
             case 'OK': return action('fetchCompaniesSuccess', data)
             case 'Unauthorized': return action('fetchCompaniesUnauthorized')
             default: return action('fetchCompaniesFailure', data)
+          }
+        })
+      }
+      case 'fetchCompanyPreferences': {
+        return get('/me/companies', ({statusText, data}) => {
+          switch (statusText) {
+            case 'OK': return action('fetchCompanyPreferencesSuccess', data)
+            case 'Unauthorized': return action('fetchCompanyPreferencesUnauthorized')
+            case 'Not Found': return action('fetchCompanyPreferencesNotFound')
+            default: return action('fetchCompanyPreferencesFailure', data)
           }
         })
       }
