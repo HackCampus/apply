@@ -63,7 +63,7 @@ module.exports = bsModels => {
       const bsModel = query.length > 0
         ? BsModel.where(...query)
         : BsModel
-      const bs = await bsModel.orderBy('name', 'ASC').fetchAll()
+      const bs = await bsModel.fetchAll()
       const bsArray = bs.toArray()
       const applications = bsArray.map(bs => new this(bs))
       return applications
