@@ -21,7 +21,8 @@ module.exports = models => {
 
     app.get('/signout', (req, res) => {
       req.session.destroy()
-      res.redirect('/')
+      const redirectTo = req.headers.referer || '/'
+      res.redirect(redirectTo)
     })
   }
 
