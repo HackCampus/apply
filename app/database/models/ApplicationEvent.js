@@ -9,7 +9,7 @@ module.exports = bsModels => {
   const BsModel = bsModels.ApplicationEvent
   const User = UserModel(bsModels)
 
-  return class Application {
+  return class ApplicationEvent {
     constructor (bs) {
       this.bs = bs == null ? new BsModel() : bs
     }
