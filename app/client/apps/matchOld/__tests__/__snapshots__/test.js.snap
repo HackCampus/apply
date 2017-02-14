@@ -1,16 +1,3 @@
 exports[`init 1`] = `"{\"model\":{\"applications\":[],\"ordering\":[],\"orderBy\":{\"column\":\"createdAt\",\"direction\":true},\"children\":{}},\"effect\":[{\"type\":\"fetchApplications\"}]}"`;
 
-exports[`view - initial 1`] = `""<div class="matching">
-        <div class="header">
-        <h2>HackCampus matching - 2017</h2>
-        <p>0 finished / 0 total</p>
-      </div>
-        <div class="listView">
-        <table>
-          <tr>
-            <th>Name</th><th>University</th><th>Gender</th><th>Created 🔼</th><th>Finished</th>
-          </tr>
-          
-        </table>
-      </div>
-      </div>""`;
+exports[`view - initial 1`] = `""<div class=\"matching\">\n        <div class=\"header\">\n        <h1>HackCampus matching</h1>\n        <p>0 finished / 0 total</p>\n      </div>\n        <div class=\"listView\">\n        <table>\n          <tr>\n            <th>Name</th><th>University</th><th>Gender</th><th>Created 🔼</th><th>Finished</th>\n          </tr>\n          \n        </table>\n      </div>\n      </div>""`;

@@ -1,15 +1,3 @@
-exports[`action 1`] = `
-Object {
-  "payload": undefined,
-  "type": "foo",
-}
-`;
+exports[`action 1`] = `"{\"type\":\"foo\"}"`;
 
-exports[`action 2`] = `
-Object {
-  "payload": Object {
-    "bar": "baz",
-  },
-  "type": "foo",
-}
-`;
+exports[`action 2`] = `"{"type":"foo","payload":{"bar":"baz"}}"`;
