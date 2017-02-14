@@ -4,6 +4,7 @@ const logger = require('../logger')
 
 const Application = require('./models/Application')
 const ApplicationEvent = require('./models/ApplicationEvent')
+const Authentication = require('./models/Authentication')
 const TechPreference = require('./models/TechPreference')
 const User = require('./models/User')
 
@@ -17,12 +18,13 @@ module.exports = function (knexInstance) {
 
   return {
     errors,
-    Authentication: bsModels.Authentication,
-    Database: bookshelf,
-    User: User(bsModels),
-    TechPreference: bsModels.TechPreference,
     Application: bsModels.Application,
-    ApplicationEvent: ApplicationEvent(bsModels),
+    // TODO rename once routes/application.js is rewritten
     ApplicationSane: Application(bsModels),
+    ApplicationEvent: ApplicationEvent(bsModels),
+    Authentication: Authentication(bsModels),
+    Database: bookshelf,
+    TechPreference: bsModels.TechPreference,
+    User: User(bsModels),
   }
 }

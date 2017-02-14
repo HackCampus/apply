@@ -6,7 +6,7 @@ const status = require('statuses')
 const errors = require('../../errors')
 const authorized = require('../../middlewares/authorized')
 const validateRequest = require('../../middlewares/validate')
-const {errors: {DuplicateEmail, NotFound}, User} = require('../../database')
+const {errors: {DuplicateEmail, NotFound}, User, Authentication} = require('../../database')
 const wireFormats = require('../../wireFormats')
 
 const djangoHasher = djangoHashers.getHasher('pbkdf2_sha256')
@@ -54,24 +54,15 @@ module.exports = (passport, app) => {
     const nextError = error => next(error)
     const nextSuccess = user => next(null, user)
     try {
-      const user = await User.fetchSingle({email})
-      const authentications = await user.fetchAuthentications()
-      const passwordAuths = authentications.filter(a => a.type === 'password')
-      if (passwordAuths.length < 1) {
-        return nextError({status: 'Unauthorized', error: errors.noPassword})
+      const authentication = await Authentication.fetchSingle({identifier: email, type: 'password'})
+      const hashedPassword = authentication.token
+      const passwordsMatch = await verifyPassword(password, hashedPassword)
+      if (passwordsMatch) {
+        const user = await authentication.fetchUser()
+        return nextSuccess(user)
+      } else {
+        return nextError({status: 'Unauthorized', error: errors.loginIncorrect})
       }
-      const {token} = passwordAuths[0]
-      try {
-        const passwordsMatch = await verifyPassword(password, token)
-        if (passwordsMatch) {
-          return nextSuccess(user)
-        } else {
-          return nextError({status: 'Unauthorized', error: errors.loginIncorrect})
-        }
-      } catch (error) {
-        return nextError({status: 'Unknown', error: error.message})
-      }
-
     } catch (error) {
       if (error instanceof NotFound) {
         return nextError({status: 'Unauthorized', error: errors.loginIncorrect})
