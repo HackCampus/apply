@@ -1,5 +1,0 @@
-exports[`init 1`] = `"{"model":{"children":{}},"effect":null}"`;
-
-exports[`view - initial 1`] = `""<div class="matchDetail">
-        hello from matchDetail :)
-      </div>""`;

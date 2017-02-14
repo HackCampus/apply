@@ -65,6 +65,10 @@ module.exports = bsModels => {
       return new this(b)
     }
 
+    static async fetchByUser (userId) {
+      return Application.fetchSingle({userId, programmeYear: constants.programmeYear})
+    }
+
     static async fetchAll (...query) {
       const bs = await BsModel.where(...query).fetchAll()
       const bsArray = bs.toArray()

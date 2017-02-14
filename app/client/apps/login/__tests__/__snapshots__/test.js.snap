@@ -1,4 +1,4 @@
-exports[`init 1`] = `"{\"model\":{\"children\":{\"login\":{\"password\":false,\"error\":null,\"children\":{\"email\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"password\":{\"errors\":[],\"started\":false,\"value\":\"\"}}}}},\"effect\":[{\"type\":\"redirectMatchers\"},{\"child\":\"login\",\"effect\":[{\"type\":\"loadUser\"}]}]}"`;
+exports[`init 1`] = `"{\"model\":{\"children\":{\"login\":{\"password\":false,\"error\":null,\"children\":{\"email\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"password\":{\"errors\":[],\"started\":false,\"value\":\"\"}}}}},\"effect\":[{\"type\":\"waitForAuthorization\"},{\"child\":\"login\",\"effect\":[{\"type\":\"loadUser\"}]}]}"`;
 
 exports[`view - initial 1`] = `""<div class="login">
         <div>

@@ -2,7 +2,7 @@ exports[`init 1`] = `"{\"model\":{\"applications\":[],\"ordering\":[],\"orderBy\
 
 exports[`view - initial 1`] = `""<div class="matching">
         <div class="header">
-        <h2>HackCampus matching - 2017</h2>
+        <h1>HackCampus matching</h1>
         <p>0 finished / 0 total</p>
       </div>
         <div class="listView">
