@@ -5,6 +5,7 @@ const u = require('updeep')
 const extend = require('xtend')
 
 const defaultSchema = {type: 'string', minLength: 1}
+const defaultSize = 3
 
 module.exports = (schema = defaultSchema, params = {}) => ({
   validate (value) {
@@ -38,16 +39,18 @@ module.exports = (schema = defaultSchema, params = {}) => ({
       valid = this.validate(value).length === 0
     }
 
+    const length = model.value.length
     const validClass = valid ? 'valid' : 'invalid'
     return h('div', { style: 'display: inline-block;' }, [
-        h('span', extend({
-          contenteditable: 'true',
+        h('input', extend({
+          type: 'text',
+          size: length > defaultSize ? length : defaultSize,
           class: `textfield ${params.class || ''} ${validClass}`,
-          oninput: e => dispatch(e.target.textContent),
+          oninput: e => dispatch(e.target.value),
           onkeydown: e => { if (e.keyCode === 13) onEnter && onEnter() },
-          style: 'display: inline-block; min-width: 35px',
           spellcheck: 'false',
-        }, params), [value])
+          value: value,
+        }, params))
     ])
   },
 })
