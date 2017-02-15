@@ -144,6 +144,11 @@ textarea {
   color: red;
 }
 
+/* Bug: Firefox collapses empty spans completely, making them unclickable. */
+span.textfield:empty:before {
+  content: '\a0';
+}
+
 /* choice field */
 
 a.choice {
