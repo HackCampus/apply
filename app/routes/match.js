@@ -6,8 +6,20 @@ const validate = require('../middlewares/validate')
 const wireFormats = require('../wireFormats')
 const constants = require('../constants')
 
+function getCompaniesScore (companies, techPreferences) {
+  const matches = {}
+  for (let {name, stack} of companies) {
+    for (let tech of stack) {
+      const preference = techPreferences[tech] || 0
+      matches[name] = matches[name] || 0
+      matches[name] += preference
+    }
+  }
+  return matches
+}
+
 module.exports = models => {
-  const {ApplicationSane: Application, ApplicationEvent} = models
+  const {ApplicationSane: Application, ApplicationEvent, Company} = models
 
   function routes (app) {
     app.get('/applications', limitToMatchers(), handleGetApplications(Application.fetchAllCurrent))
@@ -45,6 +57,9 @@ module.exports = models => {
       const response = application.toJSON()
       const techPreferences = await application.fetchTechPreferences()
       response.techPreferences = techPreferences
+      const companiesModels = await Company.fetchAll()
+      const companies = companiesModels.map(c => c.toJSON())
+      response.companiesScore = getCompaniesScore(companies, techPreferences)
       return res.json(response)
     } catch (error) {
       if (error instanceof errors.NotFound) {

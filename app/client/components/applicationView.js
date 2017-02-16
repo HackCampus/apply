@@ -31,6 +31,19 @@ function techPreferences (techs) {
   `
 }
 
+function companiesScore (score) {
+  const columns = []
+  for (let company in score) {
+    columns.push([company, score[company]])
+  }
+  const toDisplay = columns
+    .filter(([_, score]) => score !== 0)
+    .sort(([_a, a], [_b, b]) => a === b ? 0 : a < b ? 1 : -1)
+  return html`<div class="companiesScore">
+    ${toDisplay.map(([company, score]) => html`<p><strong>${company}:</strong> ${score}</p>`)}
+  </div>`
+}
+
 module.exports = function (application) {
   if (application == null) {
     return html``
@@ -87,6 +100,8 @@ module.exports = function (application) {
       </table>
       <h2>Tech preferences</h2>
       ${techPreferences(application.techPreferences)}
+      <h3>(Automatic) companies score</h3>
+      ${companiesScore(application.companiesScore)}
       <h2>Questions</h2>
       ${question('Coolest thing you have built', 'bestProject')}
       ${question('Most exciting technology', 'mostExcitingTechnology')}
