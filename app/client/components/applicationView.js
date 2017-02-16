@@ -56,9 +56,14 @@ module.exports = function (application) {
         </div>
       </div>`
   }
+
+  const sanitisedName = `${application.firstName}-${application.lastName}`.replace(' ', '-')
+  const publicProfileUrl = `https://hackcampus-apply.herokuapp.com/profile/${application.profileToken}/${sanitisedName}`
+
   return html`
     <div class="application">
       <table>
+      <tr><td><strong>public profile link</strong></td><td><a target="_blank" href="${publicProfileUrl}">${publicProfileUrl}</a></td></tr>
       ${field('created at', 'createdAt', date => moment(date).format('DD.MM.YYYY'))}
       ${field('finished at', 'finishedAt', date => date ? moment(date).format('DD.MM.YYYY') : html`<em>unfinished</em>`)}
       ${header('Contact details')}
