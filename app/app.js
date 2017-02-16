@@ -41,8 +41,8 @@ const match = require('./routes/match')(models)
 match.routes(app)
 
 // client-side app routes
-const shell = require('./shell')
-const clientApp = appName => (req, res) => res.send(shell(appName))
+const spa = require('./templates/spa')
+const clientApp = appName => (req, res) => res.send(spa(appName))
 app.get('/', clientApp('apply'))
 app.get('/shortlisted', clientApp('companies'))
 app.get('/match', limitToMatchers(clientApp('login')), clientApp('match'))
