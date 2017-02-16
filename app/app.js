@@ -40,6 +40,9 @@ user.routes(app)
 const match = require('./routes/match')(models)
 match.routes(app)
 
+const profile = require('./routes/profile')(models)
+profile.routes(app)
+
 // client-side app routes
 const spa = require('./templates/spa')
 const clientApp = appName => (req, res) => res.send(spa(appName))

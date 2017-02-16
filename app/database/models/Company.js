@@ -65,8 +65,8 @@ module.exports = bsModels => {
         : BsModel
       const bs = await bsModel.fetchAll()
       const bsArray = bs.toArray()
-      const applications = bsArray.map(bs => new this(bs))
-      return applications
+      const models = bsArray.map(bs => new this(bs))
+      return models
     }
 
     //

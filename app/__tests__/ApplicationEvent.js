@@ -4,13 +4,11 @@ const {spy} = require('sinon')
 const makeModels = require('../database/models')
 const {setupDb, teardownDb} = require('./_testDb')
 
-let db, models, methods
+let db, models
 test.before('setup db', t => {
   return setupDb().then(database => {
     db = database
     models = makeModels(database)
-    const application = require('../routes/application')(models)
-    methods = application.testing
   })
 })
 
