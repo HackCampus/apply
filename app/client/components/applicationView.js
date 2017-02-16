@@ -1,18 +1,7 @@
 const {html} = require('inu')
 const moment = require('moment')
 
-function markdownTextArea (text) {
-  if (text == null) {
-    return html`<div><em>no answer given</em></div>`
-  }
-  const markdown = require('markdown-it')({
-    linkify: true,
-  })
-  const renderedText = markdown.render(text)
-  const textArea = document.createElement('div')
-  textArea.innerHTML = renderedText
-  return textArea
-}
+const markdownTextArea = require('./markdownText')
 
 function techPreferences (techs) {
   const buckets = {}
