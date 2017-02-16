@@ -75,12 +75,14 @@ gulp.task('companies', clientApp('apps/companies/index.js', 'companies/index.js'
 gulp.task('login', clientApp('apps/login/index.js', 'login/index.js'))
 gulp.task('match', clientApp('apps/match/index.js', 'match/index.js'))
 gulp.task('matchDetail', clientApp('apps/matchDetail/index.js', 'matchDetail/index.js'))
+gulp.task('profile', clientApp('apps/profile/index.js', 'profile/index.js'))
 gulp.task('clientApps', [
   'apply',
   'companies',
   'login',
   'match',
   'matchDetail',
+  'profile',
 ])
 
 const styles = (srcDirectory) =>

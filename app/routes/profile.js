@@ -10,7 +10,12 @@ module.exports = models => {
       const {token} = req.params
       try {
         const application = await Application.fetchByProfileToken(token)
-        res.send(template(application.toJSON()))
+        const applicationJson = application.toJSON()
+        delete application.mostExcitingTechnology
+        delete application.implementation
+        delete application.codeReview
+        delete application.perfectRole
+        res.send(template(applicationJson))
       } catch (e) {
         logger.error(e)
         return handleError({status: 'Not Found'})
