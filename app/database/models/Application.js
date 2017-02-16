@@ -1,3 +1,5 @@
+const shortid = require('shortid')
+
 const constants = require('../../constants')
 
 const errors = require('../errors')
@@ -19,7 +21,7 @@ module.exports = bsModels => {
       const bsJson = this.bs.toJSON({
         shallow: true, // do not include relations - explicitly fetch them instead.
       })
-      const status = this.status ? this.status.toJSON() : null
+      const status = this.status ? this.status.toJSON() : undefined
       return Object.assign({}, bsJson, {status})
     }
 
@@ -69,11 +71,18 @@ module.exports = bsModels => {
       return Application.fetchSingle({userId, programmeYear: constants.programmeYear})
     }
 
+    static async fetchByProfileToken (profileToken) {
+      return Application.fetchSingle({profileToken})
+    }
+
     static async fetchAll (...query) {
-      const bs = await BsModel.where(...query).fetchAll()
+      const bsModel = query.length > 0
+        ? BsModel.where(...query)
+        : BsModel
+      const bs = await bsModel.fetchAll()
       const bsArray = bs.toArray()
-      const applications = bsArray.map(bs => new this(bs))
-      return applications
+      const models = bsArray.map(bs => new this(bs))
+      return models
     }
 
     static async fetchAllCurrent () {
@@ -180,7 +189,8 @@ module.exports = bsModels => {
     //
 
     static async create (fields, transaction) {
-      const required = {programmeYear: constants.programmeYear}
+      const profileToken = shortid.generate()
+      const required = {programmeYear: constants.programmeYear, profileToken}
       const actualFields = Object.assign({}, required, fields)
       const bs = await new BsModel(actualFields).save(null, {
         method: 'insert',
@@ -188,6 +198,21 @@ module.exports = bsModels => {
       })
       await bs.fetch()
       return new this(bs)
+    }
+
+    //
+    // UPDATE
+    //
+
+    async update (fields, transaction) {
+      const bs = await new BsModel({id: this.id}).save(fields, {
+        method: 'update',
+        transacting: transaction,
+        patch: true,
+      })
+      await bs.fetch()
+      this.bs = bs
+      return this
     }
   }
 }

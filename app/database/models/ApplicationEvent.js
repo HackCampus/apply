@@ -1,4 +1,5 @@
 const constants = require('../../constants')
+const logger = require('../../logger')
 
 const errors = require('../errors')
 
@@ -111,6 +112,7 @@ module.exports = bsModels => {
         transacting: transaction,
       })
       await bs.refresh({withRelated: 'actor'})
+      logger.info(fields, 'application event')
       return new this(bs)
     }
 

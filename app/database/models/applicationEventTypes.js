@@ -9,6 +9,7 @@ module.exports = {
   // ready to match
   gaveCompanyPreferences: 'gave company preferences',
   madeMatchSuggestion: 'made match suggestion',
+  gavePublicMatcherComment: 'gave a (public) matcher comment',
 
   // matching
   sentToCompany: 'sent to company',

@@ -4,13 +4,11 @@ const {spy} = require('sinon')
 const makeModels = require('../database/models')
 const {setupDb, teardownDb} = require('./_testDb')
 
-let db, models, methods
+let db, models
 test.before('setup db', t => {
   return setupDb().then(database => {
     db = database
     models = makeModels(database)
-    const application = require('../routes/application')(models)
-    methods = application.testing
   })
 })
 
@@ -55,19 +53,21 @@ test('ApplicationEvent.fetchByApplicationId', async t => {
   const events = await ApplicationEvent.fetchByApplicationId(application.id)
   const eventsJson = events.map(e => e.toJSON())
 
-  t.deepEqual(eventsJson[0].type, actions[0].type)
-  t.deepEqual(eventsJson[0].payload, actions[0].payload)
-  t.deepEqual(eventsJson[0].actor.email, email)
+  // events are fetched newest -> oldest
 
-  t.deepEqual(eventsJson[1].type, actions[1].type)
-  t.true(eventsJson[1].payload == null)
+  t.deepEqual(eventsJson[0].type, 'applicant events too')
+  t.deepEqual(eventsJson[0].payload, 1337)
+  t.deepEqual(eventsJson[0].actor.email, 'idontcare@appli.cant2')
+
+  t.deepEqual(eventsJson[1].type, actions[2].type)
+  t.deepEqual(eventsJson[1].payload, actions[2].payload)
   t.deepEqual(eventsJson[1].actor.email, email)
 
-  t.deepEqual(eventsJson[2].type, actions[2].type)
-  t.deepEqual(eventsJson[2].payload, actions[2].payload)
+  t.deepEqual(eventsJson[2].type, actions[1].type)
+  t.true(eventsJson[2].payload == null)
   t.deepEqual(eventsJson[2].actor.email, email)
 
-  t.deepEqual(eventsJson[3].type, 'applicant events too')
-  t.deepEqual(eventsJson[3].payload, 1337)
-  t.deepEqual(eventsJson[3].actor.email, 'idontcare@appli.cant2')
+  t.deepEqual(eventsJson[3].type, actions[0].type)
+  t.deepEqual(eventsJson[3].payload, actions[0].payload)
+  t.deepEqual(eventsJson[3].actor.email, email)
 })
