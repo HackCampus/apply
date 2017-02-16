@@ -87,7 +87,8 @@ module.exports = bsModels => {
       const bs = await BsModel
         .query(qb => {
           qb.where('applicationId', '=', applicationId)
-          // qb.where('type', '!=', 'commented') // comments don't affect status.
+          qb.where('type', '<>', 'commented') // comments don't affect status.
+          qb.where('type', '<>', 'gavePublicMatcherComment') // comments don't affect status.
           qb.orderBy('ts', 'DESC')
           qb.limit(1)
         })
