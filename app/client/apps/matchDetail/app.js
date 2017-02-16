@@ -44,8 +44,9 @@ module.exports = Component({
       }
 
       case 'fetchApplicationSuccess': {
-        const newModel = u({application: a.payload}, model)
-        return {model: newModel, effect: null}
+        const application = a.payload
+        const newModel = u({application}, model)
+        return {model: newModel, effect: action('takeoverClipboard', application)}
       }
       case 'fetchApplicationEventsSuccess':
       case 'deleteApplicationEventSuccess': {
@@ -101,7 +102,7 @@ module.exports = Component({
         </div>
         <div class="body">
           <div class="applicationview">
-            <h2>Application</h2>
+            <h2 id="application">Application</h2>
             ${applicationView(application)}
           </div>
           ${this.actionsView(model, dispatch, children)}
@@ -181,6 +182,21 @@ module.exports = Component({
           switch (statusText) {
             case 'OK': return action('submitSuccess', data)
             default: return action('submitFailure', data)
+          }
+        })
+      }
+
+      // make profile info easily pasteable by clicking on header.
+      // TODO factor out public profile url generation.
+      case 'takeoverClipboard': {
+        const application = effect.payload
+        document.addEventListener('copy', event => {
+          if (event.target && event.target.id === 'application') {
+            const sanitisedName = `${application.firstName}-${application.lastName}`.replace(' ', '-')
+            const publicProfileUrl = `https://hackcampus-apply.herokuapp.com/profile/${application.profileToken}/${sanitisedName}`
+            const clipboardData = `${application.firstName} ${application.lastName}\x09${document.location.href}\x09${publicProfileUrl}`
+            event.clipboardData.setData('text/plain', clipboardData)
+            event.preventDefault()
           }
         })
       }
