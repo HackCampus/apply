@@ -1,3 +1,5 @@
+const {html} = require('inu')
+
 const markdown = require('markdown-it')({
   linkify: true,
 })
