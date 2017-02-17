@@ -91,7 +91,7 @@ const personalDetails = Component({
         <h3>Basic information</h3>
         ${field('first name', 'firstName')}
         ${field('last name', 'lastName')}
-        ${field('contact email', 'contactEmail', 'optional - only needed if different from your registration email')}
+        ${field('contact email', 'contactEmail')}
         ${field('gender', 'gender')}
         ${field('date of birth', 'dateOfBirth', html`<a target="_blank" href="http://www.cl.cam.ac.uk/~mgk25/iso-time.html">YYYY-MM-DD</a>`)}
         <h3>Your studies</h3>
