@@ -132,7 +132,7 @@ module.exports = models => {
   }
 
   async function getApplicationEventsResponse (applicationId) {
-    const applicationEvents = await ApplicationEvent.fetchByApplicationId(applicationId)
+    const applicationEvents = await ApplicationEvent.fetchAllByApplicationId(applicationId)
     const response = {events: applicationEvents.map(e => e.toJSON())}
     return response
   }

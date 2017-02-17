@@ -5,7 +5,7 @@ const constants = require('../../constants')
 const errors = require('../errors')
 
 const ApplicationEventModel = require('./ApplicationEvent')
-// const applicationEventTypes = require('./applicationEventTypes')
+const applicationEvents = require('./applicationEvents')
 
 module.exports = bsModels => {
 
@@ -118,45 +118,45 @@ module.exports = bsModels => {
 
     static async fetchAllShortlisted () {
       return Application.fetchAllByStatus([
-        'shortlisted',
-        'shortlistedVeryStrong',
+        applicationEvents.shortlisted.type,
+        applicationEvents.shortlistedVeryStrong.type,
       ])
     }
 
     static async fetchAllReadyToMatch () {
       return Application.fetchAllByStatus([
-        'gaveCompanyPreferences',
-        'madeMatchSuggestion',
+        applicationEvents.gaveCompanyPreferences.type,
+        applicationEvents.madeMatchSuggestion.type,
       ])
     }
 
     static async fetchAllMatching () {
       return Application.fetchAllByStatus([
-        'sentToCompany',
-        'arrangedInterviewWithCompany',
-        'companyRejected',
+        applicationEvents.sentToCompany.type,
+        applicationEvents.arrangedInterviewWithCompany.type,
+        applicationEvents.companyRejected.type,
       ])
     }
 
     static async fetchAllOffer () {
       return Application.fetchAllByStatus([
-        'companyMadeOffer',
-        'acceptedOffer',
-        'sentContract',
+        applicationEvents.companyMadeOffer.type,
+        applicationEvents.acceptedOffer.type,
+        applicationEvents.sentContract.type,
       ])
     }
 
     static fetchAllIn () {
       return Application.fetchAllByStatus([
-        'signedContract',
-        'finalised',
+        applicationEvents.signedContract.type,
+        applicationEvents.finalised.type,
       ])
     }
 
     static async fetchAllOut () {
       return Application.fetchAllByStatus([
-        'rejected',
-        'applicantRejected',
+        applicationEvents.rejected.type,
+        applicationEvents.applicantRejected.type,
       ])
     }
 

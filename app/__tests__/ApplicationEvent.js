@@ -34,7 +34,7 @@ test('ApplicationEvent.create', async t => {
   t.deepEqual(eventJson.payload, payload)
 })
 
-test('ApplicationEvent.fetchByApplicationId', async t => {
+test('ApplicationEvent.fetchAllByApplicationId', async t => {
   const {ApplicationEvent, ApplicationSane: Application, User} = models
   const email = 'appevent@maker.test2'
   const matcher = await User.create({email, role: 'matcher'})
@@ -50,7 +50,7 @@ test('ApplicationEvent.fetchByApplicationId', async t => {
     await ApplicationEvent.create({actorId: matcher.id, applicationId: application.id, type, payload})
   }
   await ApplicationEvent.create({actorId: applicant.id, applicationId: application.id, type: 'applicant events too', payload: 1337})
-  const events = await ApplicationEvent.fetchByApplicationId(application.id)
+  const events = await ApplicationEvent.fetchAllByApplicationId(application.id)
   const eventsJson = events.map(e => e.toJSON())
 
   // events are fetched newest -> oldest

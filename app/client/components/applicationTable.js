@@ -12,7 +12,7 @@ const action = require('../lib/action')
 const dateFromNow = require('../lib/dateFromNow')
 const Component = require('../lib/component')
 
-const applicationEventTypes = wireFormats.applicationEventTypes
+const applicationEvents = wireFormats.applicationEvents
 
 const direction = {
   ascending: true,
@@ -72,7 +72,7 @@ module.exports = (applicationsArray, options) => {
     },
     status: {
       title: 'Status',
-      displayContent: application => application.status ? applicationEventTypes[application.status.type] : '-',
+      displayContent: application => application.status ? applicationEvents[application.status.type].visibleName : '-',
       sortContent: application => application.status ? application.status.type : '-',
     },
     lastUpdatedAt: {
