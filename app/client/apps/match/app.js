@@ -11,7 +11,7 @@ const Component = require('../../lib/component')
 
 const applicationTable = require('../../components/applicationTable')
 
-const applicationEventTypes = wireFormats.applicationEventTypes
+const applicationEvents = wireFormats.applicationEvents
 
 function applicationTab ({type, title, viewTitle, description, excludeColumns, orderBy}) {
   return {
@@ -129,7 +129,7 @@ function eventView (event) {
   } = event
   return html`<a class="reset" href="/match/application/${applicationId}">
     <div class="event">
-      <p><span class="application">application <em>${applicationId /* TODO get actual info */}</em></span> <span class="type">${applicationEventTypes[type] || 'commented'}</span> by <span class="actor">${actor.email}</span></p>
+      <p><span class="application">application <em>${applicationId /* TODO get actual info */}</em></span> <span class="type">${applicationEvents[type].visibleName}</span> by <span class="actor">${actor.email}</span></p>
       ${(() => {
         const fields = []
         for (let key in payload) {

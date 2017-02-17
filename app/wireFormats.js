@@ -1,8 +1,9 @@
+const values = require('object.values')
 const extend = require('xtend')
 
 const technologies = require('./technologies')
 const universities = require('./universities')
-const applicationEventTypes = require('./database/models/applicationEventTypes')
+const applicationEvents = require('./database/models/applicationEvents')
 
 const authentication = {
   type: 'object',
@@ -88,13 +89,13 @@ const techPreferences = {
   additionalProperties: false,
 }
 
-const applicationEventCommented = 'commented'
+const applicationEventTypes = values(applicationEvents).map(({type}) => type)
 
 const applicationEvent = {
   type: 'object',
   properties: {
     type: {
-      enum: [applicationEventCommented].concat(Object.keys(applicationEventTypes))
+      enum: applicationEventTypes,
     },
     payload: {
       type: 'object',
@@ -132,7 +133,6 @@ module.exports = {
   techPreferences,
   application,
   applicationEvent,
-  applicationEventCommented,
-  applicationEventTypes,
+  applicationEvents,
   companyPreferences,
 }

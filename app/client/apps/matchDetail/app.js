@@ -14,17 +14,18 @@ const selectField = require('../../components/selectField')
 const textArea = require('../../components/textArea')
 const applicationView = require('../../components/applicationView')
 
-const applicationEventTypes = wireFormats.applicationEventTypes
-const applicationEventTypeValues = values(applicationEventTypes)
-const applicationEventTypeKeys = Object.keys(applicationEventTypes)
-const applicationEventCommented = wireFormats.applicationEventCommented
+const applicationEvents = wireFormats.applicationEvents
+const applicationEventsArray = values(wireFormats.applicationEvents)
+const applicationEventVisibleNames = applicationEventsArray.map(({visibleName}) => visibleName)
+const applicationEventTypes = applicationEventsArray.map(({type}) => type)
+const applicationEventCommented = wireFormats.applicationEvents.commented
 
 // TODO hacky
 const applicationId = window.location.pathname.match(/application\/([^/]+)/)[1]
 
 module.exports = Component({
   children: {
-    actionType: selectField(applicationEventTypeValues),
+    actionType: selectField(applicationEventVisibleNames),
     comment: textArea('add a comment...'),
   },
   init () {
@@ -63,7 +64,7 @@ module.exports = Component({
       case 'submit': {
         const selected = model.children.actionType.selected
         const event = {
-          type: selected === -1 ? applicationEventCommented : applicationEventTypeKeys[selected],
+          type: selected === -1 ? applicationEventCommented.type : applicationEventTypes[selected],
           payload: {
             comment: model.children.comment.value,
           }
@@ -214,7 +215,7 @@ function eventView (event, user, onDelete) {
   } = event
   const isMine = user && user.id == actor.id
   return html`<div class="event">
-    <p><span class="type">${applicationEventTypes[type] || 'comment'}</span> by <span class="actor">${actor.email}</span></p>
+    <p><span class="type">${applicationEvents[type].visibleName}</span> by <span class="actor">${actor.email}</span></p>
     ${(() => {
       const fields = []
       for (let key in payload) {
