@@ -7,6 +7,8 @@ const errors = require('../errors')
 const ApplicationEventModel = require('./ApplicationEvent')
 const applicationEvents = require('./applicationEvents')
 
+// TODO move this somewhere more suitable.
+// Should probably unify applicationEvents.js & applicationStages.js & this.
 const stagesToEvents = {
   unfinished: null,
   finished: null,
