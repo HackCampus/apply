@@ -12,8 +12,7 @@ const applicationEvent = (type, visibleName, additionalPayloadSchema = {}, affec
 module.exports = {
   commented: applicationEvent('commented', 'commented', {}, false /* affectsStatus */),
 
-  // vetting
-  rejected: applicationEvent('rejected', 'rejected'),
+  // shortlisted
   shortlisted: applicationEvent('shortlisted', 'shortlisted'),
   shortlistedVeryStrong: applicationEvent('shortlistedVeryStrong', 'shortlisted (very strong)'),
 
@@ -21,6 +20,7 @@ module.exports = {
   gaveCompanyPreferences: applicationEvent('gaveCompanyPreferences', 'gave company preferences'),
   madeMatchSuggestion: applicationEvent('madeMatchSuggestion', 'made match suggestion'),
   gavePublicMatcherComment: applicationEvent('gavePublicMatcherComment', 'gave a (public) matcher comment', {}, false /* affectsStatus */),
+  companyRejected: applicationEvent('companyRejected', 'was rejected by company'),
 
   // matching
   sentToCompany: applicationEvent('sentToCompany', 'sent to company'),
@@ -36,6 +36,6 @@ module.exports = {
   finalised: applicationEvent('finalised', 'is in the programme'),
 
   // out
-  companyRejected: applicationEvent('companyRejected', 'was rejected by company'),
+  rejected: applicationEvent('rejected', 'rejected'),
   applicantRejected: applicationEvent('applicantRejected', 'found another opportunity'),
 }

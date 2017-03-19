@@ -22,29 +22,22 @@ module.exports = models => {
   const {ApplicationSane: Application, ApplicationEvent, Company} = models
 
   function routes (app) {
-    app.get('/applications', limitToMatchers(), handleGetApplications(Application.fetchAllCurrent))
+    app.get('/applications', limitToMatchers(), handleGetApplications)
     app.get('/applications/events', limitToMatchers(), handleGetAllApplicationEvents)
-    app.get('/applications/unfinished', limitToMatchers(), handleGetApplications(Application.fetchAllUnfinished))
-    app.get('/applications/finished', limitToMatchers(), handleGetApplications(Application.fetchAllFinished))
-    app.get('/applications/shortlisted', limitToMatchers(), handleGetApplications(Application.fetchAllShortlisted))
-    app.get('/applications/readytomatch', limitToMatchers(), handleGetApplications(Application.fetchAllReadyToMatch))
-    app.get('/applications/matching', limitToMatchers(), handleGetApplications(Application.fetchAllMatching))
-    app.get('/applications/offer', limitToMatchers(), handleGetApplications(Application.fetchAllOffer))
-    app.get('/applications/in', limitToMatchers(), handleGetApplications(Application.fetchAllIn))
-    app.get('/applications/out', limitToMatchers(), handleGetApplications(Application.fetchAllOut))
-
     app.get('/applications/:id', limitToMatchers(), handleGetSingleApplication)
     app.get('/applications/:id/events', limitToMatchers(), handleGetApplicationEvents)
     app.post('/applications/:id/events', limitToMatchers(), validate(wireFormats.applicationEvent), handlePostApplicationEvents)
     app.delete('/applications/:applicationId/events/:eventId', limitToMatchers(), handleDeleteApplicationEvent)
   }
 
-  function handleGetApplications (fetchFunction) {
-    return async (req, res) => {
-      const applicationModels = await fetchFunction()
-      const applications = applicationModels.map(a => a.toJSON())
-      return res.json({applications})
+  async function handleGetApplications (req, res, handleError) {
+    const query = req.query
+    if (query != null && Object.keys(query).length === 0) {
+      query.programmeYears = [constants.programmeYear]
     }
+    const applicationModels = await Application.fetchFiltered(query)
+    const applications = applicationModels.map(a => a.toJSON())
+    return res.json({applications})
   }
 
   async function handleGetSingleApplication (req, res, handleError) {

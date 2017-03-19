@@ -9,96 +9,9 @@ const api = require('../../lib/api')
 const dateFromNow = require('../../lib/dateFromNow')
 const Component = require('../../lib/component')
 
-const applicationTable = require('../../components/applicationTable')
+const filterableApplicationTable = require('../../components/filterableApplicationTable')
 
 const applicationEvents = wireFormats.applicationEvents
-
-function applicationTab ({type, title, viewTitle, description, excludeColumns, orderBy}) {
-  return {
-    title,
-    view: function (model, dispatch, children) {
-      return html`<div class="${type}">
-        <h2>${viewTitle}</h2>
-        <p>${description ? description() : ''}</p>
-        ${children[type]
-          ? children[type]()
-          : html`<em>Loading...</em>`}
-      </div>`
-    },
-    child: applications => applicationTable(applications, {
-      excludeColumns,
-      orderBy,
-    }),
-    effect: action('fetchApplications', type),
-  }
-}
-
-const applicationTabs = {
-  unfinished: applicationTab({
-    type: 'unfinished',
-    title: 'unfinished',
-    viewTitle: 'Unfinished applications',
-    description: () => 'Applications that are still in progress by the applicant',
-    excludeColumns: ['finishedAt', 'status', 'lastUpdatedAt'],
-    orderBy: 'createdAt',
-  }),
-  finished: applicationTab({
-    type: 'finished',
-    title: 'finished - ready to vet',
-    viewTitle: 'Finished applications',
-    description: () => html`<span><em>Finished</em> applications are applications that have not been vetted or matched.</span>`,
-    excludeColumns: ['status', 'lastUpdatedAt'],
-    orderBy: 'finishedAt',
-  }),
-  shortlisted: applicationTab({
-    type: 'shortlisted',
-    title: 'shortlisted',
-    viewTitle: 'Shortlisted applications',
-    description: () => html`<span>Applications that have been shortlisted after the first stage of the application - particularly strong candidates are marked "very strong".</span>`,
-    excludeColumns: [],
-    orderBy: 'lastUpdatedAt',
-  }),
-  readyToMatch: applicationTab({
-    type: 'readyToMatch',
-    title: 'ready to match',
-    viewTitle: 'Ready to match',
-    description: () => html`<span>The applicant has been shortlisted, and has responded with company preferences. Matching suggestions can be added here.</span>`,
-    excludeColumns: [],
-    orderBy: 'lastUpdatedAt',
-  }),
-  matching: applicationTab({
-    type: 'matching',
-    title: 'matching in progress',
-    viewTitle: 'Matching in progress',
-    description: () => html`<span>The applicant's profile has been sent to a company. Company responses can be tracked here. If a company has rejected a candidate, they will show up here again.</span>`,
-    excludeColumns: [],
-    orderBy: 'lastUpdatedAt',
-  }),
-  offer: applicationTab({
-    type: 'offer',
-    title: 'offer stage',
-    viewTitle: 'Offer stage',
-    description: () => html`<span>The applicant has been made an offer by a company, but still has to accept/reject it.</span>`,
-    excludeColumns: [],
-    orderBy: 'lastUpdatedAt',
-  }),
-  in: applicationTab({
-    type: 'in',
-    title: 'in',
-    viewTitle: 'In the programme',
-    description: () => html`<span>The applicant has signed the contract & has an internship for this year.</span>`,
-    excludeColumns: [],
-    orderBy: 'lastUpdatedAt',
-  }),
-  out: applicationTab({
-    type: 'out',
-    title: 'out',
-    viewTitle: 'Out of the programme',
-    description: () => html`<span>The applicant has chosen not to take part in the programme, or we have rejected them.</span>`,
-    excludeColumns: [],
-    orderBy: 'lastUpdatedAt',
-  }),
-}
 
 const tabs = [
   {
@@ -116,7 +29,13 @@ const tabs = [
     },
     effect: action('fetchApplicationEvents'),
   },
-].concat(values(applicationTabs))
+  {
+    title: 'applications',
+    view: function (model, dispatch, children) {
+      return children.applications()
+    }
+  }
+]
 
 function eventView (event) {
   const {
@@ -150,7 +69,9 @@ function eventView (event) {
 const initialTab = Number.parseInt(window.location.hash.slice(1)) || 0
 
 module.exports = Component({
-  children: {}, // will be added dynamically
+  children: {
+    applications: filterableApplicationTable,
+  },
   init () {
     return {
       model: {
@@ -177,16 +98,7 @@ module.exports = Component({
         return {model: newModel, effect: null}
       }
 
-      case 'fetchApplicationsSuccess': {
-        const {applications, type} = a.payload
-        return {model, effect: action('replaceChild', {
-          key: type,
-          newChild: applicationTabs[type].child(applications)
-        })}
-      }
-
       case 'fetchApplicationEventsFailure':
-      case 'fetchApplicationsFailure':
         // TODO
         console.error(a)
       default:
@@ -202,7 +114,7 @@ module.exports = Component({
           <h1>HackCampus matching</h1>
         </div>
         <div class="body">
-          <div class="sidebar">
+          <div class="menu">
             ${tabs.map(({title}, i) => {
               return html`<div class="menuitem ${i === tab ? 'selected' : 'unselected'}" onclick=${() => dispatch(action('changeTab', i))}>${title}</div>`
             })}
@@ -227,28 +139,10 @@ module.exports = Component({
         })
       }
 
-      case 'fetchApplications': {
-        const type = effect.payload
-        return get(`/applications/${type}`, ({statusText, data}) => {
-          switch (statusText) {
-            case 'OK':
-              data.type = type
-              return action('fetchApplicationsSuccess', data)
-            default:
-              return action('fetchApplicationsFailure', data)
-          }
-        })
-      }
-
       case 'changeTab': {
         const section = effect.payload
         window.location.hash = `#${section}`
         return null
-      }
-
-      case 'replaceChild': {
-        const {key, newChild} = effect.payload
-        return this.replaceChild(key, newChild)
       }
     }
   }

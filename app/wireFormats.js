@@ -4,6 +4,7 @@ const extend = require('xtend')
 const technologies = require('./technologies')
 const universities = require('./universities')
 const applicationEvents = require('./database/models/applicationEvents')
+const applicationStages = require('./database/models/applicationStages')
 
 const authentication = {
   type: 'object',
@@ -124,15 +125,16 @@ const companyPreferences = {
 }
 
 module.exports = {
-  authentication,
-  password,
-  register,
-  personalDetails,
-  optionalFields,
-  questions,
-  techPreferences,
   application,
   applicationEvent,
   applicationEvents,
+  applicationStages,
+  authentication,
   companyPreferences,
+  optionalFields,
+  password,
+  personalDetails,
+  questions,
+  register,
+  techPreferences,
 }

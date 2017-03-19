@@ -16,10 +16,11 @@ module.exports = function Component (component) {
   // Should be used as return value from a `run` function.
   // The actual replacing of children only happens in the `update` function,
   // so we need to ensure that some action triggers this.
-  component.replaceChild = function (childName, newChild) {
+  // `action` needs to be passed by child components so that the right update function gets called.
+  component.replaceChild = function (childName, newChild, action = (type, payload) => ({type, payload})) {
     component.newChildren = component.newChildren || []
     component.newChildren.push({name: childName, component: newChild})
-    return pull.once({type: '@@replaceChild', payload: childName})
+    return pull.once(action('@@replaceChild', childName))
   }
 
   const self = {
@@ -130,5 +131,5 @@ module.exports = function Component (component) {
       }
     },
   }
-  return self
+  return Object.assign({}, component, self)
 }
