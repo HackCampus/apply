@@ -10,11 +10,19 @@ if (production) {
 
   module.exports = logger
 } else {
-  const logger = {
-    error: console.error,
-    fatal: console.error,
-    info: console.log,
-  }
+  const PrettyStream = require('bunyan-prettystream')
+  const prettyStdout = new PrettyStream()
+  prettyStdout.pipe(process.stdout)
+
+  const logger = bunyan.createLogger({
+    name: 'hackcampus-apply',
+    serializers: bunyan.stdSerializers,
+    streams: [{
+      level: 'info',
+      type: 'raw',
+      stream: prettyStdout,
+    }]
+  })
 
   module.exports = logger
 }
