@@ -21,7 +21,7 @@ module.exports = function (knexInstance) {
     errors,
     Application: bsModels.Application,
     // TODO rename once routes/application.js is rewritten
-    ApplicationSane: Application(bsModels),
+    ApplicationSane: Application(bsModels, knexInstance),
     ApplicationEvent: ApplicationEvent(bsModels),
     Authentication: Authentication(bsModels),
     Company: Company(bsModels),

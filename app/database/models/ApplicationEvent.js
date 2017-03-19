@@ -1,9 +1,17 @@
+const values = require('object.values')
+
 const constants = require('../../constants')
 const logger = require('../../logger')
 
 const errors = require('../errors')
 
+const applicationEvents = require('./applicationEvents')
 const UserModel = require('./User')
+
+// eg. comments do not affect the status.
+const nonStatusEventTypes = values(applicationEvents)
+  .filter(({affectsStatus}) => !affectsStatus)
+  .map(({type}) => type)
 
 module.exports = bsModels => {
 
@@ -79,7 +87,7 @@ module.exports = bsModels => {
       return applications
     }
 
-    static async fetchByApplicationId (applicationId) {
+    static async fetchAllByApplicationId (applicationId) {
       return this.fetchAll({applicationId})
     }
 
@@ -87,8 +95,9 @@ module.exports = bsModels => {
       const bs = await BsModel
         .query(qb => {
           qb.where('applicationId', '=', applicationId)
-          qb.where('type', '<>', 'commented') // comments don't affect status.
-          qb.where('type', '<>', 'gavePublicMatcherComment') // comments don't affect status.
+          nonStatusEventTypes.forEach(type => {
+            qb.where('type', '<>', type)
+          })
           qb.orderBy('ts', 'DESC')
           qb.limit(1)
         })

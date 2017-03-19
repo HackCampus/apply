@@ -3,7 +3,7 @@ exports[`init 1`] = `"{\"model\":{\"children\":{\"login\":{\"password\":false,\"
 exports[`view - initial 1`] = `""<div class="login">
         <div>
         <div class="margin">
-          <div class="field"><p>email:</p>  <div style="display: inline-block;"><span contenteditable="true" class="textfield  invalid" style="display: inline-block; min-width: 35px" spellcheck="false" autocomplete="email"></span></div></div>
+          <div class="field"><p>email:</p>  <div style="display: inline-block;"><input type="text" size="3" class="textfield  invalid" spellcheck="false" value="" autocomplete="email" /></div></div>
           <div class="field"><p>password:</p>  <div style="display: inline-block;">
         <input type="password" size="3" value="" class="textfield passwordfield invalid" />
       </div></div>

@@ -16,6 +16,12 @@ const app = express()
 
 // app.use(requestLogger(logger))
 app.use(session())
+app.use((req, res, next) => {
+  if (!req.session) {
+    logger.fatal('session not found. is redis started?')
+  }
+  next()
+})
 app.use(bodyParser.json())
 app.use(cookieParser())
 app.use('/static', express.static(path.join(__dirname, 'build')))

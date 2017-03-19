@@ -5,9 +5,42 @@ const constants = require('../../constants')
 const errors = require('../errors')
 
 const ApplicationEventModel = require('./ApplicationEvent')
-// const applicationEventTypes = require('./applicationEventTypes')
+const applicationEvents = require('./applicationEvents')
 
-module.exports = bsModels => {
+// TODO move this somewhere more suitable.
+// Should probably unify applicationEvents.js & applicationStages.js & this.
+const stagesToEvents = {
+  unfinished: null,
+  finished: null,
+  shortlisted: [
+    applicationEvents.shortlisted.type,
+    applicationEvents.shortlistedVeryStrong.type,
+  ],
+  readyToMatch: [
+    applicationEvents.gaveCompanyPreferences.type,
+    applicationEvents.madeMatchSuggestion.type,
+  ],
+  matching: [
+    applicationEvents.sentToCompany.type,
+    applicationEvents.arrangedInterviewWithCompany.type,
+    applicationEvents.companyRejected.type,
+  ],
+  offer: [
+    applicationEvents.companyMadeOffer.type,
+    applicationEvents.acceptedOffer.type,
+    applicationEvents.sentContract.type,
+  ],
+  in: [
+    applicationEvents.signedContract.type,
+    applicationEvents.finalised.type,
+  ],
+  out: [
+    applicationEvents.rejected.type,
+    applicationEvents.applicantRejected.type,
+  ],
+}
+
+module.exports = (bsModels, knex) => {
 
   const BsModel = bsModels.Application
   const ApplicationEvent = ApplicationEventModel(bsModels)
@@ -93,71 +126,85 @@ module.exports = bsModels => {
       return Application.fetchAll({programmeYear: constants.programmeYear, finishedAt: null})
     }
 
-    static async fetchAllByStatus (statuses) {
-      statuses = Array.isArray(statuses) ? statuses : [statuses]
-      const bs = await BsModel.query(qb => {
-        qb.where('programmeYear', '=', constants.programmeYear)
-        qb.whereNotNull('finishedAt')
-      }).fetchAll()
-      const bsApplications = bs.toArray()
-      const applications = []
-      for (let bsApplication of bsApplications) {
-        const application = new this(bsApplication)
-        const status = await application.fetchStatus()
-        if (statuses.indexOf(status == null ? status : status.type) !== -1) {
-          applications.push(application)
+    static async fetchFiltered (filters) {
+      let rows = []
+
+      const programmeYears = filters.programmeYears
+      if (Array.isArray(programmeYears) && programmeYears.length > 0) {
+        const query = knex.select('applications.id')
+          .from('applications')
+          .where('programmeYear', 'in', programmeYears)
+        const yearsRows = await query
+        // If a filter is added before this, `rows` needs to be filtered properly, as below.
+        rows = yearsRows
+      }
+
+      const techs = filters.techs
+      if (Array.isArray(techs) && techs.length > 0) {
+        const techRows = await knex.select('applications.id')
+          .from('applications')
+          .innerJoin('techpreferences', 'applications.id', 'techpreferences.applicationId')
+          .whereIn('techpreferences.technology', techs)
+          .where('techpreferences.preference', '>', 2)
+        rows = rows.concat(techRows)
+      }
+
+      const stages = filters.stages
+      if (Array.isArray(stages) && stages.length > 0) {
+        let events = []
+        let doNullQuery = false
+
+        for (let stage of stages) {
+          const stageEvents = stagesToEvents[stage]
+          if (Array.isArray(stageEvents)) {
+            events = events.concat(stageEvents)
+          } else if (stageEvents === null) {
+            doNullQuery = true
+          }
+        }
+
+        let query = knex.select(['applications.id', 'applications.finishedAt'])
+          .from('applications')
+          .leftOuterJoin('applicationevents', 'applications.id', 'applicationevents.applicationId')
+
+        if (events.length > 0) {
+          query = query.whereIn('applicationevents.type', events)
+        }
+
+        if (doNullQuery) {
+          query = query.whereNull('applicationevents.type')
+        }
+
+        // AND relation between filters
+        if (rows.length > 0) {
+          const filteredIds = rows.map(row => row.id)
+          query = query.whereIn('applications.id', filteredIds)
+          // Query result will be a subset of `rows`.
+          rows = []
+        }
+
+        const stagesRows = await query
+        for (let row of stagesRows) {
+          const status = await ApplicationEvent.fetchStatusByApplicationId(row.id)
+          if (status === null) {
+            // `finished` and `unfinished` both don't have any application events, so `status` is null.
+            // we have to look at the finish time to see if the application is unfinished/finished.
+            const rowStage = row.finishedAt === null ? 'unfinished' : 'finished'
+            if (stages.indexOf(rowStage)) {
+              rows.push(row)
+            }
+          }
+          if (events.indexOf(status == null ? null : status.type) !== -1) {
+            rows.push(row)
+          }
         }
       }
-      return applications
-    }
 
-    // 'Finished' applications are those that have not yet been vetted/matched/etc.
-    static async fetchAllFinished () {
-      return Application.fetchAllByStatus([null])
-    }
-
-    static async fetchAllShortlisted () {
-      return Application.fetchAllByStatus([
-        'shortlisted',
-        'shortlistedVeryStrong',
-      ])
-    }
-
-    static async fetchAllReadyToMatch () {
-      return Application.fetchAllByStatus([
-        'gaveCompanyPreferences',
-        'madeMatchSuggestion',
-      ])
-    }
-
-    static async fetchAllMatching () {
-      return Application.fetchAllByStatus([
-        'sentToCompany',
-        'arrangedInterviewWithCompany',
-        'companyRejected',
-      ])
-    }
-
-    static async fetchAllOffer () {
-      return Application.fetchAllByStatus([
-        'companyMadeOffer',
-        'acceptedOffer',
-        'sentContract',
-      ])
-    }
-
-    static fetchAllIn () {
-      return Application.fetchAllByStatus([
-        'signedContract',
-        'finalised',
-      ])
-    }
-
-    static async fetchAllOut () {
-      return Application.fetchAllByStatus([
-        'rejected',
-        'applicantRejected',
-      ])
+      return Promise.all(rows.map(async ({id}) => {
+        const application = await Application.fetchById(id)
+        await application.fetchStatus()
+        return application
+      }))
     }
 
     //
