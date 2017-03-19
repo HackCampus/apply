@@ -1,16 +1,3 @@
 exports[`init 1`] = `"{\"model\":{\"children\":{\"login\":{\"password\":false,\"error\":null,\"children\":{\"email\":{\"errors\":[],\"started\":false,\"value\":\"\"},\"password\":{\"errors\":[],\"started\":false,\"value\":\"\"}}}}},\"effect\":[{\"type\":\"waitForAuthorization\"},{\"child\":\"login\",\"effect\":[{\"type\":\"loadUser\"}]}]}"`;
 
-exports[`view - initial 1`] = `""<div class="login">
-        <div>
-        <div class="margin">
-          <div class="field"><p>email:</p>  <div style="display: inline-block;"><span contenteditable="true" class="textfield  invalid" style="display: inline-block; min-width: 35px" spellcheck="false" autocomplete="email"></span></div></div>
-          <div class="field"><p>password:</p>  <div style="display: inline-block;">
-        <input type="password" size="3" value="" class="textfield passwordfield invalid" />
-      </div></div>
-          <div>
-            
-          </div>
-        </div>
-        <div class="field"><a href="javascript:void('hey there ✌︎')" class="disabled">Log in with email/password</a></div>
-      </div>
-      </div>""`;
+exports[`view - initial 1`] = `""<div class=\"login\">\n        <div>\n        <div class=\"margin\">\n          <div class=\"field\"><p>email:</p>  <div style=\"display: inline-block;\"><input type=\"text\" size=\"3\" class=\"textfield  invalid\" spellcheck=\"false\" value=\"\" autocomplete=\"email\" /></div></div>\n          <div class=\"field\"><p>password:</p>  <div style=\"display: inline-block;\">\n        <input type=\"password\" size=\"3\" value=\"\" class=\"textfield passwordfield invalid\" />\n      </div></div>\n          <div>\n            \n          </div>\n        </div>\n        <div class=\"field\"><a href=\"javascript:void('hey there ✌︎')\" class=\"disabled\">Log in with email/password</a></div>\n      </div>\n      </div>""`;

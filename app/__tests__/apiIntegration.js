@@ -76,8 +76,12 @@ test('login/register - happy case', async t => {
   .expectStatus(200)
   .expectHeader('set-cookie', /.*/)
   .expect((res, body, next) => {
-    cookie = res.headers['set-cookie'][0]
-    next()
+    if (res.headers['set-cookie']) {
+      cookie = res.headers['set-cookie'][0]
+      return next()
+    } else {
+      return next(new Error('no set-cookie header'))
+    }
   })
   .end()
 
