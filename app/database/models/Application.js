@@ -200,7 +200,15 @@ module.exports = (bsModels, knex) => {
         }
       }
 
-      return Promise.all(rows.map(async ({id}) => {
+      const dedupedRows = []
+      const seenIds = {}
+      for (let row of rows) {
+        if (seenIds[row.id]) continue
+        dedupedRows.push(row)
+        seenIds[row.id] = true
+      }
+
+      return Promise.all(dedupedRows.map(async ({id}) => {
         const application = await Application.fetchById(id)
         await application.fetchStatus()
         return application
