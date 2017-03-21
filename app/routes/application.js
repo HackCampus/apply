@@ -2,7 +2,7 @@ const isEmpty = require('lodash.isempty')
 const extend = require('xtend')
 
 const constants = require('../constants')
-const logger = require('../logger')
+const logger = require('../lib/logger')
 
 const authorized = require('../middlewares/authorized')
 const validate = require('../middlewares/validate')

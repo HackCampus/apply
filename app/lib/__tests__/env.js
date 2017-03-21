@@ -1,7 +1,7 @@
 const test = require('ava')
 const sinon = require('sinon')
 
-const {envNumber} = require('../envHelpers')
+const {envNumber} = require('../env')
 
 test('envNumber', t => {
   process.env.numberValue = '123'

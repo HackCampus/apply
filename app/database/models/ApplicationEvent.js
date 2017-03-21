@@ -1,7 +1,7 @@
 const values = require('object.values')
 
 const constants = require('../../constants')
-const logger = require('../../logger')
+const logger = require('../../lib/logger')
 
 const errors = require('../errors')
 

@@ -2,7 +2,7 @@
 const localenv = require('localenv/noload')
 localenv.inject_env(__dirname + '/.env')
 
-const {env, envNumber} = require('./envHelpers')
+const {env, envNumber} = require('./lib/env')
 
 const production = process.env.NODE_ENV === 'production'
 

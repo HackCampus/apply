@@ -1,4 +1,4 @@
-const validate = require('../validate')
+const validate = require('../lib/validate')
 
 module.exports = schema => (req, res, next) => {
   const errors = validate(req.body, schema)

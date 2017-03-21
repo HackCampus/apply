@@ -1,4 +1,4 @@
-const logger = require('../../logger') // TODO remove
+const logger = require('../../lib/logger') // TODO remove
 
 const errors = require('../errors')
 const hashPassword = require('../hashPassword')

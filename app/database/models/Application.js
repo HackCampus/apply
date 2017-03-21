@@ -1,5 +1,7 @@
 const shortid = require('shortid')
 
+const contains = require('../../lib/contains')
+
 const constants = require('../../constants')
 
 const errors = require('../errors')
@@ -190,11 +192,12 @@ module.exports = (bsModels, knex) => {
             // `finished` and `unfinished` both don't have any application events, so `status` is null.
             // we have to look at the finish time to see if the application is unfinished/finished.
             const rowStage = row.finishedAt === null ? 'unfinished' : 'finished'
-            if (stages.indexOf(rowStage) !== -1) {
+            if (contains(stages, rowStage)) {
               rows.push(row)
             }
           }
-          if (events.indexOf(status == null ? null : status.type) !== -1) {
+          const statusType = status == null ? null : status.type
+          if (contains(events, statusType)) {
             rows.push(row)
           }
         }

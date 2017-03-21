@@ -1,15 +1,16 @@
 const {html} = require('inu')
 const h = html.createElement
-const jsonSchema = require('jsonschema')
 const u = require('updeep')
 const extend = require('xtend')
+
+const validate = require('../../lib/validate')
 
 const defaultSchema = {type: 'string', minLength: 1}
 const defaultSize = 3
 
 module.exports = (schema = defaultSchema, params = {}) => ({
   validate (value) {
-    return jsonSchema.validate(value, schema).errors
+    return validate(value, schema)
   },
   init () {
     return {

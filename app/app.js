@@ -5,7 +5,7 @@ const http = require('http')
 const path = require('path')
 
 const env = require('./env')
-const logger = require('./logger')
+const logger = require('./lib/logger')
 
 const errorHandler = require('./middlewares/errors')
 const limitToMatchers = require('./middlewares/limitToMatchers')

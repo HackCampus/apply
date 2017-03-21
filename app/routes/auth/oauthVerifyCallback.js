@@ -1,5 +1,5 @@
 const {User, errors} = require('../../database')
-const logger = require('../../logger')
+const logger = require('../../lib/logger')
 
 // make sure `passReqToCallback: true` in your strategy!
 module.exports = provider =>

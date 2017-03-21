@@ -1,7 +1,7 @@
 const GitHubStrategy = require('passport-github2')
 
 const env = require('../../env')
-const logger = require('../../logger')
+const logger = require('../../lib/logger')
 
 const setReturnTo = require('./setReturnTo')
 const verify = require('./oauthVerifyCallback')

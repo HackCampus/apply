@@ -1,6 +1,6 @@
 const Bookshelf = require('bookshelf')
 
-const logger = require('../logger')
+const logger = require('../lib/logger')
 
 const Application = require('./models/Application')
 const ApplicationEvent = require('./models/ApplicationEvent')

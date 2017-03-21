@@ -1,6 +1,6 @@
 const status = require('statuses')
 
-const logger = require('../logger')
+const logger = require('../lib/logger')
 
 // error:
 //   status: HTTP status string or number
