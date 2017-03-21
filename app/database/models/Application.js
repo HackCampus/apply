@@ -190,7 +190,7 @@ module.exports = (bsModels, knex) => {
             // `finished` and `unfinished` both don't have any application events, so `status` is null.
             // we have to look at the finish time to see if the application is unfinished/finished.
             const rowStage = row.finishedAt === null ? 'unfinished' : 'finished'
-            if (stages.indexOf(rowStage)) {
+            if (stages.indexOf(rowStage) !== -1) {
               rows.push(row)
             }
           }
