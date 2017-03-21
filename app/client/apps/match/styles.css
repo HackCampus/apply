@@ -66,6 +66,14 @@ a.reset {
   }
 }
 
+.filters {
+  display: flex;
+}
+
+.filterContainer {
+  margin: 0 1em;
+}
+
 .applyFilters {
   margin-top: 1em;
   margin-bottom: 1em;

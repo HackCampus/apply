@@ -1,6 +1,7 @@
 const shortid = require('shortid')
 
 const contains = require('../../lib/contains')
+const intersection = require('../../lib/intersection')
 
 const constants = require('../../constants')
 
@@ -128,94 +129,124 @@ module.exports = (bsModels, knex) => {
       return Application.fetchAll({programmeYear: constants.programmeYear, finishedAt: null})
     }
 
-    static async fetchFiltered (filters) {
-      let rows = []
+    static async fetchFiltered ({programmeYears, techs, stages, genders}) {
+      let ids = null
 
-      const programmeYears = filters.programmeYears
-      if (Array.isArray(programmeYears) && programmeYears.length > 0) {
-        const query = knex.select('applications.id')
-          .from('applications')
-          .where('programmeYear', 'in', programmeYears)
-        const yearsRows = await query
-        // If a filter is added before this, `rows` needs to be filtered properly, as below.
-        rows = yearsRows
+      if (filteringBy(programmeYears)) {
+        const yearsIds = await Application._idsFilteredByProgrammeYears(programmeYears)
+        ids = new Set(yearsIds)
       }
 
-      const techs = filters.techs
-      if (Array.isArray(techs) && techs.length > 0) {
-        const techRows = await knex.select('applications.id')
-          .from('applications')
-          .innerJoin('techpreferences', 'applications.id', 'techpreferences.applicationId')
-          .whereIn('techpreferences.technology', techs)
-          .where('techpreferences.preference', '>', 2)
-        rows = rows.concat(techRows)
+      if (filteringBy(techs)) {
+        const techIds = await Application._idsFilteredByTechPreferences(techs)
+        ids = ids ? intersection(ids, techIds) : techIds
       }
 
-      const stages = filters.stages
-      if (Array.isArray(stages) && stages.length > 0) {
-        let events = []
-        let doNullQuery = false
-
-        for (let stage of stages) {
-          const stageEvents = stagesToEvents[stage]
-          if (Array.isArray(stageEvents)) {
-            events = events.concat(stageEvents)
-          } else if (stageEvents === null) {
-            doNullQuery = true
-          }
-        }
-
-        let query = knex.select(['applications.id', 'applications.finishedAt'])
-          .from('applications')
-          .leftOuterJoin('applicationevents', 'applications.id', 'applicationevents.applicationId')
-
-        if (events.length > 0) {
-          query = query.whereIn('applicationevents.type', events)
-        }
-
-        if (doNullQuery) {
-          query = query.whereNull('applicationevents.type')
-        }
-
-        // AND relation between filters
-        if (rows.length > 0) {
-          const filteredIds = rows.map(row => row.id)
-          query = query.whereIn('applications.id', filteredIds)
-          // Query result will be a subset of `rows`.
-          rows = []
-        }
-
-        const stagesRows = await query
-        for (let row of stagesRows) {
-          const status = await ApplicationEvent.fetchStatusByApplicationId(row.id)
-          if (status === null) {
-            // `finished` and `unfinished` both don't have any application events, so `status` is null.
-            // we have to look at the finish time to see if the application is unfinished/finished.
-            const rowStage = row.finishedAt === null ? 'unfinished' : 'finished'
-            if (contains(stages, rowStage)) {
-              rows.push(row)
-            }
-          }
-          const statusType = status == null ? null : status.type
-          if (contains(events, statusType)) {
-            rows.push(row)
-          }
-        }
+      if (filteringBy(stages)) {
+        const stagesIds = await Application._idsFilteredByApplicationStages(stages)
+        ids = ids ? intersection(ids, stagesIds) : stagesIds
       }
 
-      const dedupedRows = []
-      const seenIds = {}
-      for (let row of rows) {
-        if (seenIds[row.id]) continue
-        dedupedRows.push(row)
-        seenIds[row.id] = true
+      if (filteringBy(genders)) {
+        const gendersIds = await Application._idsFilteredByGenders(genders)
+        ids = ids ? intersection(ids, gendersIds) : gendersIds
       }
 
-      return Promise.all(dedupedRows.map(async ({id}) => {
+      ids = ids || new Set()
+
+      const applications = []
+      for (let id of ids) {
         const application = await Application.fetchById(id)
         await application.fetchStatus()
-        return application
-      }))
+        applications.push(application)
+      }
+      return applications
+
+      function filteringBy (field) {
+        return Array.isArray(field) && field.length > 0
+      }
+    }
+
+    static async _idsFilteredByProgrammeYears (programmeYears) {
+      if (!Array.isArray(programmeYears)) {
+        programmeYears = [programmeYears]
+      }
+      const rows = await knex.select('applications.id')
+        .from('applications')
+        .where('programmeYear', 'in', programmeYears)
+      return rows.map(row => row.id)
+    }
+
+    static async _idsFilteredByTechPreferences (techs) {
+      if (!Array.isArray(techs)) {
+        techs = [techs]
+      }
+      const rows = await knex.select('applications.id')
+        .from('applications')
+        .innerJoin('techpreferences', 'applications.id', 'techpreferences.applicationId')
+        .whereIn('techpreferences.technology', techs)
+        .where('techpreferences.preference', '>', 2)
+      return rows.map(row => row.id)
+    }
+
+    static async _idsFilteredByApplicationStages (stages) {
+      if (!Array.isArray(stages)) {
+        stages = [stages]
+      }
+
+      let ids = []
+      let events = []
+      let doNullQuery = false
+
+      for (let stage of stages) {
+        const stageEvents = stagesToEvents[stage]
+        if (Array.isArray(stageEvents)) {
+          events = events.concat(stageEvents)
+        } else if (stageEvents === null) {
+          doNullQuery = true
+        }
+      }
+
+      let query = knex.select(['applications.id', 'applications.finishedAt'])
+        .from('applications')
+        .leftOuterJoin('applicationevents', 'applications.id', 'applicationevents.applicationId')
+
+      if (events.length > 0) {
+        query = query.whereIn('applicationevents.type', events)
+      }
+
+      if (doNullQuery) {
+        query = query.whereNull('applicationevents.type')
+      }
+
+      const stagesRows = await query
+      for (let {id, finishedAt} of stagesRows) {
+        const status = await ApplicationEvent.fetchStatusByApplicationId(id)
+        if (status === null) {
+          // `finished` and `unfinished` both don't have any application events, so `status` is null.
+          // we have to look at the finish time to see if the application is unfinished/finished.
+          const rowStage = finishedAt === null ? 'unfinished' : 'finished'
+          if (contains(stages, rowStage)) {
+            ids.push(id)
+          }
+        }
+        const statusType = status == null ? null : status.type
+        if (contains(events, statusType)) {
+          ids.push(id)
+        }
+      }
+
+      return ids
+    }
+
+    static async _idsFilteredByGenders (genders) {
+      if (!Array.isArray(genders)) {
+        genders = [genders]
+      }
+      const rows = await knex.select('applications.id')
+        .from('applications')
+        .where('gender', 'in', genders)
+      return rows.map(row => row.id)
     }
 
     //

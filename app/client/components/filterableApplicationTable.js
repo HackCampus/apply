@@ -17,6 +17,7 @@ const tableFilter = require('./tableFilter')
 const filters = {
   techs: Object.keys(wireFormats.techPreferences.properties),
   stages: Object.keys(wireFormats.applicationStages),
+  genders: wireFormats.personalDetails.properties.gender.enum,
 }
 
 module.exports = Component({
@@ -69,18 +70,28 @@ module.exports = Component({
       model.showFilters
         ? link('Hide filters', () => dispatch(action('hideFilters')))
         : link('Show filters', () => dispatch(action('showFilters'))),
-      model.showFilters ? this.filtersView(model, dispatch, children) : '',
+      model.showFilters
+        ? this.filtersView(model, dispatch, children)
+        : '',
+      model.showFilters
+        ? h('div', {class: 'applyFilters'}, [link('Apply filters', () => dispatch(action('fetchApplications')))])
+        : '',
       children.table ? children.table() : '',
     ])
   },
   filtersView (model, dispatch, children) {
     return h('div', {class: 'filters'}, [
-      h('h4', {}, ['Application stages']),
-      children.stages(),
-      h('h4', {}, ['Tech preferences']),
-      children.techs(),
-      h('div', {class: 'applyFilters'}, [link('Apply filters', () => dispatch(action('fetchApplications')))]),
+      filter('Application stages', children.stages()),
+      filter('Tech preferences', children.techs()),
+      filter('Genders', children.genders()),
     ])
+
+    function filter (name, child) {
+      return h('div', {class: 'filterContainer'}, [
+        h('h4', {}, [name]),
+        child,
+      ])
+    }
   },
   run (effect, sources, action) {
     const get = (url, handler) =>
