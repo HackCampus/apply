@@ -15,7 +15,13 @@ const applicationEvents = wireFormats.applicationEvents
 
 const tabs = [
   {
-    title: 'news',
+    title: 'applications',
+    view: function (model, dispatch, children) {
+      return children.applications()
+    }
+  },
+  {
+    title: 'events',
     view: function (model, dispatch, children) {
       const {
         events,
@@ -29,12 +35,6 @@ const tabs = [
     },
     effect: action('fetchApplicationEvents'),
   },
-  {
-    title: 'applications',
-    view: function (model, dispatch, children) {
-      return children.applications()
-    }
-  }
 ]
 
 function eventView (event) {
