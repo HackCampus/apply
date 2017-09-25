@@ -3,26 +3,25 @@
   "version": "1.0.0",
   "description": "Internship applications for HackCampus",
   "engines": {
-    "node": "7.5.0",
-    "npm": "4.1.2"
+    "node": "8.5.0",
+    "npm": "5.4.2"
   },
   "scripts": {
     "clean": "rm -rf app/build/",
     "build-client": "npm run clean && NODE_ENV=production node build.js",
-    "start": "npm run migrate-latest && node --harmony_async_await app/index.js",
-    "develop-server": "nodemon --exec \"node --harmony_async_await --trace-warnings\" --ignore build/ --ignore client/ app/index.js | bunyan",
+    "start": "npm run migrate-latest && node app/index.js",
+    "develop-server": "nodemon --ignore build/ --ignore client/ app/index.js | bunyan",
     "develop-client": "npm run clean && nodemon --ext js,css --ignore app/build/ build.js",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "postinstall": "npm run build-client",
-    "test": "node --harmony_async_await node_modules/.bin/ava --timeout=30s --serial",
+    "test": "ava --timeout=30s --serial",
     "coverage": "nyc --reporter=html npm test"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "autoprefixer": "^6.4.0",
-    "ava": "^0.18.2",
     "axios": "^0.14.0",
     "babel": "^6.5.2",
     "babel-preset-es2015": "^6.16.0",
