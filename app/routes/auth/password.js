@@ -1,30 +1,26 @@
 const bcrypt = require('bcrypt')
-const djangoHashers = require('node-django-hashers')
 const {Strategy: LocalStrategy} = require('passport-local')
+const pify = require('pify')
 const status = require('statuses')
 
 const errors = require('../../errors')
+const verifyDjangoHash = require('../../lib/verifyDjangoHash')
 const authorized = require('../../middlewares/authorized')
 const validateRequest = require('../../middlewares/validate')
 const {errors: {DuplicateEmail, NotFound}, User, Authentication} = require('../../database')
 const wireFormats = require('../../wireFormats')
 
-const djangoHasher = djangoHashers.getHasher('pbkdf2_sha256')
+const bcrypt_compare = pify(bcrypt.compare)
 
-function verifyPassword (requestPassword, hashedPassword) {
-  return new Promise((resolve, reject) => {
-    if (hashedPassword.startsWith('pbkdf2_sha256')) {
-      // old users
-      const passwordsMatch = djangoHasher.verify(requestPassword, hashedPassword)
-      return resolve(passwordsMatch)
-    } else {
-      // new users
-      bcrypt.compare(requestPassword, hashedPassword, (err, passwordsMatch) => {
-        if (err) return reject(err)
-        return resolve(passwordsMatch)
-      })
-    }
-  })
+// Returns a Promise<boolean> which resolves to true iff the given password matches the hash in the database.
+function verifyPassword (password, hash) {
+  if (hash.startsWith('pbkdf2_sha256')) {
+    // old users
+    return verifyDjangoHash(password, hash)
+  } else {
+    // new users
+    return bcrypt_compare(password, hash)
+  }
 }
 
 module.exports = (passport, app) => {
