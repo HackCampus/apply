@@ -2,8 +2,6 @@ const knex = require('knex')
 const path = require('path')
 const rm = require('rimraf').sync
 
-const testDb = './test.sqlite'
-
 const knexConfig = {
   client: 'pg',
   connection: 'postgres://hackcampus:hackcampus@127.0.0.1:5432/test',
