@@ -21,7 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "autoprefixer": "^6.4.0",
+    "autoprefixer": "^7.1.4",
     "axios": "^0.14.0",
     "babel-preset-env": "^1.6.0",
     "babelify": "^7.3.0",
