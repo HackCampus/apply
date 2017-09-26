@@ -47,7 +47,7 @@
     "inux": "^2.0.7",
     "jsonschema": "^1.1.0",
     "keymirror": "^0.1.1",
-    "knex": "^0.11.10",
+    "knex": "^0.13.0",
     "localenv": "^0.2.2",
     "lodash.isempty": "^4.4.0",
     "lodash.mapvalues": "^4.6.0",
