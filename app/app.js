@@ -8,11 +8,14 @@ const env = require('./env')
 const logger = require('./lib/logger')
 
 const errorHandler = require('./middlewares/errors')
+const forceHttps = require('./middlewares/forceHttps')
 const limitToMatchers = require('./middlewares/limitToMatchers')
 const requestLogger = require('./middlewares/requestLogger')
 const session = require('./middlewares/session')
 
 const app = express()
+
+app.use(forceHttps)
 
 // app.use(requestLogger(logger))
 app.use(session())
