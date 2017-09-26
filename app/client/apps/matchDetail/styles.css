@@ -1,12 +1,15 @@
+.body {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
 .applicationview {
-  lost-column: 1/2;
   .application {
     margin: 20px;
   }
 }
 
 .actions {
-  lost-column: 1/2;
   textarea {
     border-top: none;
     border-bottom: none;
