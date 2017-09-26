@@ -31,7 +31,7 @@
     "bookshelf": "^0.10.0",
     "browserify": "^14.4.0",
     "bunyan": "^1.8.5",
-    "bunyan-middleware": "^0.6.0",
+    "bunyan-middleware": "^0.8.0",
     "classnames": "^2.2.5",
     "connect-redis": "^3.1.0",
     "cookie-parser": "^1.4.3",
