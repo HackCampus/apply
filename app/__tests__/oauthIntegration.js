@@ -40,20 +40,18 @@ no:
 */
 
 const test = require('ava')
-const axios = require('axios')
 const nock = require('nock')
 const sinon = require('sinon')
 
-// nock.recorder.rec()
-const port = require('./_serve')()
-const host = `http://127.0.0.1:${port}`
+const {port, server} = require('./_serve')()
+const api = require('./_apiClient')(`http://127.0.0.1:${port}`)
+test.after.always(() => {
+  server.close()
+})
 
 const {User, Authentication} = require('../database')
 
 const randomId = () => (''+Math.random()).slice(2, 8)
-
-const githubCallback = () =>
-  axios.get(`${host}/auth/github/callback?code=FAKECALLBACKCODEPLZ`)
 
 const mockAccessTokenRequest = token =>
   nock('https://github.com:443')
@@ -115,34 +113,30 @@ const mockGithubCallback = (accessToken = 'FAKETOKEN', userId = '123456', emails
   const accessTokenRequest = mockAccessTokenRequest(accessToken)
   const userRequest = mockUserProfileRequest(userId)
   const emailsRequest = mockUserEmailsRequest(emails)
-  return githubCallback()
+  return api.githubCallback()
 }
 
-test('github oauth flow requests get made', t => {
+test.serial('github oauth flow requests get made', async t => {
   const accessToken = mockAccessTokenRequest()
   const user = mockUserProfileRequest('faketoken')
   const emails = mockUserEmailsRequest(['fakeemail@foo.bar'])
-  return githubCallback().then(res => {
-    t.true(accessToken.isDone())
-    t.true(user.isDone())
-    t.true(emails.isDone())
-  })
+  await api.githubCallback()
+  t.true(accessToken.isDone())
+  t.true(user.isDone())
+  t.true(emails.isDone())
 })
 
-test('(A) creates a new user', t => {
+test.serial('(A) creates a new user', async t => {
   const createNewUser = sinon.spy(User, 'createWithToken')
-
   const id = randomId()
   const accessToken = 'FAKEACCESSTOKENPLZ' + id
   const email = id + 'fake@foo.bar'
-  return mockGithubCallback('FAKEACCESSTOKENPLZ' + id, id, [id + 'fake@foo.bar'])
-    .then(res => {
-      t.is(res.status, 200)
-      t.true(createNewUser.called)
-    })
+  const res = await mockGithubCallback('FAKEACCESSTOKENPLZ' + id, id, [id + 'fake@foo.bar'])
+  t.is(res.status, 200)
+  t.true(createNewUser.called)
 })
 
-test('(B) updates access token for an existing user with matching email', t => {
+test.serial('(B) updates access token for an existing user with matching email', async t => {
   const updateAuthentication = sinon.spy(User.prototype, 'updateAuthentication')
 
   const firstId = randomId()
@@ -153,51 +147,20 @@ test('(B) updates access token for an existing user with matching email', t => {
 
   const email = firstId + 'fake@foo.bar'
 
-  return mockGithubCallback(firstAccessToken, firstId, [email])
-    .then(res => {
-      return mockGithubCallback(secondAccessToken, firstId, [email])
-    }).then(res => {
-      t.is(res.status, 200)
-      t.true(updateAuthentication.called)
-      const args = updateAuthentication.args[0]
-      const {type, identifier, token} = args[0]
-      t.is(identifier, firstId)
-      t.is(token, secondAccessToken)
-      t.is(type, 'github')
-      t.false(updateAuthentication.threw())
-      updateAuthentication.restore()
-    })
+  await mockGithubCallback(firstAccessToken, firstId, [email])
+  const res = await mockGithubCallback(secondAccessToken, firstId, [email])
+  t.is(res.status, 200)
+  t.true(updateAuthentication.called)
+
+  const args = updateAuthentication.args[0]
+  const {type, identifier, token} = args[0]
+  t.is(identifier, firstId)
+  t.is(token, secondAccessToken)
+  t.is(type, 'github')
+  t.false(updateAuthentication.threw())
+  updateAuthentication.restore()
 })
 
-test('(C) can not authenticate with oauth if there is an existing password auth', t => {
-  const email = randomId() + 'asdf@asd.df'
-  t.fail('TODO')
-  // return axios.post(`${host}/users`, {email, password: 'watever'})
-  //   .then(res => {
-  //     t.is(res.status, 201)
-  //     // ...
-  //   })
-})
+test.todo('(C) can not authenticate with oauth if there is an existing password auth')
 
-test("(D) update an existing user's email address", t => {
-  t.fail('TODO')
-  // const updateAuthentication = sinon.spy(User.prototype, 'updateAuthentication')
-  //
-  // const firstId = randomId()
-  // const firstAccessToken = 'firstAccessToken' + firstId
-  // const firstEmail = firstId + 'fake@foo.bar'
-  //
-  // const secondId = randomId()
-  // const secondAccessToken = 'secondAccessToken' + secondId
-  // const secondEmail = secondId + 'fake@foo.bar'
-  //
-  // return mockGithubCallback(firstAccessToken, firstId, [firstEmail])
-  //   .then(res => {
-  //     return mockGithubCallback(secondAccessToken, firstId, [secondEmail])
-  //   }).then(res => {
-  //     t.is(res.status, 200)
-  //     return new User({email: secondEmail}).fetch()
-  //   }).then(user => {
-  //     t.truthy(user)
-  //   })
-})
+test.todo("(D) update an existing user's email address")

@@ -159,11 +159,6 @@ module.exports = bsModels => {
     // Returns JSON representation of new authentication object
     async createAuthentication (authentication, transaction) {
       return definitelyTransact(transaction, async transaction => {
-        const authenticationMethods = {
-          password: this.createPasswordAuthentication,
-          github: this.createTokenAuthentication,
-        }
-
         const {type, token, identifier} = authentication
         if (type == null || token == null || identifier == null) {
           throw new errors.AuthenticationTypeError(`authentication object needs to be of shape {type, token, identifier}`)
