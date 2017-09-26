@@ -19,15 +19,17 @@ test.serial.cb('can log in with github access token', t => {
   })
 })
 
-test('"different user has already connected" message gets passed to error handler', async t => {
+test.serial('"different user has already connected" message gets passed to error handler', async t => {
   const verify = oauthVerifyCallback('github')
   const profile = {
     id: '1337',
     emails: [{value: 'github-oauth-verify-test@foo.bar'}]
   }
-  const user = await User.create({email: 'asdfasdfasdf@foo.bar'})
-  return new Promise((resolve, reject) => {
+  const randomId = () => (''+Math.random()).slice(2, 8)
+  const user = await User.create({email: `asdfasdfasdf${randomId()}@foo.bar`})
+  await new Promise((resolve, reject) => {
     verify({user}, 'fakeaccesstoken', 'fakerefreshtoken', profile, function (err, user, errorMessage) {
+      if (err) return reject(err)
       t.falsy(err)
       t.falsy(user)
       t.truthy(errorMessage.message)

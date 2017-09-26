@@ -2,6 +2,8 @@ const test = require('ava')
 const sinon = require('sinon')
 const pull = require('pull-stream')
 
+test.todo('apply')
+
 // const app = require('../app')
 //
 // const fakeUser = () =>

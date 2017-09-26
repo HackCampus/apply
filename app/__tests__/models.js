@@ -73,14 +73,14 @@ test('User.fetchSingle', async t => {
   t.is(userJson.email, email)
 })
 
-test('User.createWithAuthentication throws with junk input', t => {
+test('User.createWithAuthentication throws with junk input', async t => {
   const {User, errors} = models
-  t.throws(User.createWithAuthentication('foo@bar.baz', {junk: true}), error => error instanceof errors.AuthenticationTypeError)
+  await t.throws(User.createWithAuthentication('foo@bar.baz', {junk: true}), error => error instanceof errors.AuthenticationTypeError)
 })
 
-test('User.createWithAuthentication throws with a garbage authentication type', t => {
+test('User.createWithAuthentication throws with a garbage authentication type', async t => {
   const {User, errors} = models
-  t.throws(User.createWithAuthentication('foo@bar.baz', {type: 'junk', identifier: 'foo', token: 'foo'}), error => error instanceof errors.AuthenticationNotImplemented)
+  await t.throws(User.createWithAuthentication('foo@bar.baz', {type: 'junk', identifier: 'foo', token: 'foo'}), error => error instanceof errors.AuthenticationNotImplemented)
 })
 
 test('User.createWithPassword, fetchById, fetchRelated', async t => {
@@ -129,7 +129,7 @@ test("User.createWithToken won't create a new user with the same external id", a
   }
   const secondEmail = 'seconduser-DIFFERENT@bar.baz'
   const firstUserModel = await User.createWithToken(authentication.type, 'firstuser@bar.baz', authentication.identifier, authentication.token)
-  t.throws(User.createWithToken(authentication.type, secondEmail, authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
+  await t.throws(User.createWithToken(authentication.type, secondEmail, authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
 })
 
 test('User.createWithToken throws if a user signs up with a different email but there is an email/password auth for that user', async t => {
@@ -144,7 +144,7 @@ test('User.createWithToken throws if a user signs up with a different email but 
   await User.createWithPassword(firstEmail, 'somepassword')
   const user = await User.createWithToken(authentication.type, firstEmail, authentication.identifier, authentication.token)
   const firstUser = user.toJSON()
-  t.throws(User.createWithToken(authentication.type, secondEmail_DIFFERENT, authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
+  await t.throws(User.createWithToken(authentication.type, secondEmail_DIFFERENT, authentication.identifier, authentication.token), error => error instanceof errors.DuplicateKey)
 })
 
 test('User.updateAuthentication with no existing authentication', async t => {
