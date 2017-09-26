@@ -1,254 +1,173 @@
 const test = require('ava')
 const axios = require('axios')
-const hippie = require('hippie')
 const sinon = require('sinon')
 const extend = require('xtend')
-hippie.assert.showDiff = true
+
+// server
 
 process.env.NODE_ENV = 'production'
-const port = require('./_serve')()
+const {port, server} = require('./_serve')()
+test.after.always(() => {
+  server.close()
+})
 
-const host = `http://127.0.0.1:${port}`
+// API
 
-const api = () =>
-  hippie()
-  .json()
-  .base(host)
+const api = axios.create({
+  baseURL: `http://127.0.0.1:${port}`,
+})
+const register = data => api.post('/users', data)
+const login = data => api.post('/auth/password', data)
+const changePassword = (data, cookie) => api.put('/me/password', data, cookie ? {headers: {cookie}} : {})
+const getApplication = cookie => api.get('/me/application', cookie ? {headers: {cookie}} : {})
+const putApplication = (data, cookie) => api.put('/me/application', data, cookie ? {headers: {cookie}} : {})
+const getTechPreferences = cookie => api.get('/me/application/techpreferences', cookie ? {headers: {cookie}} : {})
+const putTechPreferences = (data, cookie) => api.put('/me/application/techpreferences', data, cookie ? {headers: {cookie}} : {})
 
 const testCredentials = {email: 'foo@bar.baz', password: 'helloworld'}
 
-const getCookie = credentialOverrides =>
-  axios
-    .post(`${host}/auth/password`, extend(testCredentials, credentialOverrides))
-    .then(res => res.headers['set-cookie'][0])
+async function getCookie (credentialOverrides) {
+  const credentials = extend(testCredentials, credentialOverrides)
+  const response = await api.post('/auth/password', credentials)
+  return response.headers['set-cookie'][0]
+}
+
+// tests
 
 // === register ===
 
-const register = () =>
-  api()
-  .post('/users')
-
-test.cb('register - weird stuff gets bad request response', t => {
-  register()
-  .send({weird: 'stuff'})
-  .expectStatus(400)
-  .end(t.end)
+test('register - weird stuff gets bad request response', async t => {
+  const error = await t.throws(register({weird: 'stuff'}))
+  t.is(error.response.status, 400)
 })
 
-test.cb('register - weird types gets bad request response', t => {
-  register()
-  .send({name: 1337, email: 'not an email'})
-  .expectStatus(400)
-  .end(t.end)
+test('register - weird types gets bad request response', async t => {
+  const error = await t.throws(register({name: 1337, email: 'not an email'}))
+  t.is(error.response.status, 400)
 })
 
-test.cb('register - already taken', t => {
-  register()
-  .send(testCredentials)
-  .expectStatus(409)
-  .end(t.end)
+test('register - already taken', async t => {
+  const error = await t.throws(register(testCredentials))
+  t.is(error.response.status, 409)
 })
 
 // === login ===
 
-const login = () =>
-  api()
-  .post('/auth/password')
 
-test.cb('login - wrong login gives you unauthorized response', t => {
-  login()
-  .send({email: 'foo@bar.baz', password: 'wrooooooong'})
-  .expectStatus(401)
-  .end(t.end)
+test('login - wrong login gives you unauthorized response', async t => {
+  const error = await t.throws(login({email: 'foo@bar.baz', password: 'wrooooooong'}))
+  t.is(error.response.status, 401)
 })
 
 test('login/register - happy case', async t => {
   const random = (Math.random() + '').slice(2, 10)
-  const deets = {email: `foo${random}@example.com`, password: 'foobar'}
-  await register()
-  .send(deets)
-  .expectStatus(201)
-  .end()
+  const newUser = {email: `foo${random}@example.com`, password: 'foobar'}
+  const registerResponse = await register(newUser)
+  t.is(registerResponse.status, 201)
 
-  let cookie
-  await login()
-  .send(deets)
-  .expectStatus(200)
-  .expectHeader('set-cookie', /.*/)
-  .expect((res, body, next) => {
-    if (res.headers['set-cookie']) {
-      cookie = res.headers['set-cookie'][0]
-      return next()
-    } else {
-      return next(new Error('no set-cookie header'))
-    }
-  })
-  .end()
+  const loginResponse = await login(newUser)
+  t.is(loginResponse.status, 200)
+  t.truthy(loginResponse.headers['set-cookie'])
+  const cookie = loginResponse.headers['set-cookie'][0]
+  t.truthy(cookie)
 
-  return await api()
-  .header('cookie', cookie)
-  .get('/me')
-  .expectStatus(200)
-  .expect((res, body, next) => {
-    t.is(body.email, deets.email)
-    t.is(body.role, 'applicant')
-    t.true(typeof body.connectedAccounts === 'object')
-    t.true(body.connectedAccounts.password)
-    next()
-  })
-  .end()
+  const profileResponse = await api.get('/me', {headers: {cookie}})
+  t.is(profileResponse.status, 200)
+  const body = profileResponse.data
+  t.is(body.email, newUser.email)
+  t.is(body.role, 'applicant')
+  t.true(typeof body.connectedAccounts === 'object')
+  t.true(body.connectedAccounts.password)
 })
 
 // === change password ===
 
-const changePassword = cookie =>
-  api()
-  .header('cookie', cookie)
-  .put('/me/password')
 
-test('change password - unauthorized', t => {
-  return changePassword('')
-  .send({password: 'newpasswordpls'})
-  .expectStatus(401)
-  .end()
+test('change password - unauthorized', async t => {
+  const error = await t.throws(changePassword({password: 'newpasswordpls'}))
+  t.is(error.response.status, 401)
 })
 
-test('change password - can log in only with new password', t => {
+test('change password - can log in only with new password', async t => {
   const random = (Math.random() + '').slice(2, 10)
   const email = `foo${random}@example.com`
   const oldPassword = 'oldpassword'
   const newPassword = 'newpassword'
   const credentials = {email, password: oldPassword}
-  return axios.post(`${host}/users`, credentials)
-    .then(() => getCookie(credentials))
-    .then(cookie =>
-      changePassword(cookie)
-      .send({junk: 'something something'})
-      .expectStatus(400)
-      .end()
-      .then(() =>
-        changePassword(cookie)
-        .send({password: newPassword})
-        .expectStatus(200)
-        .end()
-      )
-    )
-    .then(() =>
-      login()
-      .send({email, password: oldPassword})
-      .expectStatus(401)
-      .end()
-    )
-    .then(() =>
-      login()
-      .send({email, password: newPassword})
-      .expectStatus(200)
-      .expectHeader('set-cookie', /.*/)
-      .end()
-    )
+  await register(credentials)
+
+  const cookie = await getCookie(credentials)
+  const junk = await t.throws(changePassword({junk: 'something something'}, cookie))
+  t.is(junk.response.status, 400)
+  const changed = await changePassword({password: newPassword}, cookie)
+  t.is(changed.status, 200)
+
+  const oldLogin = await t.throws(login({email, password: oldPassword}))
+  t.is(oldLogin.response.status, 401)
+
+  const newLogin = await login({email, password: newPassword})
+  t.is(newLogin.status, 200)
+  t.truthy(newLogin.headers['set-cookie'])
+  t.truthy(newLogin.headers['set-cookie'][0])
 })
 
 // === application ===
 
-const getApplication = cookie =>
-  api()
-  .header('cookie', cookie)
-  .get('/me/application')
-
-const putApplication = cookie =>
-  api()
-  .header('cookie', cookie)
-  .put('/me/application')
-
-test.cb('application - unauthorized', t => {
-  api()
-  .get('/me/application')
-  .send()
-  .expectStatus(401)
-  .end(t.end)
+test('application - unauthorized', async t => {
+  const error = await t.throws(getApplication())
+  t.is(error.response.status, 401)
 })
 
-test.cb('application - new', t => {
+test('application - new', async t => {
   const random = (Math.random() + '').slice(2, 10)
   const credentials = {email: `foo${random}@example.com`, password: 'foobar'}
-  axios.post(`${host}/users`, credentials)
-    .then(() => getCookie(credentials))
-    .then(cookie => {
-      getApplication(cookie)
-      .send()
-      .expectStatus(404)
-      .end(() => {
-        putApplication(cookie)
-        .send({})
-        .expectStatus(200)
-        .end(t.end)
-      })
-    })
+
+  await register(credentials)
+  const cookie = await getCookie(credentials)
+
+  const newApplication = await t.throws(getApplication(cookie))
+  t.is(newApplication.response.status, 404)
+
+  const put = await putApplication({}, cookie)
+  t.is(put.status, 200)
 })
 
-test.cb('application - put empty', t => {
-  getCookie().then(cookie => {
-    putApplication(cookie)
-    .send({})
-    .expectStatus(200)
-    .end(t.end)
-  })
+test('application - put empty', async t => {
+  const cookie = await getCookie()
+  const response = await putApplication({}, cookie)
+  t.is(response.status, 200)
 })
 
-test.cb('application - put good', t => {
-  getCookie().then(cookie => {
-    putApplication(cookie)
-    .send({firstName: 'Harry'})
-    .expectStatus(200)
-    .end(() => {
-      getApplication(cookie)
-      .expectValue('firstName', 'Harry')
-      .end(t.end)
-    })
-  })
+test('application - put good', async t => {
+  const cookie = await getCookie()
+  const put = await putApplication({firstName: 'TestUser'}, cookie)
+  t.is(put.status, 200)
+  const get = await getApplication(cookie)
+  t.is(get.data.firstName, 'TestUser')
 })
 
 // === tech preferences ===
 
-const putTechPreferences = cookie =>
-  api()
-  .header('cookie', cookie)
-  .put('/me/application/techpreferences')
-
-test.cb('techpreferences - unauthorized put', t => {
-  api()
-  .put('/me/application/techpreferences')
-  .expectStatus(401)
-  .end(t.end)
+test('techpreferences - unauthorized put', async t => {
+  const error = await t.throws(putTechPreferences())
+  t.is(error.response.status, 401)
 })
 
-test.cb('techpreferences - good', t => {
-  getCookie().then(cookie => {
-    putTechPreferences(cookie)
-    .send({React: 3})
-    .expectStatus(200)
-    .expect((res, body, next) => {
-      t.is(body.React, 3)
-      next()
-    })
-    .end(t.end)
-  })
+test('techpreferences - good', async t => {
+  const cookie = await getCookie()
+  const put = await putTechPreferences({React: 3}, cookie)
+  t.is(put.status, 200)
+  t.is(put.data.React, 3)
 })
 
-test.cb('techpreferences - bad value', t => {
-  getCookie().then(cookie => {
-    putTechPreferences(cookie)
-    .send({React: 4})
-    .expectStatus(400)
-    .end(t.end)
-  })
+test('techpreferences - bad value', async t => {
+  const cookie = await getCookie()
+  const error = await t.throws(putTechPreferences({React: 4}, cookie))
+  t.is(error.response.status, 400)
 })
 
-test.cb('techpreferences - junk', t => {
-  getCookie().then(cookie => {
-    putTechPreferences(cookie)
-    .send({Junk: 0})
-    .expectStatus(400)
-    .end(t.end)
-  })
+test('techpreferences - junk', async t => {
+  const cookie = await getCookie()
+  const error = await t.throws(putTechPreferences({Junk: 0}, cookie))
+  t.is(error.response.status, 400)
 })

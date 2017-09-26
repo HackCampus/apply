@@ -67,4 +67,5 @@ const server = http.createServer(app)
 
 module.exports = function (port) {
   server.listen(port, () => { logger.info({port}, 'started') })
+  return server
 }
