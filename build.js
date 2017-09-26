@@ -23,7 +23,11 @@ const development = process.env.NODE_ENV !== 'production'
 const notifier = development ? require('node-notifier') : function () {}
 
 const babelifyConfig = {
-  presets: ['es2015-ie'],
+  presets: [['env', {
+    targets: {
+      browsers: ['last 2 versions'],
+    },
+  }]],
 }
 
 if (development) {
