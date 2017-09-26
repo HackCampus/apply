@@ -15,7 +15,7 @@
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "postinstall": "npm run build-client",
-    "test": "ava --timeout=30s --serial",
+    "test": "ava --timeout=30s --serial --verbose",
     "coverage": "nyc --reporter=html npm test"
   },
   "author": "",
