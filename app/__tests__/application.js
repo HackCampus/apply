@@ -48,7 +48,7 @@ test('getApplication creates a new application for old ones', t => {
     .then(applicationModel => {
       t.false(handleError.called)
       const application = applicationModel.toJSON()
-      t.is(application.programmeYear, 2017) // note!
+      t.is(application.programmeYear, 2018) // note!
       t.falsy(application.finishedAt)
       t.is(application.firstName, 'foozle')
     })
@@ -73,7 +73,7 @@ test('createApplicationFromPreviousYear copies an application from a previous ye
         .then(applicationModel => {
           t.false(handleError.called)
           const application = applicationModel.toJSON()
-          t.is(application.programmeYear, 2017)
+          t.is(application.programmeYear, 2018)
           t.is(application.firstName, 'foozle')
           return application
         }).then(() => getApplication(user.id, handleError))

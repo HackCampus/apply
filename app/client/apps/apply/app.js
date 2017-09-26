@@ -1,5 +1,6 @@
 const {pull, html} = require('inu')
 const isEmpty = require('lodash.isempty')
+const moment = require('moment')
 const uninterrupted = require('../../lib/pull-uninterrupted')
 const u = require('updeep')
 const extend = require('xtend')
@@ -232,7 +233,7 @@ module.exports = Component({
       <div class="apply">
         <h1>Apply to HackCampus</h1>
         <p>Welcome! This is the application form for the <a href="http://hackcampus.io/">HackCampus internship programme</a>. If something doesn't work, we'd appreciate it if you <a href="https://github.com/hackcampus/apply/issues">file an issue on GitHub</a> or email us at contact@hackcampus.io. Thanks! :)</p>
-        <p><strong>The application deadline for the ${constants.programmeYear} programme was on the ${constants.applicationDeadline}. You can still apply, but we can not guarantee that you will be considered for this year's interviews.</strong></p>
+        ${deadlineMessage()}
         ${section('step0', 'Step 0: Authenticate', children.authenticate())}
         ${section('step1', 'Step 1: Personal details', user ? children.personalDetails(extend(props, {connect})) : '')}
         ${section('step2', 'Step 2: Tech preferences', user ? children.techPreferences(props) : '')}
@@ -285,4 +286,12 @@ function getFormResponses (model) {
     }
   }
   return fields
+}
+
+const pastDeadline = moment().isAfter(constants.applicationDeadline, 'day')
+const deadline = moment(constants.applicationDeadline).format('Do [of] MMMM')
+function deadlineMessage () {
+  return pastDeadline
+    ? html`<p><strong>The application deadline for the ${constants.programmeYear} programme was on the ${deadline}. You can still apply, but we can not guarantee that you will be considered for this year's interviews.</strong></p>`
+    : html`<p>The application deadline for the ${constants.programmeYear} programme is the ${deadline}.</p>`
 }
