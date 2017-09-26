@@ -29,7 +29,7 @@
     "bcrypt": "^1.0.3",
     "body-parser": "^1.15.2",
     "bookshelf": "^0.10.0",
-    "browserify": "^13.1.0",
+    "browserify": "^14.4.0",
     "bunyan": "^1.8.5",
     "bunyan-middleware": "^0.6.0",
     "classnames": "^2.2.5",
