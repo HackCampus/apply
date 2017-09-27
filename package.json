@@ -38,6 +38,7 @@
     "cssnano": "^3.7.4",
     "exorcist": "^1.0.0",
     "express": "^4.14.0",
+    "express-promise-router": "^2.0.0",
     "express-session": "^1.14.1",
     "gulp": "^3.9.1",
     "gulp-postcss": "^7.0.0",

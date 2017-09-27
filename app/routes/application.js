@@ -10,7 +10,7 @@ const validate = require('../middlewares/validate')
 const wireFormats = require('../wireFormats')
 
 module.exports = function (models) {
-  const {Database, Application, TechPreference} = models
+  const {Database, Application, ApplicationSane, TechPreference} = models
 
   function routes (app) {
     app.get('/me/application',
@@ -30,38 +30,50 @@ module.exports = function (models) {
 
   // Application - handlers
 
-  function handleGetApplication (req, res, handleError) {
+  async function handleGetApplication (req, res) {
     const userId = req.user.id
-    return getApplication(userId, handleError)
-      .then(sendApplication(res))
-      .catch(error => {
-        if (error.status != null) {
-          return handleError(error)
-        } else {
-          return internalError(error)
-        }
-      })
+    const application = await ApplicationSane.fetchLatest(userId)
+    if (!application) {
+      throw {status: 'Not Found'}
+    }
+    res.json(await application.materialize())
   }
 
-  function handlePutApplication (req, res, handleError) {
-    let handler
+  async function handlePutApplication (req, res) {
     if (req.body.finished) {
-      logger.info({userId: req.user.id}, 'finishing application')
-      delete req.body.finished
-      handler = handleFinishApplication
+      console.warning('TODO handlePutApplication: finished application')
+      // logger.info({userId: req.user.id}, 'finishing application')
+      // delete req.body.finished
+      // await handleFinishApplication(req, res)
     } else {
       logger.info({userId: req.user.id}, 'updating application')
-      handler = handleUpdateApplication
+      const userId = req.user.id
+      const application = await ApplicationSane.fetchLatest(userId)
+      console.warning('TODO handlePutApplication: update application')
     }
-    return handler(req, res)
-      .catch(error => {
-        if (error.status != null) {
-          return handleError(error)
-        } else {
-          return internalError(error)
-        }
-      })
   }
+
+  // function handlePutApplication (req, res, handleError) {
+  //   console.log('put')
+  //   let handler
+  //   if (req.body.finished) {
+  //     logger.info({userId: req.user.id}, 'finishing application')
+  //     delete req.body.finished
+  //     handler = handleFinishApplication
+  //   } else {
+  //     logger.info({userId: req.user.id}, 'updating application')
+  //     handler = handleUpdateApplication
+  //   }
+  //   return handler(req, res)
+  //     .catch(error => {
+  //       if (error.status != null) {
+  //         return handleError(error)
+  //       } else {
+  //         console.trace(error)
+  //         return internalError(error)
+  //       }
+  //     })
+  // }
 
   function handleFinishApplication (req, res) {
     return updateApplication(req.user.id, req.body)
@@ -188,6 +200,7 @@ module.exports = function (models) {
   }
 
   function sendApplication (res) {
+    console.trace('deprecated: sendApplication')
     return application => {
       if (!application) {
         throw {status: 'Not Found'}
@@ -201,6 +214,7 @@ module.exports = function (models) {
   }
 
   function internalError (handleError) {
+    console.trace('deprecated: internalError')
     return error => {
       logger.error(error)
       return handleError({status: 'Internal Server Error'})

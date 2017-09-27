@@ -21,9 +21,16 @@ module.exports = models => {
     const role = user.role
     if (role === roles.applicant) {
       // TODO there should be a better way to get the current application from a user.
-      const application = await Application.fetchByUser(user.id)
+      const application = await Application.fetchLatest(user.id)
+      if (application == null) {
+        return next({status: 'Unauthorized'})
+      }
       req.application = application
       const status = await application.fetchStatus()
+      if (application.programmeYear !== constants.programmeYear) {
+        // old application
+        return next({status: 'Unauthorized'})
+      }
       if (status === null) {
         // not vetted yet
         return next({status: 'Unauthorized'})

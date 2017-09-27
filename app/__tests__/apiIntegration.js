@@ -158,3 +158,9 @@ test('techpreferences - junk', async t => {
   const error = await t.throws(api.putTechPreferences({Junk: 0}, cookie))
   t.is(error.response.status, 400)
 })
+
+// === companies ===
+
+test.todo('companies - no application')
+test.todo('companies - rejected')
+test.todo('companies - happy case')

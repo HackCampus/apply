@@ -10,7 +10,7 @@ module.exports = (error, req, res, next) => {
     logger.fatal(error.error)
     res.status(500).end()
   } else {
-    logger.info({error})
+    logger.info({error: error.message, stack: error.stack})
     try {
       const statusCode = status(error.status)
       res.status(statusCode)

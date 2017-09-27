@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const express = require('express')
+const router = require('express-promise-router')()
 const http = require('http')
 const path = require('path')
 
@@ -14,20 +15,21 @@ const requestLogger = require('./middlewares/requestLogger')
 const session = require('./middlewares/session')
 
 const app = express()
+app.use(router)
 
-app.use(forceHttps)
+router.use(forceHttps)
 
-// app.use(requestLogger(logger))
-app.use(session())
-app.use((req, res, next) => {
+// router.use(requestLogger(logger))
+router.use(session())
+router.use((req, res, next) => {
   if (!req.session) {
     logger.fatal('session not found. is redis started?')
   }
   next()
 })
-app.use(bodyParser.json())
-app.use(cookieParser())
-app.use('/static', express.static(path.join(__dirname, 'build')))
+router.use(bodyParser.json())
+router.use(cookieParser())
+router.use('/static', express.static(path.join(__dirname, 'build')))
 app.disable('x-powered-by')
 
 // routes
@@ -35,34 +37,34 @@ const models = require('./database')
 
 // Needs to come before all other routes, as authorized middleware depends on these.
 const auth = require('./routes/auth')(models)
-auth.routes(app)
+auth.routes(router)
 
 const application = require('./routes/application')(models)
-application.routes(app)
+application.routes(router)
 
 const companies = require('./routes/companies')(models)
-companies.routes(app)
+companies.routes(router)
 
 const user = require('./routes/user')(models)
-user.routes(app)
+user.routes(router)
 
 const match = require('./routes/match')(models)
-match.routes(app)
+match.routes(router)
 
 const profile = require('./routes/profile')(models)
-profile.routes(app)
+profile.routes(router)
 
 // client-side app routes
 const spa = require('./templates/spa')
 const clientApp = appName => (req, res) => res.send(spa(appName))
-app.get('/', clientApp('apply'))
-app.get('/shortlisted', clientApp('companies'))
-app.get('/match', limitToMatchers(clientApp('login')), clientApp('match'))
-app.get('/match/application/:id', limitToMatchers(clientApp('login')), clientApp('matchDetail'))
+router.get('/', clientApp('apply'))
+router.get('/shortlisted', clientApp('companies'))
+router.get('/match', limitToMatchers(clientApp('login')), clientApp('match'))
+router.get('/match/application/:id', limitToMatchers(clientApp('login')), clientApp('matchDetail'))
 
 // error handling & fallback route.
-app.use(errorHandler)
-app.use((req, res, handleError) => {
+router.use(errorHandler)
+router.use((req, res, handleError) => {
   res.status(404).end()
 })
 

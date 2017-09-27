@@ -103,8 +103,14 @@ module.exports = (bsModels, knex) => {
       return new this(b)
     }
 
-    static async fetchByUser (userId) {
-      return Application.fetchSingle({userId, programmeYear: constants.programmeYear})
+    // Returns the application with the latest application year belonging to the given user.
+    // Returns null if the user has no applications.
+    static async fetchLatest (userId) {
+      const bs = await BsModel.where({userId}).orderBy('programmeYear', 'DESC').fetch()
+      if (bs == null) {
+        return null
+      }
+      return new this(bs)
     }
 
     static async fetchByProfileToken (profileToken) {
@@ -302,6 +308,18 @@ module.exports = (bsModels, knex) => {
       await bs.fetch()
       this.bs = bs
       return this
+    }
+
+    //
+    // MATERIALIZE
+    //
+
+    // Returns a JSON object of the full model, ready to be sent over the wire.
+    async materialize () {
+      let application = this.toJSON()
+      application.status = await this.fetchStatus()
+      application.techPreferences = await this.fetchTechPreferences()
+      return application
     }
   }
 }
