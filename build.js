@@ -6,6 +6,7 @@ const cssnano = require('cssnano')
 const exorcist = require('exorcist')
 const fs = require('fs')
 const gulp = require('gulp')
+const gulpBabel = require('gulp-babel')
 const postcss = require('gulp-postcss')
 const sourcemaps = require('gulp-sourcemaps')
 const mkdirp = require('mkdirp')
@@ -14,12 +15,28 @@ const precss = require('precss')
 const uglifyify = require('uglifyify')
 const source = require('vinyl-source-stream')
 
-const build = path.join(__dirname, 'app', 'build')
-const client = path.join(__dirname, 'app', 'client')
+const appPath = path.join(__dirname, 'app')
+const buildPath = path.join(appPath, 'build')
+const clientSource = path.join(appPath, 'client')
+const clientBuild = path.join(buildPath, 'client')
 
 const development = process.env.NODE_ENV !== 'production'
 
-const notifier = development ? require('node-notifier') : function () {}
+const notifier = development ? require('node-notifier') : {notify () {}}
+
+//
+// Server compilation
+//
+
+gulp.task('server', () => {
+  return gulp.src(path.join(appPath, '**', '*.js'))
+    .pipe(gulpBabel())
+    .pipe(gulp.dest(buildPath))
+})
+
+//
+// Client JS bundling
+//
 
 const babelifyConfig = {
   presets: [['env', {
@@ -34,9 +51,8 @@ if (development) {
   function bundle (entryPath) {
     return browserifyIncremental({
       entries: [entryPath],
-      fullPaths: true, // for disc
       debug: true, // source maps
-      cacheFile: path.join(build, '.buildCache.json')
+      cacheFile: path.join(clientBuild, '.buildCache.json')
     })
     .transform(babelify, babelifyConfig)
     .on('log', console.log)
@@ -61,15 +77,15 @@ if (development) {
   }
 }
 
-// entryPath is relative to `client` directory
-// bundleName output is relative to `build` directory
+// entryPath is relative to `clientSource` directory
+// bundleName output is relative to `clientBuild` directory
 function clientApp (entryPath, bundleName) {
   return () => {
-    mkdirp.sync(build)
-    return bundle(path.join(client, entryPath))
-    .pipe(exorcist(path.join(build, `${bundleName}.map`)))
+    mkdirp.sync(clientBuild)
+    return bundle(path.join(clientSource, entryPath))
+    .pipe(exorcist(path.join(clientBuild, `${bundleName}.map`)))
     .pipe(source(bundleName))
-    .pipe(gulp.dest(build))
+    .pipe(gulp.dest(clientBuild))
   }
 }
 
@@ -88,19 +104,23 @@ gulp.task('clientApps', [
   'profile',
 ])
 
+//
+// Client CSS
+//
+
 const styles = (srcDirectory) =>
   gulp.src(srcDirectory)
   .pipe(sourcemaps.init())
   .pipe(postcss([autoprefixer, precss, cssnano()]))
   .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(build))
+  .pipe(gulp.dest(clientBuild))
 
 gulp.task('app styles', () =>
-  styles(path.join(client, 'apps', '*', 'styles.css'))
+  styles(path.join(clientSource, 'apps', '*', 'styles.css'))
 )
 
 gulp.task('common styles', () =>
-  styles(path.join(client, 'styles', '*.css'))
+  styles(path.join(clientSource, 'styles', '*.css'))
 )
 
 gulp.task('styles', [
@@ -108,8 +128,12 @@ gulp.task('styles', [
   'common styles',
 ])
 
-gulp.task('default', ['clientApps', 'styles'], () => {
-  development && notifier.notify({
+//
+// Entrypoints
+//
+
+gulp.task('default', ['server', 'clientApps', 'styles'], () => {
+  notifier.notify({
     title: 'HackCampus',
     message: 'build finished',
   })

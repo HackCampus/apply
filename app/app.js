@@ -29,7 +29,7 @@ router.use((req, res, next) => {
 })
 router.use(bodyParser.json())
 router.use(cookieParser())
-router.use('/static', express.static(path.join(__dirname, 'build')))
+router.use('/static', express.static(path.join(__dirname, 'client')))
 app.disable('x-powered-by')
 
 // routes
