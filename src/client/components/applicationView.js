@@ -79,6 +79,7 @@ module.exports = function (application) {
       <tr><td><strong>public profile link</strong></td><td><a target="_blank" href="${publicProfileUrl}">${publicProfileUrl}</a></td></tr>
       ${field('created at', 'createdAt', date => moment(date).format('DD.MM.YYYY'))}
       ${field('finished at', 'finishedAt', date => date ? moment(date).format('DD.MM.YYYY') : html`<em>unfinished</em>`)}
+      ${field('previous applications', 'previousApplications', applications => html`<span>${Object.entries(applications).map(([year, id]) => html`<span><a href="/match/application/${id}">${year}</a> </span>`)}</span>`)}
       ${header('Contact details')}
       ${field('first name', 'firstName')}
       ${field('last name', 'lastName')}

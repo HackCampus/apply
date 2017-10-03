@@ -30,7 +30,7 @@ module.exports = models => {
     app.delete('/applications/:applicationId/events/:eventId', limitToMatchers(), handleDeleteApplicationEvent)
   }
 
-  async function handleGetApplications (req, res, handleError) {
+  async function handleGetApplications (req, res) {
     const query = req.query
     if (query != null && Object.keys(query).length === 0) {
       query.programmeYears = [constants.programmeYear]
@@ -40,25 +40,24 @@ module.exports = models => {
     return res.json({applications})
   }
 
-  async function handleGetSingleApplication (req, res, handleError) {
+  async function handleGetSingleApplication (req, res) {
     const id = req.params.id
     if (Number.isNaN(Number.parseInt(id))) {
-      return handleError({status: 'Not Found'})
+      throw {status: 'Not Found'}
     }
     try {
       const application = await Application.fetchById(id)
-      const response = application.toJSON()
-      const techPreferences = await application.fetchTechPreferences()
-      response.techPreferences = techPreferences
+      const response = await application.materialize()
       const companiesModels = await Company.fetchAll()
       const companies = companiesModels.map(c => c.toJSON())
-      response.companiesScore = getCompaniesScore(companies, techPreferences)
+      response.companiesScore = getCompaniesScore(companies, response.techPreferences)
+      response.previousApplications = await getPreviousApplicationIdsByYear(response.userId)
       return res.json(response)
     } catch (error) {
       if (error instanceof errors.NotFound) {
-        return handleError({status: 'Not Found'})
+        throw {status: 'Not Found'}
       }
-      return handleError({status: 'Unknown'})
+      throw {status: 'Unknown'}
     }
   }
 
@@ -128,6 +127,16 @@ module.exports = models => {
     const applicationEvents = await ApplicationEvent.fetchAllByApplicationId(applicationId)
     const response = {events: applicationEvents.map(e => e.toJSON())}
     return response
+  }
+
+  async function getPreviousApplicationIdsByYear (userId) {
+    const applications = await Application.fetchAll({userId})
+    const years = {}
+    for (let application of applications) {
+      years[application.programmeYear] = application.id
+    }
+    delete years[constants.programmeYear]
+    return years
   }
 
   return {
