@@ -1,3 +1,7 @@
+import type Knex from 'knex'
+import type {Model} from './Model'
+
+// @flow
 const shortid = require('shortid')
 
 const contains = require('../../lib/contains')
@@ -8,7 +12,9 @@ const constants = require('../../constants')
 const errors = require('../errors')
 
 const ApplicationEventModel = require('./ApplicationEvent')
+const TechPreferenceModel = require('./TechPreference')
 const applicationEvents = require('./applicationEvents')
+const definitelyTransactFactory = require('./definitelyTransact')
 
 // TODO move this somewhere more suitable.
 // Should probably unify applicationEvents.js & applicationStages.js & this.
@@ -43,22 +49,16 @@ const stagesToEvents = {
   ],
 }
 
-module.exports = (bsModels, knex) => {
+module.exports = (bsModels, knex: Knex) => {
 
   const BsModel = bsModels.Application
-  const ApplicationEvent = ApplicationEventModel(bsModels)
+  const TechPreference: Model = TechPreferenceModel(bsModels)
+  const ApplicationEvent: Model = ApplicationEventModel(bsModels)
+  const definitelyTransact = definitelyTransactFactory(bsModels)
 
-  return class Application {
+  return class Application implements Model {
     constructor (bs) {
       this.bs = bs == null ? new BsModel() : bs
-    }
-
-    toJSON () {
-      const bsJson = this.bs.toJSON({
-        shallow: true, // do not include relations - explicitly fetch them instead.
-      })
-      const status = this.status ? this.status.toJSON() : undefined
-      return Object.assign({}, bsJson, {status})
     }
 
     //
@@ -69,18 +69,12 @@ module.exports = (bsModels, knex) => {
       return this.bs.id
     }
 
-    //
-    // BS INTERFACE VIOLATIONS
-    //
-
-    static where () {
-      console.trace('using bs method! where')
-      return bsModels.Application.where(...arguments)
+    get finishedAt () {
+      return this.bs.get('finishedAt')
     }
 
-    get () {
-      console.trace('using bs method! get')
-      return this.bs.get(...arguments)
+    get programmeYear () {
+      return this.bs.get('programmeYear')
     }
 
     //
@@ -260,16 +254,7 @@ module.exports = (bsModels, knex) => {
     //
 
     async fetchTechPreferences () {
-      const bs = await this.bs.load('techPreferences')
-      const bsJson = bs.toJSON()
-      const results = bsJson['techPreferences']
-      if (results == null) {
-        throw errors.NotFound()
-      }
-      const techPreferences = {}
-      results.forEach(({technology, preference}) => {
-        techPreferences[technology] = preference
-      })
+      const techPreferences = await TechPreference.fetchAllByApplication(this.id)
       return techPreferences
     }
 
@@ -283,16 +268,18 @@ module.exports = (bsModels, knex) => {
     // CREATE
     //
 
-    static async create (fields, transaction) {
-      const profileToken = shortid.generate()
-      const required = {programmeYear: constants.programmeYear, profileToken}
-      const actualFields = Object.assign({}, required, fields)
-      const bs = await new BsModel(actualFields).save(null, {
-        method: 'insert',
-        transacting: transaction,
+    static async create (userId, fields, transaction) {
+      return await definitelyTransact(transaction, async transaction => {
+        const profileToken = shortid.generate()
+        const required = {userId, programmeYear: constants.programmeYear, profileToken}
+        const bs = await new BsModel(required).save(null, {
+          method: 'insert',
+          transacting: transaction,
+        })
+        await bs.fetch({transacting: transaction})
+        const application = new this(bs)
+        return await application.update(fields, transaction)
       })
-      await bs.fetch()
-      return new this(bs)
     }
 
     //
@@ -300,19 +287,74 @@ module.exports = (bsModels, knex) => {
     //
 
     async update (fields, transaction) {
-      const bs = await new BsModel({id: this.id}).save(fields, {
-        method: 'update',
-        transacting: transaction,
-        patch: true,
+      return await definitelyTransact(transaction, async transaction => {
+        if (this.finishedAt != null) {
+          throw new errors.ApplicationFinished()
+        }
+        if (fields == null || Object.keys(fields).length == 0) {
+          return this
+        }
+        if ('techPreferences' in fields) {
+          const preferences = []
+          for (let technology in fields.techPreferences) {
+            preferences.push({technology, preference: fields.techPreferences[technology]})
+          }
+          for (let preference of preferences) {
+            await TechPreference.create(this.id, preference, transaction)
+          }
+          delete fields.techPreferences
+        }
+        if ('status' in fields) {
+          delete fields.status
+        }
+        fields.updatedAt = new Date()
+        const bs = await new BsModel({id: this.id}).save(fields, {
+          method: 'update',
+          transacting: transaction,
+          patch: true,
+        })
+        await bs.fetch({transacting: transaction})
+        this.bs = bs
+        return this
       })
-      await bs.fetch()
-      this.bs = bs
-      return this
+    }
+
+    // Updates a given user's application if it is from the current year,
+    // or creates a new application, copying the user's previous answers if
+    // the user already applied in previous years.
+    static async updateOrRenew (userId, fields, transaction) {
+      return await definitelyTransact(transaction, async transaction => {
+        const latest = await Application.fetchLatest(userId, transaction)
+        if (!latest) {
+          return await Application.create(userId, fields, transaction)
+        }
+        if (latest.programmeYear !== constants.programmeYear) {
+          const oldFields = await latest.materialize()
+          const updatedFields = Object.assign({}, oldFields, fields)
+          delete updatedFields.id
+          delete updatedFields.createdAt
+          delete updatedFields.updatedAt
+          delete updatedFields.finishedAt
+          delete updatedFields.profileToken
+          delete updatedFields.programmeYear
+          delete updatedFields.status
+          const newApplication = await Application.create(userId, updatedFields, transaction)
+          return newApplication
+        }
+        return latest.update(fields, transaction)
+      })
     }
 
     //
     // MATERIALIZE
     //
+
+    // toJSON does not include relations - you have to explicitly fetch them instead.
+    toJSON () {
+      return this.bs.toJSON({
+        shallow: true,
+      })
+    }
 
     // Returns a JSON object of the full model, ready to be sent over the wire.
     async materialize () {

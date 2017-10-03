@@ -21,7 +21,7 @@ test('ApplicationEvent.create', async t => {
   const email = 'appevent@maker.test'
   const matcher = await User.create({email, role: 'matcher'})
   const applicant = await User.create({email: 'idontcare@appli.cant'})
-  const application = await Application.create({userId: applicant.id})
+  const application = await Application.create(applicant.id)
   const type = 'commented'
   const payload = {
     comment: 'deep meaningful comment'
@@ -39,7 +39,7 @@ test('ApplicationEvent.fetchAllByApplicationId', async t => {
   const email = 'appevent@maker.test2'
   const matcher = await User.create({email, role: 'matcher'})
   const applicant = await User.create({email: 'idontcare@appli.cant2'})
-  const application = await Application.create({userId: applicant.id})
+  const application = await Application.create(applicant.id)
   const actions = [
     {type: 'commented', payload: {comment: 'yes'}},
     {type: 'rejected'}, // no payload

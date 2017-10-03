@@ -1,21 +1,24 @@
 // @flow
-// import type {$Request, $Response, Router} from 'express'
+import type {$Response, Middleware, Router} from 'express'
+import type {Request} from '../types'
 
 const isEmpty = require('lodash.isempty')
 const extend = require('xtend')
 
-const constants = require('../constants')
+const errors = require('../database/errors')
+
 const logger = require('../lib/logger')
 
 const authorized = require('../middlewares/authorized')
 const validate = require('../middlewares/validate')
 
+const constants = require('../constants')
 const wireFormats = require('../wireFormats')
 
 module.exports = function (models) {
-  const {Database, Application, ApplicationSane, TechPreference} = models
+  const {Database, ApplicationSane: Application, TechPreference} = models
 
-  function routes (app: express$Application) {
+  function routes (app: Router) {
     app.get('/me/application',
       authorized,
       handleGetApplication)
@@ -33,266 +36,50 @@ module.exports = function (models) {
 
   // Application - handlers
 
-  async function handleGetApplication (req: $Request & {user: ?{id: string}}, res: $Response) {
+  async function handleGetApplication (req: Request, res: $Response) {
     if (!req.user) {
       throw {status: 'Unauthorized'}
     }
     const userId = req.user.id
-    const application = await ApplicationSane.fetchLatest(userId)
+    const application = await Application.fetchLatest(userId)
     if (!application) {
       throw {status: 'Not Found'}
     }
     res.json(await application.materialize())
   }
 
-  async function handlePutApplication (req, res) {
-    if (req.body.finished) {
-      logger.warn('TODO handlePutApplication: finished application')
-      // logger.info({userId: req.user.id}, 'finishing application')
-      // delete req.body.finished
-      // await handleFinishApplication(req, res)
+  async function handlePutApplication (req: Request, res: $Response) {
+    if (!req.user) {
+      throw {status: 'Unauthorized'}
+    }
+    const userId = req.user.id
+    const updates = req.body
+    if (updates.finished) {
+      logger.info({userId}, 'finishing application')
+      delete updates.finished
+      updates.finishedAt = new Date()
     } else {
-      logger.info({userId: req.user.id}, 'updating application')
-      const userId = req.user.id
-      const application = await ApplicationSane.fetchLatest(userId)
-      logger.warn('TODO handlePutApplication: update application')
+      logger.info({userId}, 'updating application')
     }
-  }
-
-  // function handlePutApplication (req, res, handleError) {
-  //   console.log('put')
-  //   let handler
-  //   if (req.body.finished) {
-  //     logger.info({userId: req.user.id}, 'finishing application')
-  //     delete req.body.finished
-  //     handler = handleFinishApplication
-  //   } else {
-  //     logger.info({userId: req.user.id}, 'updating application')
-  //     handler = handleUpdateApplication
-  //   }
-  //   return handler(req, res)
-  //     .catch(error => {
-  //       if (error.status != null) {
-  //         return handleError(error)
-  //       } else {
-  //         console.trace(error)
-  //         return internalError(error)
-  //       }
-  //     })
-  // }
-
-  function handleFinishApplication (req, res) {
-    return updateApplication(req.user.id, req.body)
-      .then(application => {
-        const {finished, errors} = verifyFinished(application.toJSON())
-        if (finished) {
-          return finishApplication(application)
-            .then(sendApplication(res))
-        } else {
-          throw {
-            status: 'Bad Request',
-            error: {errors},
-          }
-        }
-      })
-  }
-
-  function handleUpdateApplication (req, res) {
-    return updateApplication(req.user.id, req.body)
-      .then(sendApplication(res))
-  }
-
-  // Application - helpers
-  // Helpers should throw application errors instead of handling them.
-  // It is the responsibility of handler functions to handle the errors.
-
-  function getApplication (userId) {
-    return fetchCurrentApplication(userId)
-      .then(application => {
-        if (application) return application
-        // There was no application from this year, but there might be one from a previous year.
-        // Create a new one.
-        return createApplicationFromPreviousYear(userId)
-      })
-      .then(application => {
-        if (application) return application
-        throw {status: 'Not Found'}
-      })
-  }
-
-  // Checks that none of the required fields are empty in the given application.
-  // This is a hack to work around the fact that the JSON schema (in wireFormats.js)
-  // does not have any required fields set, as we want to do partial updates.
-  // Terrible solution - should find a better way to do finished applications.
-  function verifyFinished (application) {
-    const emptyFields = []
-    for (let field in application) {
-      if (field === 'updatedAt' || field === 'finishedAt') continue
-      const response = application[field]
-      if ((response == null || response === '') && !wireFormats.optionalFields[field]) {
-        emptyFields.push(field)
+    try {
+      const application = await Application.updateOrRenew(userId, updates)
+      res.json(await application.materialize())
+    } catch (e) {
+      if (e instanceof errors.ApplicationFinished) {
+        throw {status: 'Unauthorized'}
+      } else {
+        throw e
       }
     }
-    return {
-      finished: emptyFields.length === 0,
-      errors: emptyFields
-    }
   }
 
-  // Updates the fields passed in the `update` parameter in the application
-  // corresponding to the user `userId`.
-  // If there is no application, or the application is from a previous year,
-  // a new application is created for this year.
-  function updateApplication (userId, update) {
-    const application = fetchCurrentApplication(userId)
-      .then(application => {
-        if (application) return application
-        return createApplicationFromPreviousYear(userId)
-      })
-      .then(upsertApplication(userId))
-    return isEmpty(update)
-      ? application
-      : application.then(a => a.save(update, {patch: true}))
-  }
-
-  // Fetches an application from this year only.
-  function fetchCurrentApplication (userId) {
-    return Application.where({userId, programmeYear: constants.programmeYear}).fetch()
-  }
-
-  // Creates a copy of a previous year's application.
-  // If an application from this year exists already, does nothing.
-  function createApplicationFromPreviousYear(userId) {
-    return Application.where({userId}).orderBy('programmeYear', 'DESC').fetch()
-      .then(application => {
-        if (!application) return null
-        const now = new Date().toJSON()
-        const applicationJson = application.toJSON()
-        if (applicationJson.programmeYear === constants.programmeYear) {
-          logger.error('createApplicationFromPreviousYear was called even though a current application exists')
-          return application
-        }
-        logger.info({userId}, 'creating new application from previous year')
-        const newApplication = extend(applicationJson, {
-          programmeYear: constants.programmeYear,
-          updatedAt: new Date(),
-          finishedAt: null,
-        })
-        // so bad... if we don't remove the id, we'll update the current application rather than creating a new one.
-        delete newApplication.id
-        return new Application(newApplication).save()
-      })
-  }
-
-  function finishApplication (application) {
-    const now = new Date().toJSON()
-    return Application.where('id', application.id).fetch()
-      .then(application => application.save({finishedAt: now}, {patch: true}))
-  }
-
-  function formatApplicationObject (application) {
-    if (application.dateOfBirth instanceof Date) {
-      application.dateOfBirth = application.dateOfBirth.toISOString().substr(0, 10)
-    }
-    return application
-  }
-
-  function upsertApplication (userId) {
-    return application => {
-      if (application) return application
-      logger.info({userId}, 'creating new application')
-      return new Application({userId, programmeYear: constants.programmeYear}).save()
-    }
-  }
-
-  function sendApplication (res) {
-    console.trace('deprecated: sendApplication')
-    return application => {
-      if (!application) {
-        throw {status: 'Not Found'}
-      }
-      const applicationObject = formatApplicationObject(application.serialize())
-      return getTechPreferences(application.id).then(techPreferences => {
-        applicationObject.techPreferences = techPreferences
-        res.json(applicationObject)
-      })
-    }
-  }
-
-  function internalError (handleError) {
-    console.trace('deprecated: internalError')
-    return error => {
-      logger.error(error)
-      return handleError({status: 'Internal Server Error'})
-    }
-  }
-
-  // Tech preferences - handlers
-
-  function handlePutTechPreferences (req, res, handleError) {
-    updateTechPreferences(req.user.id, req.body)
-      .then(techPreferences => { res.json(techPreferences) })
-      .catch(internalError(handleError))
-  }
-
-  // Tech preferences - helpers
-
-  function getTechPreferences (applicationId) {
-    return TechPreference.where({applicationId}).fetchAll()
-      .then(collection => {
-        const preferences = collection.serialize()
-        const techPreferences = {}
-        for (let p in preferences) {
-          const {technology, preference} = preferences[p]
-          techPreferences[technology] = preference
-        }
-        return techPreferences
-      })
-  }
-
-  function updateTechPreferences (userId, newPreferences) {
-    return fetchCurrentApplication(userId)
-      .then(maybeApplication => {
-        if (!maybeApplication) {
-          throw new Error('no application for user with id ' + userId)
-        }
-        return maybeApplication
-      })
-      .then(application => {
-        return Database.transaction(t => {
-          const writes = []
-          for (let technology in newPreferences) {
-            const preference = newPreferences[technology]
-            writes.push({applicationId: application.id, technology, preference})
-          }
-          return Promise.all(writes.map(write => saveTechPreference(write, t)))
-            .then(() => getTechPreferences(application.id))
-        })
-      })
-  }
-
-  function saveTechPreference ({applicationId, technology, preference}, transaction) {
-    return TechPreference.where({applicationId, technology})
-      .fetch()
-      .then(row => {
-        if (row) {
-          return row.save({preference}, {patch: true, transacting: transaction})
-        } else {
-          return new TechPreference({applicationId, technology, preference}).save({}, {transacting: transaction})
-        }
-      })
+  async function handlePutTechPreferences (req: Request, res: $Response) {
+    const userId = req.user.id
+    const application = await Application.updateOrRenew(userId, {techPreferences: req.body})
+    res.json(await application.fetchTechPreferences())
   }
 
   return {
     routes,
-
-    testing: {
-      createApplicationFromPreviousYear,
-      finishApplication,
-      getApplication,
-      updateApplication,
-      updateTechPreferences,
-      verifyFinished,
-    },
   }
 }

@@ -130,6 +130,22 @@ test('application - put good', async t => {
   t.is(get.data.firstName, 'TestUser')
 })
 
+test('application - put finished', async t => {
+  const random = (Math.random() + '').slice(2, 10)
+  const credentials = {email: `foo${random}@example.com`, password: 'foobar'}
+
+  await api.register(credentials)
+  const cookie = await getCookie(credentials)
+
+  const put = await api.putApplication({firstName: 'TestUser', finished: true}, cookie)
+  t.is(put.status, 200)
+  const get = await api.getApplication(cookie)
+  t.is(get.data.firstName, 'TestUser')
+  t.truthy(get.data.finishedAt)
+  const finishedPut = await t.throws(api.putApplication({lastName: '2late'}, cookie))
+  t.is(finishedPut.response.status, 401)
+})
+
 // === tech preferences ===
 
 test('techpreferences - unauthorized put', async t => {

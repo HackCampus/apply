@@ -14,7 +14,7 @@
     "clean": "rm -rf build/",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "test": "ava --timeout=30s --serial --verbose",
+    "test": "ava --timeout=30s --serial --verbose build/**/__tests__/**/*.js",
     "coverage": "nyc --reporter=html npm test"
   },
   "author": "",

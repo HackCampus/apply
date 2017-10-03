@@ -31,7 +31,11 @@ const notifier = development ? require('node-notifier') : {notify () {}}
 
 gulp.task('server', () => {
   return gulp.src([path.join(sourcePath, '**', '*.js'), '!' + clientSource])
-    .pipe(gulpBabel())
+    .pipe(gulpBabel({
+      plugins: [
+        'transform-flow-strip-types'
+      ]
+    }))
     .pipe(gulp.dest(buildPath))
 })
 

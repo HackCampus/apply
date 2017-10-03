@@ -17,9 +17,11 @@ module.exports = {
 
 async function setupDb () {
   try {
+    console.log('starting migrations on test database...')
     await db.migrate.latest({
       directory: path.join(__dirname, '..', '..', 'migrations'),
     })
+    console.log('migrations done')
     return db
   } catch (e) {
     console.error(e)
@@ -28,5 +30,6 @@ async function setupDb () {
 }
 
 function teardownDb (db) {
+  console.log('dropping test database')
   return db.raw('drop owned by hackcampus;')
 }
