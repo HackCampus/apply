@@ -6,6 +6,7 @@ const shortid = require('shortid')
 
 const contains = require('../../lib/contains')
 const intersection = require('../../lib/intersection')
+const logger = require('../../lib/logger')
 
 const constants = require('../../constants')
 
@@ -329,6 +330,7 @@ module.exports = (bsModels, knex: Knex) => {
           return await Application.create(userId, fields, transaction)
         }
         if (latest.programmeYear !== constants.programmeYear) {
+          logger.info({userId}, 'applicant from previous year started a new application')
           const oldFields = await latest.materialize()
           const updatedFields = Object.assign({}, oldFields, fields)
           delete updatedFields.id
