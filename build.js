@@ -15,9 +15,9 @@ const precss = require('precss')
 const uglifyify = require('uglifyify')
 const source = require('vinyl-source-stream')
 
-const appPath = path.join(__dirname, 'app')
-const buildPath = path.join(appPath, 'build')
-const clientSource = path.join(appPath, 'client')
+const sourcePath = path.join(__dirname, 'src')
+const buildPath = path.join(__dirname, 'build')
+const clientSource = path.join(sourcePath, 'client')
 const clientBuild = path.join(buildPath, 'client')
 
 const development = process.env.NODE_ENV !== 'production'
@@ -29,7 +29,7 @@ const notifier = development ? require('node-notifier') : {notify () {}}
 //
 
 gulp.task('server', () => {
-  return gulp.src(path.join(appPath, '**', '*.js'))
+  return gulp.src(path.join(sourcePath, '**', '*.js'))
     .pipe(gulpBabel())
     .pipe(gulp.dest(buildPath))
 })

@@ -7,11 +7,11 @@
     "npm": "5.4.2"
   },
   "scripts": {
-    "start": "npm build && npm run migrate-latest && node app/build/index.js",
+    "start": "npm build && npm run migrate-latest && node build/index.js",
     "build": "npm run clean && NODE_ENV=production node build.js",
-    "watch": "npm run clean && nodemon --ext js,css --ignore app/build/ build.js",
-    "develop-server": "nodemon --ignore client/ app/build/index.js | bunyan",
-    "clean": "rm -rf app/build/",
+    "watch": "npm run clean && nodemon --ext js,css --ignore build/ build.js",
+    "develop-server": "nodemon --ignore build/client/ build/index.js | bunyan",
+    "clean": "rm -rf build/",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "test": "ava --timeout=30s --serial --verbose",

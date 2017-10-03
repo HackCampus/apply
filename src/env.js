@@ -1,6 +1,7 @@
 // Only loaded in development
+const path = require('path')
 const localenv = require('localenv/noload')
-localenv.inject_env(__dirname + '/.env')
+localenv.inject_env(path.resolve('./.env'))
 
 const {env, envNumber} = require('./lib/env')
 

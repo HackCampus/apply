@@ -41,7 +41,7 @@ module.exports = function (models) {
 
   async function handlePutApplication (req, res) {
     if (req.body.finished) {
-      console.warning('TODO handlePutApplication: finished application')
+      logger.warn('TODO handlePutApplication: finished application')
       // logger.info({userId: req.user.id}, 'finishing application')
       // delete req.body.finished
       // await handleFinishApplication(req, res)
@@ -49,7 +49,7 @@ module.exports = function (models) {
       logger.info({userId: req.user.id}, 'updating application')
       const userId = req.user.id
       const application = await ApplicationSane.fetchLatest(userId)
-      console.warning('TODO handlePutApplication: update application')
+      logger.warn('TODO handlePutApplication: update application')
     }
   }
 
