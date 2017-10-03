@@ -1,7 +1,7 @@
 const models = require('../app/database')
 const shortid = require('shortid')
 
-const {ApplicationSane: Application} = models
+const {Application} = models
 
 async function main () {
   const applications = await Application.fetchAll()
