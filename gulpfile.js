@@ -7,6 +7,7 @@ const exorcist = require('exorcist')
 const fs = require('fs')
 const gulp = require('gulp')
 const gulpBabel = require('gulp-babel')
+const nodemon = require('gulp-nodemon')
 const postcss = require('gulp-postcss')
 const sourcemaps = require('gulp-sourcemaps')
 const mkdirp = require('mkdirp')
@@ -29,7 +30,7 @@ const notifier = development ? require('node-notifier') : {notify () {}}
 //
 
 gulp.task('server', () => {
-  return gulp.src(path.join(sourcePath, '**', '*.js'))
+  return gulp.src([path.join(sourcePath, '**', '*.js'), '!' + clientSource])
     .pipe(gulpBabel())
     .pipe(gulp.dest(buildPath))
 })
@@ -83,9 +84,9 @@ function clientApp (entryPath, bundleName) {
   return () => {
     mkdirp.sync(clientBuild)
     return bundle(path.join(clientSource, entryPath))
-    .pipe(exorcist(path.join(clientBuild, `${bundleName}.map`)))
-    .pipe(source(bundleName))
-    .pipe(gulp.dest(clientBuild))
+      .pipe(exorcist(path.join(clientBuild, `${bundleName}.map`)))
+      .pipe(source(bundleName))
+      .pipe(gulp.dest(clientBuild))
   }
 }
 
@@ -110,10 +111,10 @@ gulp.task('clientApps', [
 
 const styles = (srcDirectory) =>
   gulp.src(srcDirectory)
-  .pipe(sourcemaps.init())
-  .pipe(postcss([autoprefixer, precss, cssnano()]))
-  .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(clientBuild))
+    .pipe(sourcemaps.init())
+    .pipe(postcss([autoprefixer, precss, cssnano()]))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(clientBuild))
 
 gulp.task('app styles', () =>
   styles(path.join(clientSource, 'apps', '*', 'styles.css'))
@@ -139,4 +140,19 @@ gulp.task('default', ['server', 'clientApps', 'styles'], () => {
   })
 })
 
-gulp.start.call(gulp, 'default')
+gulp.task('watch-server', ['server'], () => {
+  return nodemon({
+    script: path.join(buildPath, 'index.js'),
+    watch: sourcePath,
+    ignore: [clientSource],
+    tasks: ['server'],
+  })
+})
+
+gulp.task('watch-client', ['clientApps', 'styles'], () => {
+  return nodemon({
+    script: 'empty.js',
+    watch: clientSource,
+    tasks: ['clientApps', 'styles']
+  })
+})

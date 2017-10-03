@@ -1,3 +1,6 @@
+// @flow
+// import type {$Request, $Response, Router} from 'express'
+
 const isEmpty = require('lodash.isempty')
 const extend = require('xtend')
 
@@ -12,7 +15,7 @@ const wireFormats = require('../wireFormats')
 module.exports = function (models) {
   const {Database, Application, ApplicationSane, TechPreference} = models
 
-  function routes (app) {
+  function routes (app: express$Application) {
     app.get('/me/application',
       authorized,
       handleGetApplication)
@@ -30,7 +33,10 @@ module.exports = function (models) {
 
   // Application - handlers
 
-  async function handleGetApplication (req, res) {
+  async function handleGetApplication (req: $Request & {user: ?{id: string}}, res: $Response) {
+    if (!req.user) {
+      throw {status: 'Unauthorized'}
+    }
     const userId = req.user.id
     const application = await ApplicationSane.fetchLatest(userId)
     if (!application) {
