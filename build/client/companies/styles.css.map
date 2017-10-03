@@ -1,0 +1,1 @@
+{"version":3,"sources":["companies/styles.css"],"names":[],"mappings":"AAAA,WACE,gBAAiB,AACjB,WAAa,CACd","file":"styles.css","sourcesContent":[".companies {\n  max-width: 768px;\n  margin: auto;\n}\n"]}

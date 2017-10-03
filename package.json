@@ -7,15 +7,15 @@
     "npm": "5.4.2"
   },
   "scripts": {
-    "start": "npm run build && npm run migrate-latest && node build/index.js",
     "build": "npm run clean && NODE_ENV=production gulp",
+    "clean": "rm -rf build/",
+    "coverage": "nyc --reporter=html npm test",
     "develop-client": "gulp watch-client-apps & gulp watch-client-styles & wait",
     "develop-server": "gulp watch-server",
-    "clean": "rm -rf build/",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "test": "ava --timeout=30s --serial --verbose build/**/__tests__/**/*.js",
-    "coverage": "nyc --reporter=html npm test"
+    "start": "npm run migrate-latest && node build/index.js",
+    "test": "ava --timeout=30s --serial --verbose build/**/__tests__/**/*.js"
   },
   "author": "",
   "license": "ISC",
