@@ -5,7 +5,7 @@ const roles = require('../roles')
 const wireFormats = require('../wireFormats')
 
 module.exports = models => {
-  const {ApplicationSane: Application, ApplicationEvent, Company} = models
+  const {Application, ApplicationEvent, Company} = models
 
   function routes (app) {
     app.get('/companies', limitToSuccessfulApplicants, handleGetCompanies)

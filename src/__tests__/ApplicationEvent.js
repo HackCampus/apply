@@ -17,7 +17,7 @@ test.after.always('teardown db', t => {
 })
 
 test('ApplicationEvent.create', async t => {
-  const {ApplicationEvent, ApplicationSane: Application, User} = models
+  const {ApplicationEvent, Application, User} = models
   const email = 'appevent@maker.test'
   const matcher = await User.create({email, role: 'matcher'})
   const applicant = await User.create({email: 'idontcare@appli.cant'})
@@ -35,7 +35,7 @@ test('ApplicationEvent.create', async t => {
 })
 
 test('ApplicationEvent.fetchAllByApplicationId', async t => {
-  const {ApplicationEvent, ApplicationSane: Application, User} = models
+  const {ApplicationEvent, Application, User} = models
   const email = 'appevent@maker.test2'
   const matcher = await User.create({email, role: 'matcher'})
   const applicant = await User.create({email: 'idontcare@appli.cant2'})

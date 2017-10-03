@@ -3,7 +3,7 @@ const logger = require('../lib/logger')
 
 module.exports = models => {
 
-  const {ApplicationSane: Application, ApplicationEvent} = models
+  const {Application, ApplicationEvent} = models
 
   function routes (app) {
     app.get('/profile/:token/:ignored', async (req, res, handleError) => {

@@ -16,7 +16,7 @@ test.after.always('teardown db', t => {
 })
 
 test('Application.create/update', async t => {
-  const {ApplicationSane: Application, User} = models
+  const {Application, User} = models
   const user = await User.createWithPassword('applicationsane@test.file', 'somepass')
   const application = await Application.create(user.id, {firstName: 'foo', lastName: 'bar', techPreferences: {React: 3, JavaScript: 0}})
   const applicationJson = await application.materialize()
@@ -33,7 +33,7 @@ test('Application.create/update', async t => {
 })
 
 test('Application.fetchLatest', async t => {
-  const {ApplicationSane: Application, User} = models
+  const {Application, User} = models
   const user = await User.createWithPassword('applicationsane2@test.file', 'somepass')
   await Application.create(user.id, {programmeYear: 2015})
   await Application.create(user.id, {firstName: 'blap', programmeYear: 2016, techPreferences: {React: 3}})
@@ -45,7 +45,7 @@ test('Application.fetchLatest', async t => {
 })
 
 test('Application.updateOrRenew - previous application exists', async t => {
-  const {ApplicationSane: Application, User} = models
+  const {Application, User} = models
   const user = await User.createWithPassword('applicationsane3@test.file', 'somepass')
   await Application.create(user.id, {programmeYear: 2015, firstName: 'name doesnt change'})
   const application = await Application.updateOrRenew(user.id, {lastName: 'does though'})

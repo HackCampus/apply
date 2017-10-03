@@ -16,7 +16,7 @@ const constants = require('../constants')
 const wireFormats = require('../wireFormats')
 
 module.exports = function (models) {
-  const {Database, ApplicationSane: Application, TechPreference} = models
+  const {Database, Application, TechPreference} = models
 
   function routes (app: Router) {
     app.get('/me/application',

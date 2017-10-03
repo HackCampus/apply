@@ -19,7 +19,7 @@ function getCompaniesScore (companies, techPreferences) {
 }
 
 module.exports = models => {
-  const {ApplicationSane: Application, ApplicationEvent, Company} = models
+  const {Application, ApplicationEvent, Company} = models
 
   function routes (app) {
     app.get('/applications', limitToMatchers(), handleGetApplications)
