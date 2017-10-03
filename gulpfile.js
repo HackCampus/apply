@@ -148,15 +148,23 @@ gulp.task('watch-server', ['server'], () => {
   return nodemon({
     script: path.join(buildPath, 'index.js'),
     watch: sourcePath,
-    ignore: [clientSource],
+    ignore: [path.join(clientSource, '**')],
     tasks: ['server'],
   })
 })
 
-gulp.task('watch-client', ['clientApps', 'styles'], () => {
+gulp.task('watch-client-apps', ['clientApps'], () => {
   return nodemon({
     script: 'empty.js',
-    watch: clientSource,
-    tasks: ['clientApps', 'styles']
+    watch: [path.join(clientSource, '**', '*.js')],
+    tasks: ['clientApps']
+  })
+})
+
+gulp.task('watch-client-styles', ['styles'], () => {
+  return nodemon({
+    script: 'empty.js',
+    watch: [path.join(clientSource, '**', '*.css')],
+    tasks: ['styles']
   })
 })

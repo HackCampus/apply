@@ -9,7 +9,7 @@
   "scripts": {
     "start": "npm run build && npm run migrate-latest && node build/index.js",
     "build": "npm run clean && NODE_ENV=production gulp",
-    "develop-client": "gulp watch-client",
+    "develop-client": "gulp watch-client-apps & gulp watch-client-styles & wait",
     "develop-server": "gulp watch-server",
     "clean": "rm -rf build/",
     "migrate-latest": "knex migrate:latest",
