@@ -56,7 +56,7 @@ module.exports = Component({
         const {applications} = a.payload
         return {model, effect: action('replaceChild', {
           key: 'table',
-          newChild: applicationTable(applications, {orderBy: 'lastUpdatedAt'})
+          newChild: applicationTable(applications, {orderBy: 'statusUpdatedAt'})
         })}
       }
       case 'fetchApplicationsFailure':

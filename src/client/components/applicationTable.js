@@ -70,13 +70,18 @@ module.exports = (applicationsArray, options) => {
       displayContent: application => application.finishedAt ? dateFromNow(application.finishedAt) : html`<em>-</em>`,
       sortContent: application => application.finishedAt || '',
     },
+    updatedAt: {
+      title: 'Updated',
+      displayContent: application => application.updatedAt ? dateFromNow(application.updatedAt) : html`<em>-</em>`,
+      sortContent: application => application.updatedAt || '',
+    },
     status: {
       title: 'Status',
       displayContent: application => application.status ? applicationEvents[application.status.type].visibleName : '-',
       sortContent: application => application.status ? application.status.type : '-',
     },
-    lastUpdatedAt: {
-      title: 'Last updated',
+    statusUpdatedAt: {
+      title: 'Status updated',
       displayContent: application => application.status ? dateFromNow(application.status.ts) : '',
       sortContent: application => application.status ? application.status.ts : '',
     },
