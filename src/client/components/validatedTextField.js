@@ -40,7 +40,7 @@ module.exports = (schema = defaultSchema, params = {}) => ({
       valid = this.validate(value).length === 0
     }
 
-    const length = model.value.length
+    const length = value.length
     const validClass = valid ? 'valid' : 'invalid'
     return h('div', { style: 'display: inline-block;' }, [
         h('input', extend({

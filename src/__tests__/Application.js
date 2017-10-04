@@ -18,10 +18,11 @@ test.after.always('teardown db', t => {
 test('Application.create/update', async t => {
   const {Application, User} = models
   const user = await User.createWithPassword('applicationsane@test.file', 'somepass')
-  const application = await Application.create(user.id, {firstName: 'foo', lastName: 'bar', techPreferences: {React: 3, JavaScript: 0}})
+  const application = await Application.create(user.id, {firstName: 'foo', lastName: 'bar', dateOfBirth: '2017-10-04', techPreferences: {React: 3, JavaScript: 0}})
   const applicationJson = await application.materialize()
   t.is(applicationJson.firstName, 'foo')
   t.is(applicationJson.lastName, 'bar')
+  t.is(applicationJson.dateOfBirth, '2017-10-04')
   t.is(applicationJson.techPreferences.React, 3)
   t.is(applicationJson.techPreferences.JavaScript, 0)
   await application.update({lastName: 'different', techPreferences: {React: 1}})

@@ -1,5 +1,6 @@
 
 
+const moment = require('moment');
 const shortid = require('shortid');
 
 const contains = require('../../lib/contains');
@@ -329,6 +330,13 @@ module.exports = (bsModels, knex) => {
       let application = this.toJSON();
       application.status = await this.fetchStatus();
       application.techPreferences = await this.fetchTechPreferences();
+      // Only return YYYY-MM-DD string rather than full datetime.
+      // BST is UTC+1, ie. 1111-11-11 == 1111-11-11T00:00:00+01:00 == 1111-11-10T23:00:00Z
+      // So we can't use the native Date.toISOString and truncate because this returns dates in UTC,
+      // and we would get back a date that is the day before the entered birthday!
+      if (application.dateOfBirth instanceof Date) {
+        application.dateOfBirth = moment(application.dateOfBirth).format('YYYY-MM-DD');
+      }
       return application;
     }
   };
