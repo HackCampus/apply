@@ -31,7 +31,7 @@ module.exports = application => Component({
     const field = (className, label, content) => html`<p class="${className}"><strong>${label}:</strong> ${content}</p>`;
     return html`
       <div class="profile">
-        <h1>HackCampus 2017 - ${application.firstName} ${application.lastName}</h1>
+        <h1>HackCampus ${application.programmeYear || ''} - ${application.firstName} ${application.lastName}</h1>
         ${application.matcherComment ? html`<div class="matcherComment"><p class="context">${markdownText(application.matcherComment)}</p></div>` : ''}
         <h3>Contact details</h3>
         ${field('name', 'name', `${application.firstName} ${application.lastName}`)}
