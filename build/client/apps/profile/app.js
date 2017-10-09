@@ -36,7 +36,7 @@ module.exports = application => Component({
         <h3>Contact details</h3>
         ${field('name', 'name', `${application.firstName} ${application.lastName}`)}
         ${field('cv', 'CV', html`<a href="${application.cvUrl}">Link to CV</a>`)}
-        ${application.websiteUrl ? field('website', 'website', html`<a href="${application.websiteUrl}">${application.websiteUrl}</a>`) : ''}
+        ${application.websiteUrl ? field('website', 'website', html`<a href="${makeAbsolute(application.websiteUrl)}">${application.websiteUrl}</a>`) : ''}
         <h3>Education</h3>
         ${field('university', 'university', application.university === 'other (eg. international)' ? application.otherUniversity : application.university)}
         ${field('courseName', 'course', `${application.courseName}`)}
@@ -48,12 +48,13 @@ module.exports = application => Component({
       </div>
     `;
   }
-} // run (effect, sources, action) {
-//   const get = (url, handler) =>
-//     pull(api.get(url), pull.map(handler))
-//   switch (effect.type) {
-//     case 'foo': {
-//     }
-//   }
-// }
-);
+});
+
+// If people enter 'www.example.com' instead of 'https://www.example.com', it will by default be interpreted as a relative URL which will return a 404.
+// Tries to return a URL that's always absolute - obviously the resulting URL may still not be valid.
+function makeAbsolute(url) {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  return 'https://' + url;
+}
