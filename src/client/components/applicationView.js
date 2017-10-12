@@ -71,7 +71,7 @@ module.exports = function (application) {
   }
 
   const sanitisedName = `${application.firstName}-${application.lastName}`.replace(' ', '-')
-  const publicProfileUrl = `https://hackcampus-apply.herokuapp.com/profile/${application.profileToken}/${sanitisedName}`
+  const publicProfileUrl = `https://apply.hackcampus.io/profile/${application.profileToken}/${sanitisedName}`
 
   return html`
     <div class="application">

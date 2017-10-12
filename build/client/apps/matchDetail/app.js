@@ -211,7 +211,7 @@ module.exports = Component({
           document.addEventListener('copy', event => {
             if (event.target && event.target.id === 'application') {
               const sanitisedName = `${application.firstName}-${application.lastName}`.replace(' ', '-');
-              const publicProfileUrl = `https://hackcampus-apply.herokuapp.com/profile/${application.profileToken}/${sanitisedName}`;
+              const publicProfileUrl = `https://apply.hackcampus.io/profile/${application.profileToken}/${sanitisedName}`;
               const clipboardData = `${application.firstName} ${application.lastName}\x09${document.location.href}\x09${publicProfileUrl}`;
               event.clipboardData.setData('text/plain', clipboardData);
               event.preventDefault();

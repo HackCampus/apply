@@ -118,19 +118,25 @@ textarea {
   min-height: 200px;
 }
 
-.preview h1 {
+/* Markdown answer fields */
+
+.markdown h1 {
   font-size: 1.5em;
 }
-.preview h2 {
+.markdown h2 {
   font-size: 1.3em;
 }
-.preview h3 {
+.markdown h3 {
   font-size: 1.2em;
 }
-.preview h2::before, .preview h3::before {
+.markdown h2::before, .markdown h3::before {
   content: '';
 }
-
+.markdown pre, .markdown code {
+  font-family: 'Roboto Mono', monospace;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
 
 /* text field */
 
