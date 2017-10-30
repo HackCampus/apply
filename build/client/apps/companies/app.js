@@ -109,6 +109,7 @@ module.exports = Component({
     } = model;
     return html`<div class="step1">
       <h2>Step 1: Check out this year's companies</h2>
+      <p><strong>Don't be discouraged if you're not an expert at some of the technologies listed with the company you're interested in! Most companies have a wide range of projects which suit various skillsets.</strong></p>
       <div class="companiesList">
         ${companies.map(company => this.companyView(company))}
       </div>
