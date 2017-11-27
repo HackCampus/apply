@@ -182,3 +182,18 @@ test('User.updateAuthentication with existing authentication', async t => {
   t.is(auth.identifier, newAuthentication.identifier);
   t.is(auth.token, newAuthentication.token);
 });
+
+test('User.createWithToken works when the token is really long', async t => {
+  const { User } = models;
+  const authentication = {
+    type: 'linkedin',
+    identifier: 'super-long',
+    token: '12341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234123412341234'
+  };
+  const user = await User.createWithAuthentication('longest@bar.baz', authentication);
+  const [actual] = await user.fetchAuthentications();
+
+  t.is(actual.type, authentication.type);
+  t.is(actual.identifier, authentication.identifier);
+  t.is(actual.token, authentication.token);
+});
