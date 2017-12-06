@@ -176,10 +176,10 @@ test('techpreferences - junk', async t => {
 })
 
 test('techpreferences - unauthorized after finish', async t => {
-  const credentials = {email: 'earlyfinish@foo.bar', password: 'whatever'}
+  const credentials = {email: `earlyfinish${(''+Math.random()).slice(2, 10)}@foo.bar`, password: 'whatever'}
   await api.register(credentials)
   const cookie = await getCookie(credentials)
-  await api.putApplication({name: 'Early finisher', finished: true}, cookie)
+  await api.putApplication({firstName: 'Early finisher', finished: true}, cookie)
   const error = await t.throws(api.putTechPreferences({React: 3}, cookie))
   t.is(error.response.status, 401)
 })

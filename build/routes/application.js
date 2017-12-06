@@ -63,8 +63,16 @@ module.exports = function (models) {
 
   async function handlePutTechPreferences(req, res) {
     const userId = req.user.id;
-    const application = await Application.updateOrRenew(userId, { techPreferences: req.body });
-    res.json((await application.fetchTechPreferences()));
+    try {
+      const application = await Application.updateOrRenew(userId, { techPreferences: req.body });
+      res.json((await application.fetchTechPreferences()));
+    } catch (e) {
+      if (e instanceof errors.ApplicationFinished) {
+        throw { status: 'Unauthorized' };
+      } else {
+        throw e;
+      }
+    }
   }
 
   return {
